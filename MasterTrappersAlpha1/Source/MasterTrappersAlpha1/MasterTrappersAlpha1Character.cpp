@@ -359,10 +359,17 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     }
 
     CurrentSpeed = GetVelocity().Size();
-
-    if (CurrentSpeed <= 0.f/*FMath::IsNearlyZero(CurrentSpeed, 0.001f)*/)
+    if (GetHealth() > 0.0f)
     {
-        UpdateHealth(-0.35f);
+        if (CurrentSpeed <= 0.f/*FMath::IsNearlyZero(CurrentSpeed, 0.001f)*/)
+        {
+            UpdateHealth(-0.5f);
+        }
+    }
+    else
+    {
+        Destroy();
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
     }
 }
 
