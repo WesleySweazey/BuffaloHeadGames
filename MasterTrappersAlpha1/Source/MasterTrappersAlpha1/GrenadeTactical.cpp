@@ -25,6 +25,10 @@ AGrenadeTactical::AGrenadeTactical()
     // Set as root component
     RootComponent = CollisionComp;
 
+
+    StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    StaticMeshComponent->SetupAttachment(RootComponent);
+
     // Use a ProjectileMovementComponent to govern this projectile's movement
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
     ProjectileMovement->UpdatedComponent = CollisionComp;

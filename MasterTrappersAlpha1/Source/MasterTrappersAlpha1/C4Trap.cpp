@@ -7,8 +7,8 @@
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Public/WorldCollision.h"
 #include "MasterTrappersAlpha1Character.h"
-//#include "DestructibleActor.h"
-//#include "DestructibleComponent.h"
+#include "DestructibleActor.h"
+#include "DestructibleComponent.h"
 
 AC4Trap::AC4Trap() : ABaseTrap()
 {
@@ -45,7 +45,7 @@ void AC4Trap::Detonate()
     CollisionShape.ShapeType = ECollisionShape::Sphere;
     CollisionShape.SetSphere(Radius);
 
-    /*if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
+    if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
     {
         for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
         {
@@ -61,7 +61,7 @@ void AC4Trap::Detonate()
                 DA->GetDestructibleComponent()->ApplyRadiusDamage(10.0f, Actors->ImpactPoint, 500.0f, 3000.0f, false);
             }
         }
-    }*/
+    }
     DetonationLength = 0.3f;
 }
 
