@@ -7,8 +7,8 @@
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Public/WorldCollision.h"
-//#include "DestructibleComponent.h"
-//#include "DestructibleActor.h"
+#include "DestructibleComponent.h"
+#include "DestructibleActor.h"
 
 AGrenadeTactical::AGrenadeTactical()
 {
@@ -74,16 +74,16 @@ void AGrenadeTactical::OnDetonate()
         for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
         {
             UStaticMeshComponent* SM = Cast<UStaticMeshComponent>((*Actors).Actor->GetRootComponent());
-            //ADestructibleActor* DA = Cast<ADestructibleActor>((*Actors).GetActor());
+            ADestructibleActor* DA = Cast<ADestructibleActor>((*Actors).GetActor());
 
             if (SM)
             {
                 SM->AddRadialImpulse(GetActorLocation(), 1000.0f, 5000.0f, ERadialImpulseFalloff::RIF_Linear, true);
             }
-           /* else if (DA)
+            else if (DA)
             {
                 DA->GetDestructibleComponent()->ApplyRadiusDamage(10.0f, Actors->ImpactPoint, 500.0f, 3000.0f, false);
-            }*/
+            }
         }
     }
 

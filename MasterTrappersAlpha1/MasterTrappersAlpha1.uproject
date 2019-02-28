@@ -4,13 +4,19 @@
 	"Category": "",
 	"Description": "",
 	"Modules": [
-    {
-      "Name": "MasterTrappersAlpha1",
-      "Type": "Runtime",
-      "LoadingPhase": "Default",
-      "AdditionalDependencies": [
-        "Engine"
-      ]
-    }
+		{
+			"Name": "MasterTrappersAlpha1",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ApexDestruction",
+			"Enabled": true
+		}
 	]
 }
