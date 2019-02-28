@@ -122,6 +122,15 @@ void AMasterTrappersAlpha1Character::AddToInventory(APickupActor * actor)
 
 void AMasterTrappersAlpha1Character::UpdateInventory()
 {
+    //FString sInventory = "";
+    //// for each inventory item
+    //for (APickupActor* actor : _inventory)
+    //{
+    //    sInventory.Append(actor->Name);
+    //    sInventory.Append(" | ");
+    //}
+
+    //GEngine->AddOnScreenDebugMessage(1, 3, FColor::White, *sInventory);
     //OnUpdateInventory.Broadcast(_inventory);
 }
 
@@ -433,7 +442,59 @@ void AMasterTrappersAlpha1Character::SetupPlayerInputComponent(class UInputCompo
 	PlayerInputComponent->BindAxis("TurnRate", this, &AMasterTrappersAlpha1Character::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AMasterTrappersAlpha1Character::LookUpAtRate);
+
+    // Bind fire event
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMasterTrappersAlpha1Character::OnFire);
 }
+
+void AMasterTrappersAlpha1Character::OnFire()
+{
+    // try and fire a projectile
+    if (ProjectileClass != NULL)
+    {
+        UWorld* const World = GetWorld();
+        if (World != NULL)
+        {
+            if (bUsingMotionControllers)
+            {
+                const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
+                const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
+                World->SpawnActor<AGrenadeTactical>(ProjectileClass, SpawnLocation, SpawnRotation);
+            }
+            else
+            {
+                const FRotator SpawnRotation = GetControlRotation();
+                // MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+                const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+
+                //Set Spawn Collision Handling Override
+                FActorSpawnParameters ActorSpawnParams;
+                ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+                // spawn the projectile at the muzzle
+                World->SpawnActor<AGrenadeTactical>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+            }
+        }
+    }
+
+    // try and play the sound if specified
+    if (FireSound != NULL)
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+    }
+
+    // try and play a firing animation if specified
+    if (FireAnimation != NULL)
+    {
+        // Get the animation object for the arms mesh
+        UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+        if (AnimInstance != NULL)
+        {
+            AnimInstance->Montage_Play(FireAnimation, 1.f);
+        }
+    }
+}
+
 
 void AMasterTrappersAlpha1Character::MoveForward(float Value)
 {
@@ -502,50 +563,50 @@ bool AMasterTrappersAlpha1Character::EnableTouchscreenMovement(class UInputCompo
 
 void AMasterTrappersAlpha1Character::SpawnTatical()
 {
-    // try and fire a projectile
-    if (GrenadeTactical != NULL)
-    {
-        UWorld* const World = GetWorld();
-        if (World != NULL)
-        {
-            if (bUsingMotionControllers)
-            {
-                const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
-                const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
-                World->SpawnActor<AMasterTrappersAlpha1Projectile>(GrenadeTactical, SpawnLocation, SpawnRotation);
-            }
-            else
-            {
-                const FRotator SpawnRotation = GetControlRotation();
-                // MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-                const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+    //// try and fire a projectile
+    //if (GrenadeTactical != NULL)
+    //{
+    //    UWorld* const World = GetWorld();
+    //    if (World != NULL)
+    //    {
+    //        if (bUsingMotionControllers)
+    //        {
+    //            const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
+    //            const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
+    //            World->SpawnActor<AMasterTrappersAlpha1Projectile>(GrenadeTactical, SpawnLocation, SpawnRotation);
+    //        }
+    //        else
+    //        {
+    //            const FRotator SpawnRotation = GetControlRotation();
+    //            // MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+    //            const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
 
-                //Set Spawn Collision Handling Override
-                FActorSpawnParameters ActorSpawnParams;
-                ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+    //            //Set Spawn Collision Handling Override
+    //            FActorSpawnParameters ActorSpawnParams;
+    //            ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-                // spawn the projectile at the muzzle
-                World->SpawnActor<AMasterTrappersAlpha1Projectile>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
-            }
-        }
-    }
+    //            // spawn the projectile at the muzzle
+    //            World->SpawnActor<AMasterTrappersAlpha1Projectile>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+    //        }
+    //    }
+    //}
 
-    // try and play the sound if specified
-    if (FireSound != NULL)
-    {
-        UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-    }
+    //// try and play the sound if specified
+    //if (FireSound != NULL)
+    //{
+    //    UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+    //}
 
-    // try and play a firing animation if specified
-    if (FireAnimation != NULL)
-    {
-        // Get the animation object for the arms mesh
-        UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-        if (AnimInstance != NULL)
-        {
-            AnimInstance->Montage_Play(FireAnimation, 1.f);
-        }
-    }
+    //// try and play a firing animation if specified
+    //if (FireAnimation != NULL)
+    //{
+    //    // Get the animation object for the arms mesh
+    //    UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+    //    if (AnimInstance != NULL)
+    //    {
+    //        AnimInstance->Montage_Play(FireAnimation, 1.f);
+    //    }
+    //}
 }
 
 void AMasterTrappersAlpha1Character::OnResetVR()

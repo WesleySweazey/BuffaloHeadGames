@@ -69,24 +69,24 @@ void AGrenadeTactical::OnDetonate()
     CollisionShape.ShapeType = ECollisionShape::Sphere;
     CollisionShape.SetSphere(Radius);
 
-    /*if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
+    if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
     {
         for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
         {
             UStaticMeshComponent* SM = Cast<UStaticMeshComponent>((*Actors).Actor->GetRootComponent());
-            ADestructibleActor* DA = Cast<ADestructibleActor>((*Actors).GetActor());
+            //ADestructibleActor* DA = Cast<ADestructibleActor>((*Actors).GetActor());
 
             if (SM)
             {
                 SM->AddRadialImpulse(GetActorLocation(), 1000.0f, 5000.0f, ERadialImpulseFalloff::RIF_Linear, true);
             }
-            else if (DA)
+           /* else if (DA)
             {
                 DA->GetDestructibleComponent()->ApplyRadiusDamage(10.0f, Actors->ImpactPoint, 500.0f, 3000.0f, false);
-            }
+            }*/
         }
     }
-*/
+
     Destroy();
 }
 

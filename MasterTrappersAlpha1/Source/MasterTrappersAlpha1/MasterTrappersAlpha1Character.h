@@ -178,7 +178,7 @@ public:
 
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class AMasterTrappersAlpha1Projectile> ProjectileClass;
+	TSubclassOf<class AGrenadeTactical> ProjectileClass;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
@@ -194,6 +194,9 @@ public:
 
 protected:
 	
+    /** Fires a projectile. */
+    void OnFire();
+
 	/** Spawn a Tatical. */
 	void SpawnTatical();
 
