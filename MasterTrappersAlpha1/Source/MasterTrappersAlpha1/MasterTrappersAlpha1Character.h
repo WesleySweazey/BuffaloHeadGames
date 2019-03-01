@@ -20,6 +20,10 @@ class AMasterTrappersAlpha1Character : public ACharacter
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	class USkeletalMeshComponent* Mesh1P;
 
+    /** Pawn mesh: 1st person view (arms; seen only by self) */
+    UPROPERTY(EditAnywhere, Category = Camera)
+        class UPostProcessComponent* FP_PostProcessComponent;
+
 	/** Gun mesh: 1st person view (seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	class USkeletalMeshComponent* FP_Gun;
@@ -28,16 +32,8 @@ class AMasterTrappersAlpha1Character : public ACharacter
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	class USceneComponent* FP_MuzzleLocation;
 
-	/** Gun mesh: VR view (attached to the VR controller directly, no arm, just the actual gun) */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USkeletalMeshComponent* VR_Gun;
-
-	/** Location on VR gun mesh where projectiles should spawn. */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USceneComponent* VR_MuzzleLocation;
-
 	/** First person camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent;
 
 	/** Motion controller (right hand) */
@@ -49,14 +45,19 @@ class AMasterTrappersAlpha1Character : public ACharacter
 	class UMotionControllerComponent* L_MotionController;
 
 public:
+    /** Character constructor */
 	AMasterTrappersAlpha1Character();
 
     //Inventory
 private:
+    /** Inventory of Pick up Actors */
     TArray<class APickupActor*> _inventory;
+
 public:
+    /** Add item to inventory*/
     void AddToInventory(class APickupActor* actor);
 
+    /** Update inventory*/
     UFUNCTION(BlueprintCallable)
         void UpdateInventory();
 
@@ -64,99 +65,172 @@ public:
     //UPROPERTY(BlueprintAssignable, Category = "Pickup")
         //FUpdateInventoryDelegate OnUpdateInventory;
 
+    //Tacticals
 
-    //Taticals
-
-    /** Location on gun mesh where projectiles should spawn. */
+    /** The inventory's current tacticals index*/
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
-        Category = "Taticals")
+        Category = "Tacticals")
+        int currentTactical;
+
+    /** Total amount of tacticals there are */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Tacticals")
+        int totalTacticals;
+
+    /** Grenade Blueprint */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Tacticals")
         TSubclassOf<class AGrenadeTactical> GrenadeTactical;
 
+    /** Flash Bang Blueprint */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Tacticals")
+        TSubclassOf<class AFlashBangTactical> FlashBangTactical;
+
+    //Scrolls Through Tactical Inventory Up
+    void SwitchTacticalUp();
+    //Scrolls Through Tactical Inventory Down
+    void SwitchTacticalDown();
+
     //Traps
-    //The inventory's current trap
+
+    /** The inventory's current trap index*/
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
         Category = "Traps")
         int currentTrap;
-    //Total amount of traps there are
+
+    /** Total amount of traps there are */
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
         Category = "Traps")
         int totalTraps;
 
+    /** Bear trap blueprint */
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
         Category = "Traps")
         TSubclassOf<class ABearTrap> BearTrap;
 
+    /** Boost trap blueprint */
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
         Category = "Traps")
         TSubclassOf<class ABoostTrap> BoostTrap;
 
+    /** C4 trap blueprint */
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
         Category = "Traps")
         TSubclassOf<class AC4Trap> C4Trap;
 
+    /** Trip Wire trap blueprint */
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
         Category = "Traps")
         TSubclassOf<class ATripWireTrap> TripWireTrap;
 
+    /** Banana peel blueprint */
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
         Category = "Traps")
         TSubclassOf<class ABananaPeelTrap> BananaPeelTrap;
     
+    /** TArray of C4 traps placed */
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
-        Category = "Config")
+        Category = "Traps")
         TArray <AC4Trap*> PlacedC4Traps;
+
+    /** FTimerHandle for when the player slips */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Traps")
+    FTimerHandle BananaSlipTimerHandle;
+
+    /** FTimerHandle for when the player stunned */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Tacticals")
+        FTimerHandle StunTimerHandle;
+
+    /** Float for how long the player slips */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Traps")
+    float BananaSlipTimerLength = 2.0f;
+
+    /** Float for how long the player is stunned */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Tacticals")
+        float StunTimerLength = 2.0f;
 
     //Spawns Trap
     void SpawnTrap();
     //Activates Placed C4 Trap
     void ActivateTrap();
 
-    //Scrolls Through Inventory Up
+    //Scrolls Through Trap Inventory Up
     void SwitchTrapUp();
-    //Scrolls Through Inventory Down
+    //Scrolls Through Trap Inventory Down
     void SwitchTrapDown();
+
+    //Scrolls Through Inventory Down
+    void StartSlip();
+    //Scrolls Through Inventory Down
+    void EndSlip();
+
+    //Scrolls Through Inventory Down
+    void StartStun();
+    //Scrolls Through Inventory Down
+    void EndStun();
+
 protected:
+    // Called at the Beginning
 	virtual void BeginPlay();
     // Called every frame.
     virtual void Tick(float DeltaSeconds) override;
+
+    /** Takes damage if player movement is 0 */
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser);
 public:
-
+    /** Boolean for shoving feature */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Shoving)
         bool bIsShoving;
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = Character, Meta = (ClampMin = 0.0, UIMin = 0.0))
+    /** Boolean for shoving feature */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shoving)
         float ShoveStrength;
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = Character, Meta = (ClampMin = 0.0, UIMin = 0.0))
+    /** Float for character movement speed */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
         float Speed;
+    /** Quaternion for cursor surface rotation */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Traps)
         FQuat SpawnSurfaceRotation;
 
     //Health
 
+    /** Float for maximum amount of health */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
         float FullHealth;
+    /** Float for current amount of health */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
         float Health;
+    /** Float for current health percent*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
         float HealthPercentage;
+    /** Float for current movement speed */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
         float CurrentSpeed;
 
-    float TimelineValue;
-
+    /** Returns player's current health */
     UFUNCTION(BlueprintPure, Category = "Health")
         float GetHealth();
+    /** Updates player's health */
     UFUNCTION(BlueprintCallable, Category = "Health")
         void UpdateHealth(float HealthChange);
 
@@ -175,10 +249,6 @@ public:
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	FVector GunOffset;
-
-	/** Projectile class to spawn */
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class AGrenadeTactical> ProjectileClass;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
@@ -199,9 +269,6 @@ protected:
 
 	/** Spawn a Tatical. */
 	void SpawnTatical();
-
-	/** Resets HMD orientation and position in VR. */
-	void OnResetVR();
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
@@ -224,31 +291,10 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
-	struct TouchData
-	{
-		TouchData() { bIsPressed = false;Location=FVector::ZeroVector;}
-		bool bIsPressed;
-		ETouchIndex::Type FingerIndex;
-		FVector Location;
-		bool bMoved;
-	};
-	void BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
-	void EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
-	void TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location);
-	TouchData	TouchItem;
-	
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
-
-	/* 
-	 * Configures input for touchscreen devices if there is a valid touch interface for doing so 
-	 *
-	 * @param	InputComponent	The input component pointer to bind controls to
-	 * @returns true if touch controls were enabled.
-	 */
-	bool EnableTouchscreenMovement(UInputComponent* InputComponent);
 
 public:
 	/** Returns Mesh1P subobject **/

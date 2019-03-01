@@ -25,7 +25,8 @@ void ABananaPeelTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, 
                 GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "ABananaPeelTrap::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());
-                //pawn->Destroy();
+                pawn->StartSlip();
+                this->Destroy();
             }
         }
     }

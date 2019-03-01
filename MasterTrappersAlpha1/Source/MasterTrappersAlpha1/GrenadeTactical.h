@@ -7,15 +7,15 @@
 #include "GrenadeTactical.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class MASTERTRAPPERSALPHA1_API AGrenadeTactical : public ABaseTactical
 {
-	GENERATED_BODY()
-
-        /** Sphere collision component */
-        UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
+    GENERATED_BODY()
+public:
+    /** Sphere collision component */
+    UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
         class USphereComponent* CollisionComp;
 
     /** Projectile movement component */
