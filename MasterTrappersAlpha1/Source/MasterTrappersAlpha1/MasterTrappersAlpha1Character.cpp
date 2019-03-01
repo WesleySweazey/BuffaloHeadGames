@@ -71,13 +71,6 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 	// Default offset from the character location for projectiles to spawn
 	GunOffset = FVector(100.0f, 0.0f, 10.0f);
 
-	// Create VR Controllers.
-	R_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("R_MotionController"));
-	R_MotionController->MotionSource = FXRMotionControllerBase::RightHandSourceId;
-	R_MotionController->SetupAttachment(RootComponent);
-	L_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("L_MotionController"));
-	L_MotionController->SetupAttachment(RootComponent);
-
     // Create a decal in the world to show the cursor's location
     CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
     CursorToWorld->SetupAttachment(RootComponent);

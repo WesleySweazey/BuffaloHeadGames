@@ -29,20 +29,12 @@ class AMasterTrappersAlpha1Character : public ACharacter
 	class USkeletalMeshComponent* FP_Gun;
 
 	/** Location on gun mesh where projectiles should spawn. */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	UPROPERTY(EditAnywhere, Category = Mesh)
 	class USceneComponent* FP_MuzzleLocation;
 
 	/** First person camera */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent;
-
-	/** Motion controller (right hand) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UMotionControllerComponent* R_MotionController;
-
-	/** Motion controller (left hand) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UMotionControllerComponent* L_MotionController;
 
 public:
     /** Character constructor */

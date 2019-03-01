@@ -38,10 +38,14 @@ AFlashBangTactical::AFlashBangTactical()
     // Die after 3 seconds by default
     InitialLifeSpan = 3.0f;
 
+    FRotator NewRotation = FRotator(90.0f, 0.0f, 0.0f);
+
+    FQuat QuatRotation = FQuat(NewRotation);
+    SetActorRotation(QuatRotation);
     // Initialize the rotate value
-    PitchVal = 5.f;
+    PitchVal = 0.f;
     YawVal = 5.f;
-    RollVal = 5.f;
+    RollVal = 0.f;
 }
 
 
