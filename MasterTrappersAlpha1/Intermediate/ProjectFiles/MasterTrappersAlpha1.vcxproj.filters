@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<None Include="..\..\MasterTrappersAlpha1.uproject" />
+		<Filter Include="Source">
+			<UniqueIdentifier>{5837F29E-F691-4E49-9E67-6280874BD598}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Source\MasterTrappersAlpha1.Target.cs">
+			<Filter>Source</Filter>
+		</None >
+		<None Include="..\..\Source\MasterTrappersAlpha1Editor.Target.cs">
+			<Filter>Source</Filter>
+		</None >
+		<Filter Include="Config">
+			<UniqueIdentifier>{0CCC489A-6F67-4251-AC22-FF315B74EDAE}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Config\DefaultEditor.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultEditorPerProjectUserSettings.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultEngine.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultGame.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultInput.ini">
+			<Filter>Config</Filter>
+		</None >
+		<Filter Include="Source\MasterTrappersAlpha1">
+			<UniqueIdentifier>{3049DF5B-E802-4985-BDE5-E530169AE2F7}</UniqueIdentifier>
+		</Filter>
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\BananaPeelTrap.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\BananaPeelTrap.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\BaseTactical.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\BaseTactical.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\BaseTrap.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\BaseTrap.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\BearTrap.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\BearTrap.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\BoostTrap.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\BoostTrap.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\C4Trap.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\C4Trap.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\GrenadeTactical.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\GrenadeTactical.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<None Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1.Build.cs">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</None >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1Character.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1Character.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1GameMode.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1GameMode.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1HUD.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1HUD.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1Projectile.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\MasterTrappersAlpha1Projectile.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\MasterTrappersAlpha1\TripWireTrap.cpp">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\MasterTrappersAlpha1\TripWireTrap.h">
+			<Filter>Source\MasterTrappersAlpha1</Filter>
+		</ClInclude >
+	</ItemGroup>
+</Project>

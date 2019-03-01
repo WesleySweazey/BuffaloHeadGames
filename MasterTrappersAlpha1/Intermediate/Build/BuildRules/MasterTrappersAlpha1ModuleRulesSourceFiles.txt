@@ -1,0 +1,3 @@
+C:\Users\zhan0472\Desktop\BuffaloHeadGames-Rui\MasterTrappersAlpha1\Source\MasterTrappersAlpha1\MasterTrappersAlpha1.Build.cs
+C:\Users\zhan0472\Desktop\BuffaloHeadGames-Rui\MasterTrappersAlpha1\Source\MasterTrappersAlpha1.Target.cs
+C:\Users\zhan0472\Desktop\BuffaloHeadGames-Rui\MasterTrappersAlpha1\Source\MasterTrappersAlpha1Editor.Target.cs
