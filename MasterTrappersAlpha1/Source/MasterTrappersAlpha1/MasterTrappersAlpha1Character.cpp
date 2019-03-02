@@ -152,10 +152,10 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
                 FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
                 SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-                if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
+                /*if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
                 {
                     SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-                }
+                }*/
                 //float YawAdjustment = SpawnRotationValue;
                 //// World space
                 //FRotator SpawnNormalize = SpawnRotation.GetNormalized();
@@ -191,10 +191,10 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
                 FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
                 //SpawnRotation.Yaw = ActorRotation.Yaw - 90.0f;
                 SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-                if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
+                /*if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
                 {
                     SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-                }
+                }*/
                 //FRotator SpawnRotation = GetActorRotation(); //
                 //FRotator CursorRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
                 ////SpawnRotation.Pitch = SpawnRotation.Pitch + 90.0f;
@@ -230,10 +230,10 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
                 FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
                 SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-                if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
+                /*if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
                 {
                     SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-                }
+                }*/
                 AC4Trap* SpawnedActor = World->SpawnActor<AC4Trap>(C4Trap, SpawnTransform, SpawnParams);
                 SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
                 // Add C4 Trap to TArray of C4 traps already placed
@@ -259,10 +259,10 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
                 FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
                 SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-                if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
+                /*if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
                 {
                     SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-                }
+                }*/
                 ATripWireTrap* SpawnedActor = World->SpawnActor<ATripWireTrap>(TripWireTrap, SpawnTransform, SpawnParams);
                 SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
                 if (SpawnedActor)
@@ -285,11 +285,11 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
                 FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
                 SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-                if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
-                {
-                    SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-                    //UE_LOG(LogTemp, Warning, TEXT("Can not spawn Banana Peel Trap on wall"));
-                }
+                //if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
+                //{
+                //    SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
+                //    //UE_LOG(LogTemp, Warning, TEXT("Can not spawn Banana Peel Trap on wall"));
+                //}
                 ABananaPeelTrap* SpawnedActor = World->SpawnActor<ABananaPeelTrap>(BananaPeelTrap, SpawnTransform, SpawnParams);
                 SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
                 if (SpawnedActor)

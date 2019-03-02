@@ -49,7 +49,7 @@ void AC4Trap::Detonate()
     {
         for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
         {
-            UStaticMeshComponent* SM = Cast<UStaticMeshComponent>((*Actors).Actor->GetRootComponent());
+            /*UStaticMeshComponent* SM = Cast<UStaticMeshComponent>((*Actors).Actor->GetRootComponent());
             ADestructibleActor* DA = Cast<ADestructibleActor>((*Actors).GetActor());
 
             if (SM)
@@ -59,7 +59,7 @@ void AC4Trap::Detonate()
             else if (DA)
             {
                 DA->GetDestructibleComponent()->ApplyRadiusDamage(10.0f, Actors->ImpactPoint, 500.0f, 3000.0f, false);
-            }
+            }*/
         }
     }
     DetonationLength = 0.3f;
