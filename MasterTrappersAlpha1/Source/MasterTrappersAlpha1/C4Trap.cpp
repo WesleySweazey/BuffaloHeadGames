@@ -84,7 +84,8 @@ void AC4Trap::Tick(float DeltaTime)
                     GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
                         "AC4Trap Killed - "
                         + collidedCharacters[i]->GetName());
-                    collidedCharacters[i]->Destroy();
+                    //collidedCharacters[i]->Destroy();
+                    collidedCharacters[i]->Die();
                 }
             }
         }

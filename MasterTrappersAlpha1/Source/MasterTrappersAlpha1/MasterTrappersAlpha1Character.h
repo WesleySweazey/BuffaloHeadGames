@@ -182,6 +182,11 @@ public:
     //Scrolls Through Inventory Down
     void EndStun();
 
+    //Scrolls Through Inventory Down
+    void Die();
+
+    //Respawn Point
+    FVector RespawnLocation;
 protected:
     // Called at the Beginning
 	virtual void BeginPlay();

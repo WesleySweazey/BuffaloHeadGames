@@ -368,13 +368,22 @@ void AMasterTrappersAlpha1Character::EndStun()
     FP_PostProcessComponent->bEnabled = false;
 }
 
+void AMasterTrappersAlpha1Character::Die()
+{
+    Health = FullHealth;
+    SetActorLocation(RespawnLocation);
+    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
+    StartSlip();
+
+}
+
 void AMasterTrappersAlpha1Character::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-
+    RespawnLocation = GetActorLocation();
 	// Show gun mesh componen.
 	Mesh1P->SetHiddenInGame(false, true);
 }
@@ -409,8 +418,8 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     }
     else
     {
-        Destroy();
-        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
+        //Destroy();
+        Die();
     }
 }
 

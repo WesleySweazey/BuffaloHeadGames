@@ -25,7 +25,8 @@ void ABearTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor
                 GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "ABearTrap::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());
-                pawn->Destroy();
+                //pawn->Destroy();
+                pawn->Die();
             }
         }
     }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseTactical.h"
+#include "MasterTrappersAlpha1Character.h"
 #include "GrenadeTactical.generated.h"
 
 /**
@@ -17,6 +18,18 @@ public:
     /** Sphere collision component */
     UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
         class USphereComponent* CollisionComp;
+
+    UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
+        class USphereComponent* ExplosionComp;
+
+    /** called when projectile hits something */
+    UFUNCTION()
+        void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
+            AActor* OtherActor,
+            UPrimitiveComponent* OtherComp,
+            int32 OtherBodyIndex,
+            bool bFromSweep,
+            const FHitResult &SweepResult);
 
     /** Projectile movement component */
     UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
@@ -42,6 +55,13 @@ public:
 
 public:
     AGrenadeTactical();
+
+    FTimerHandle Explosionhandle;
+    UFUNCTION()
+    void OnExplosion();
+
+    UPROPERTY(VisibleAnywhere, Category = "Collision")
+        TArray<AMasterTrappersAlpha1Character*> collidedCharacters;
 
     virtual void BeginPlay() override;
 
