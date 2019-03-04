@@ -40,13 +40,15 @@ void ATripWireTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AA
                 //pawn->IncrementPickupCount(1);
                 /*FVector Character = pawn->GetVelocity();
                 pawn->LaunchCharacter(Character * 10, false, false);*/
-                pawn->Destroy();
+                //pawn->Destroy();
 
                 UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
                 Explosion->SetRelativeScale3D(FVector(4.f));
 
                 UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
                 Destroy();
+                
+               pawn->Die();
             }
         }
     }
