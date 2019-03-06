@@ -25,6 +25,8 @@
 #include "BananaPeelTrap.h"
 #include "GrenadeTactical.h"
 #include "FlashBangTactical.h"
+#include "DrawDebugHelpers.h"
+#include <string>
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
 //////////////////////////////////////////////////////////////////////////
@@ -151,7 +153,10 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
                 ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
                 FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
+                //vec3 normal = CursorToWorld->GetNormal
                 SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
+                FRotator PlayerRot = FirstPersonCameraComponent->GetComponentRotation();
+
                 /*if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
                 {
                     SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
@@ -181,34 +186,32 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
             if (World)
             {
                 //Creates Spawn Parameters, Transforms and Rotations
+                FHitResult HitResult;
+                FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
                 FActorSpawnParameters SpawnParams;
                 SpawnParams.Owner = this;
                 SpawnParams.SpawnCollisionHandlingOverride =
                 ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
-                //GetActorRotation();
-                FRotator ActorRotation = GetActorRotation();
-                FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
-                //SpawnRotation.Yaw = ActorRotation.Yaw - 90.0f;
-                SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-                /*if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
-                {
-                    SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-                }*/
-                //FRotator SpawnRotation = GetActorRotation(); //
-                //FRotator CursorRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
-                ////SpawnRotation.Pitch = SpawnRotation.Pitch + 90.0f;
-                //SpawnRotation.Yaw = SpawnRotation.Yaw + 90.0f;
-                //SpawnRotation.Pitch = CursorRotation.Pitch;
-                //SpawnRotation.Roll = CursorRotation.Roll;
-                //if (CursorRotation.Pitch < 0.2f && CursorRotation.Pitch > -0.2f)
-                //{
-                //    SpawnRotation.Pitch = CursorRotation.Pitch;
-                //    SpawnRotation.Roll = SpawnRotation.Roll + 90.0f;
-                //}
 
+                FVector StartLocation = CursorToWorld->GetComponentLocation();
+                FVector EndLocation = CursorToWorld->GetComponentRotation().Vector() * 30.0f + StartLocation;
+                Params.AddIgnoredActor(this);
+                World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+                FQuat Normal = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
+                Normal.RotateVector(FirstPersonCameraComponent->GetComponentRotation().Vector());
+                FRotator rot = Normal.Rotator();
+                rot.Pitch = rot.Pitch + 90.0f;
+                rot.Normalize();
+                FRotator PlayerRot = FirstPersonCameraComponent->GetComponentRotation();
+                PlayerRot.Roll = 0;
+                PlayerRot.Pitch = 0;
+                PlayerRot.Yaw = 1;
+                //PlayerRot.Normalize();
+                FQuat newQuat = rot.Quaternion() * PlayerRot.Quaternion();
+                newQuat = newQuat * TrapRotation.Quaternion();
                 ABoostTrap* SpawnedActor = World->SpawnActor<ABoostTrap>(BoostTrap, SpawnTransform, SpawnParams);
-                SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+                SpawnedActor->SetActorRelativeRotation(newQuat);
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Boost Pad Trap Spawned"));
@@ -405,6 +408,10 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
                 FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
                 SpawnSurfaceRotation = SurfaceRotation;
                 CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
+                FRotator temp = TrapRotation;
+                temp.Yaw -= 90;
+                FVector trapFowardVector = temp.Vector();
+                DrawDebugLine(GetWorld(), CursorToWorld->GetComponentLocation(), CursorToWorld->GetComponentLocation() + trapFowardVector * 100.0f, FColor(255, 0, 0), false, 0.1f, 0, 2.333);
             }
     }
 
@@ -473,6 +480,7 @@ void AMasterTrappersAlpha1Character::SetupPlayerInputComponent(class UInputCompo
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMasterTrappersAlpha1Character::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMasterTrappersAlpha1Character::MoveRight);
+    PlayerInputComponent->BindAxis("RotateTrap", this, &AMasterTrappersAlpha1Character::RotateTrap);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -572,6 +580,23 @@ void AMasterTrappersAlpha1Character::Shove()
             otherCharacter->LaunchCharacter(GetActorForwardVector()*ShoveStrength, false, false);
         }
     }
+}
+
+void AMasterTrappersAlpha1Character::RotateTrap(float Value)
+{
+    if (Value != 0.0f)
+    {
+        // add movement in that direction
+        TrapRotation.Yaw += Value * 90;
+        if (TrapRotation.Yaw > 360.0f)
+        {
+            TrapRotation.Yaw = 360.0f - TrapRotation.Yaw;
+        }
+        FString s = FString::SanitizeFloat(TrapRotation.Yaw);
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Rotation - " + s));
+        //AddMovementInput(GetActorRightVector(), Value);
+    }
+    
 }
 
 void AMasterTrappersAlpha1Character::TurnAtRate(float Rate)

@@ -208,7 +208,9 @@ public:
     /** Quaternion for cursor surface rotation */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Traps)
         FQuat SpawnSurfaceRotation;
-
+    /** Quaternion for cursor surface rotation */
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Traps)
+        FRotator TrapRotation;
     //Health
 
     /** Float for maximum amount of health */
@@ -258,7 +260,7 @@ public:
 	/** Whether to use motion controller location for aiming. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	uint32 bUsingMotionControllers : 1;
-
+    
 protected:
 	
     /** Fires a projectile. */
@@ -276,6 +278,7 @@ protected:
     /** Handles moving shove */
     void Shove();
 
+    void RotateTrap(float val);
 	/**
 	 * Called via input to turn at a given rate.
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
