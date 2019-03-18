@@ -49,7 +49,14 @@ public:
     // grenade setups
     int CurrentGrenadeNum; // current grenade number
     int MaxGrenadeNum;// max grenade number
-    void AddGrenadeNum() { CurrentGrenadeNum += 2; }//every pickup add 2 grenade
+    void AddGrenadeNum() { CurrentGrenadeNum += 5; }//every pickup add 2 grenade
+    int GetCurrentGrenadeNum() { return CurrentGrenadeNum; }
+    int GetMaxGrenadeNum() { return MaxGrenadeNum; }
+    // Inventory component
+    UPROPERTY(EditAnywhere, Category = "InventoryComponent")
+        class UInventoryComponent* InventoryComponent;
+
+    FTimerHandle PrintInventoryHandle;
 
     /** Add item to inventory*/
     void AddToInventory(class ABasePickup* actor);

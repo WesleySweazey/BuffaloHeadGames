@@ -28,6 +28,8 @@
 #include "DrawDebugHelpers.h"
 #include <string>
 #include "Pickups/BasePickup.h"
+#include "Components/InventoryComponent.h"
+
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
 //////////////////////////////////////////////////////////////////////////
@@ -96,13 +98,20 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     //Adding Player Tag
     Tags.Add("Player");
 
+    //create inventory component
+    InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("Inventory Component");
+    
+    //Initialize grenade number
     MaxGrenadeNum = 10;
     CurrentGrenadeNum = 0;
+
+
+    
 }
 
 void AMasterTrappersAlpha1Character::AddToInventory(ABasePickup * actor)
 {
-    _inventory.Add(actor);
+    InventoryComponent->AddToTacticalsInventory(actor);
     
 }
 
@@ -114,16 +123,7 @@ void AMasterTrappersAlpha1Character::AddToInventory(ABasePickup * actor)
 
 void AMasterTrappersAlpha1Character::UpdateInventory()
 {
-    FString sInventory = "";
-    // for each inventory item
-    for (ABasePickup* actor : _inventory)
-    {
-        sInventory.Append(actor->Name);
-        sInventory.Append(" | ");
-    }
-
-    GEngine->AddOnScreenDebugMessage(1, 3, FColor::White, *sInventory);
-    //OnUpdateInventory.Broadcast(_inventory);
+    InventoryComponent->UpdateTacticalsInventory();
 }
 
 void AMasterTrappersAlpha1Character::SwitchTacticalUp()
@@ -400,6 +400,10 @@ void AMasterTrappersAlpha1Character::BeginPlay()
     RespawnLocation = GetActorLocation();
 	// Show gun mesh componen.
 	Mesh1P->SetHiddenInGame(false, true);
+
+    // Display inventory after every 2 seconds
+    //GetWorld()->GetTimerManager().SetTimer(PrintInventoryHandle, this, &AMasterTrappersAlpha1Character::UpdateInventory, 2.f, false);
+
 }
 
 void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
@@ -445,6 +449,14 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     if (CurrentGrenadeNum >= MaxGrenadeNum)
     {
         CurrentGrenadeNum = MaxGrenadeNum;
+    }
+
+   
+
+    //displaying inventory
+    if (CurrentGrenadeNum > 0)
+    {
+        UpdateInventory();
     }
 }
 
@@ -516,6 +528,8 @@ void AMasterTrappersAlpha1Character::OnFire()
 {
     // try and fire a projectile
     
+    
+
     if (GrenadeTactical != NULL && CurrentGrenadeNum>0)
     {
         UWorld* const World = GetWorld();
@@ -534,6 +548,14 @@ void AMasterTrappersAlpha1Character::OnFire()
                 {
                     World->SpawnActor<AGrenadeTactical>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                     CurrentGrenadeNum--;
+                    if (CurrentGrenadeNum == 0)
+                    {
+                        InventoryComponent->RemoveFromTacticalInventory();
+                    }
+                    else if (CurrentGrenadeNum == 5)
+                    {
+                        InventoryComponent->RemoveFromTacticalInventory();
+                    }
                 }
                 else if (currentTactical == 1)
                 {

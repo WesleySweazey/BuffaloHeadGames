@@ -8,7 +8,7 @@
 void AGrenadePickup::OnInteract()
 {
     FString pickup = FString::Printf(TEXT("Picked up: %s"), *Name);
-    GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, pickup);
+    //GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, pickup);
     //Destroy();
 
     //TODO
@@ -19,6 +19,7 @@ void AGrenadePickup::OnInteract()
     {
         PlayEffects();
         Show(false);
+        if(player->GetCurrentGrenadeNum()<player->GetMaxGrenadeNum())
         player->AddToInventory(this);
         player->AddGrenadeNum();
     }

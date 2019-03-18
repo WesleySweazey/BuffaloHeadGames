@@ -55,16 +55,16 @@ AGrenadeTactical::AGrenadeTactical()
 
 void AGrenadeTactical::OnExplosion()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
-        "OnExplosion ");
+   /* GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
+        "OnExplosion ");*/
 
     for (int i = 0; i < collidedCharacters.Num(); i++)
     {
         if (GetDistanceTo(collidedCharacters[i])<300.0f)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
+          /*  GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
                 "AGrenadeTactical Killed - "
-                + collidedCharacters[i]->GetName());
+                + collidedCharacters[i]->GetName());*/
             collidedCharacters[i]->Die();
             //collidedCharacters[i]->PawnClientRestart();
             //collidedCharacters[i]->SetActorLocation()
@@ -80,7 +80,7 @@ void AGrenadeTactical::BeginPlay()
 
     FTimerHandle handle;
     //GetWorld()->GetTimerManager().SetTimer(handle, this, &AGrenadeTactical::OnDetonate, 5.f, false);  // don't want to loop the explotion, just do once every 5.0 second
-    GetWorld()->GetTimerManager().SetTimer(Explosionhandle, this, &AGrenadeTactical::OnExplosion, 5.f, false);
+    GetWorld()->GetTimerManager().SetTimer(Explosionhandle, this, &AGrenadeTactical::OnExplosion, 2.5f, false);
 }
 
 void AGrenadeTactical::OnDetonate()
@@ -141,9 +141,9 @@ void AGrenadeTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "AGrenadeTactical::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());
+                    + OtherActor->GetName());*/
                 collidedCharacters.Add(pawn);
             }
         }
@@ -171,9 +171,9 @@ void AGrenadeTactical::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent,
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "AGrenadeTactical::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());
+                    + OtherActor->GetName());*/
                 if (collidedCharacters[0] != pawn)
                 {
                     collidedCharacters.Add(pawn);
