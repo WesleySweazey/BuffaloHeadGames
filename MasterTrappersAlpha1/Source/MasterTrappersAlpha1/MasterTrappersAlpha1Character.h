@@ -43,11 +43,16 @@ public:
     //Inventory
 private:
     /** Inventory of Pick up Actors */
-    TArray<class APickupActor*> _inventory;
+    TArray<class ABasePickup*> _inventory;
 
 public:
+    // grenade setups
+    int CurrentGrenadeNum; // current grenade number
+    int MaxGrenadeNum;// max grenade number
+    void AddGrenadeNum() { CurrentGrenadeNum += 2; }//every pickup add 2 grenade
+
     /** Add item to inventory*/
-    void AddToInventory(class APickupActor* actor);
+    void AddToInventory(class ABasePickup* actor);
 
     /** Update inventory*/
     UFUNCTION(BlueprintCallable)

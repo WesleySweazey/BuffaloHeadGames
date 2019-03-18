@@ -27,6 +27,7 @@
 #include "FlashBangTactical.h"
 #include "DrawDebugHelpers.h"
 #include <string>
+#include "Pickups/BasePickup.h"
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
 //////////////////////////////////////////////////////////////////////////
@@ -94,24 +95,34 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 
     //Adding Player Tag
     Tags.Add("Player");
+
+    MaxGrenadeNum = 10;
+    CurrentGrenadeNum = 0;
 }
 
-void AMasterTrappersAlpha1Character::AddToInventory(APickupActor * actor)
+void AMasterTrappersAlpha1Character::AddToInventory(ABasePickup * actor)
 {
-    //_inventory.Add(actor);
+    _inventory.Add(actor);
+    
 }
+
+//void AMasterTrappersAlpha1Character::RemoveFromInventory(ABasePickup * actor)
+//{
+//    _inventory.Add(actor);
+//
+//}
 
 void AMasterTrappersAlpha1Character::UpdateInventory()
 {
-    //FString sInventory = "";
-    //// for each inventory item
-    //for (APickupActor* actor : _inventory)
-    //{
-    //    sInventory.Append(actor->Name);
-    //    sInventory.Append(" | ");
-    //}
+    FString sInventory = "";
+    // for each inventory item
+    for (ABasePickup* actor : _inventory)
+    {
+        sInventory.Append(actor->Name);
+        sInventory.Append(" | ");
+    }
 
-    //GEngine->AddOnScreenDebugMessage(1, 3, FColor::White, *sInventory);
+    GEngine->AddOnScreenDebugMessage(1, 3, FColor::White, *sInventory);
     //OnUpdateInventory.Broadcast(_inventory);
 }
 
@@ -428,6 +439,13 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
         //Destroy();
         Die();
     }
+
+
+    // clmap max grenade nums
+    if (CurrentGrenadeNum >= MaxGrenadeNum)
+    {
+        CurrentGrenadeNum = MaxGrenadeNum;
+    }
 }
 
 float AMasterTrappersAlpha1Character::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
@@ -462,7 +480,7 @@ void AMasterTrappersAlpha1Character::SetupPlayerInputComponent(class UInputCompo
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	// Bind fire event
-	PlayerInputComponent->BindAction("SpawnTatical", IE_Pressed, this, &AMasterTrappersAlpha1Character::SpawnTatical);
+	//PlayerInputComponent->BindAction("SpawnTatical", IE_Pressed, this, &AMasterTrappersAlpha1Character::SpawnTatical);
 
     // Bind Shove events
     PlayerInputComponent->BindAction("Shove", IE_Pressed, this, &AMasterTrappersAlpha1Character::Shove);
@@ -497,7 +515,8 @@ void AMasterTrappersAlpha1Character::SetupPlayerInputComponent(class UInputCompo
 void AMasterTrappersAlpha1Character::OnFire()
 {
     // try and fire a projectile
-    if (GrenadeTactical != NULL)
+    
+    if (GrenadeTactical != NULL && CurrentGrenadeNum>0)
     {
         UWorld* const World = GetWorld();
         if (World != NULL)
@@ -511,33 +530,46 @@ void AMasterTrappersAlpha1Character::OnFire()
                 ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
                 // spawn the projectile at the muzzle
-                if (currentTactical == 0)
+                if (currentTactical == 0 )
                 {
                     World->SpawnActor<AGrenadeTactical>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    CurrentGrenadeNum--;
                 }
                 else if (currentTactical == 1)
                 {
                     World->SpawnActor<AFlashBangTactical>(FlashBangTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                 }
         }
-    }
 
-    // try and play the sound if specified
-    if (FireSound != NULL)
-    {
-        UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-    }
 
-    // try and play a firing animation if specified
-    if (FireAnimation != NULL)
-    {
-        // Get the animation object for the arms mesh
-        UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-        if (AnimInstance != NULL)
+        // try and play the sound if specified
+        if (FireSound != NULL)
         {
-            AnimInstance->Montage_Play(FireAnimation, 1.f);
+            UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+        }
+
+        // try and play a firing animation if specified
+        if (FireAnimation != NULL)
+        {
+            // Get the animation object for the arms mesh
+            UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+            if (AnimInstance != NULL)
+            {
+                AnimInstance->Montage_Play(FireAnimation, 1.f);
+            }
         }
     }
+
+    else
+    {
+        if (CurrentGrenadeNum <= 0)
+        {
+            FString s = "Run out of grenade, take some grenade pickups";
+            GEngine->AddOnScreenDebugMessage(1, 3, FColor::Green, *s);
+        }
+        
+    }
+    
 }
 
 
