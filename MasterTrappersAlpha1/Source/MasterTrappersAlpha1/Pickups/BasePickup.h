@@ -60,14 +60,14 @@ public:
     UPROPERTY(EditAnywhere, Category = Movement)
         float RollValue;
 
-    virtual void OnInteract();
+    
 
     virtual void Rotator(float DeltaTime);
 
     //UFUNCTION()
     // void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-    UFUNCTION()
-        virtual void NotifyActorBeginOverlap(class AActor* OtherActor) override;
+   /* UFUNCTION()
+        virtual void NotifyActorBeginOverlap(class AActor* OtherActor) override;*/
 	
 };

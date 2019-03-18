@@ -46,6 +46,11 @@ private:
     TArray<class ABasePickup*> _inventory;
 
 public:
+    // grenade setups
+    int CurrentGrenadeNum; // current grenade number
+    int MaxGrenadeNum;// max grenade number
+    void AddGrenadeNum() { CurrentGrenadeNum += 2; }//every pickup add 2 grenade
+
     /** Add item to inventory*/
     void AddToInventory(class ABasePickup* actor);
 
