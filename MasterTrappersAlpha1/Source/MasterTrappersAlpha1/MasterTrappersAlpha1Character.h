@@ -43,11 +43,11 @@ public:
     //Inventory
 private:
     /** Inventory of Pick up Actors */
-    TArray<class APickupActor*> _inventory;
+    TArray<class ABasePickup*> _inventory;
 
 public:
     /** Add item to inventory*/
-    void AddToInventory(class APickupActor* actor);
+    void AddToInventory(class ABasePickup* actor);
 
     /** Update inventory*/
     UFUNCTION(BlueprintCallable)

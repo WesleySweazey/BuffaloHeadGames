@@ -27,6 +27,7 @@
 #include "FlashBangTactical.h"
 #include "DrawDebugHelpers.h"
 #include <string>
+#include "Pickups/BasePickup.h"
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
 //////////////////////////////////////////////////////////////////////////
@@ -96,22 +97,22 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     Tags.Add("Player");
 }
 
-void AMasterTrappersAlpha1Character::AddToInventory(APickupActor * actor)
+void AMasterTrappersAlpha1Character::AddToInventory(ABasePickup * actor)
 {
-    //_inventory.Add(actor);
+    _inventory.Add(actor);
 }
 
 void AMasterTrappersAlpha1Character::UpdateInventory()
 {
-    //FString sInventory = "";
-    //// for each inventory item
-    //for (APickupActor* actor : _inventory)
-    //{
-    //    sInventory.Append(actor->Name);
-    //    sInventory.Append(" | ");
-    //}
+    FString sInventory = "";
+    // for each inventory item
+    for (ABasePickup* actor : _inventory)
+    {
+        sInventory.Append(actor->Name);
+        sInventory.Append(" | ");
+    }
 
-    //GEngine->AddOnScreenDebugMessage(1, 3, FColor::White, *sInventory);
+    GEngine->AddOnScreenDebugMessage(1, 3, FColor::White, *sInventory);
     //OnUpdateInventory.Broadcast(_inventory);
 }
 
