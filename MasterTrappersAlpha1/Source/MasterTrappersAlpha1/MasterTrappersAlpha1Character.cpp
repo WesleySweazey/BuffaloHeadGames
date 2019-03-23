@@ -23,8 +23,12 @@
 #include "Traps/BoostTrap.h"
 #include "Traps/TripWireTrap.h"
 #include "Traps/BananaPeelTrap.h"
+#include "Traps/WhoopieCushionTrap.h"
 #include "Tacticals/GrenadeTactical.h"
 #include "Tacticals/FlashBangTactical.h"
+#include "Tacticals/MolotovTactical.h"
+#include "Tacticals/NinjaStarTactical.h"
+#include "Tacticals/ThrowingAxeTactical.h"
 #include "DrawDebugHelpers.h"
 #include <string>
 #include "Pickups/BasePickup.h"
@@ -85,9 +89,9 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     //Intializing UProperties
     ShoveStrength = 15005.0f;
     Speed = 3.0f;
-    totalTacticals = 1;
+    totalTacticals = 4;
     currentTactical = 0;
-    totalTraps = 5;
+    totalTraps = 6;
     currentTrap = 0;
     FullHealth = 1000.f;
     Health = FullHealth;
@@ -166,24 +170,8 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
                     ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
-                FVector StartLocation = CursorToWorld->GetComponentLocation();
-                FVector EndLocation = CursorToWorld->GetComponentRotation().Vector() * 30.0f + StartLocation;
-                Params.AddIgnoredActor(this);
-                World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
-                FQuat Normal = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
-                Normal.RotateVector(FirstPersonCameraComponent->GetComponentRotation().Vector());
-                FRotator rot = Normal.Rotator();
-                rot.Pitch = rot.Pitch + 90.0f;
-                rot.Normalize();
-                FRotator PlayerRot = FirstPersonCameraComponent->GetComponentRotation();
-                PlayerRot.Roll = 0;
-                PlayerRot.Pitch = 0;
-                PlayerRot.Yaw = 1;
-                //PlayerRot.Normalize();
-                FQuat newQuat = rot.Quaternion() * PlayerRot.Quaternion();
-                newQuat = newQuat * TrapRotation.Quaternion();
                 ABearTrap* SpawnedActor = World->SpawnActor<ABearTrap>(BearTrap, SpawnTransform, SpawnParams);
-                SpawnedActor->SetActorRelativeRotation(newQuat);
+                SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
 
                 if (SpawnedActor)
                 {
@@ -207,24 +195,8 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
                 ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
-                FVector StartLocation = CursorToWorld->GetComponentLocation();
-                FVector EndLocation = CursorToWorld->GetComponentRotation().Vector() * 30.0f + StartLocation;
-                Params.AddIgnoredActor(this);
-                World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
-                FQuat Normal = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
-                Normal.RotateVector(FirstPersonCameraComponent->GetComponentRotation().Vector());
-                FRotator rot = Normal.Rotator();
-                rot.Pitch = rot.Pitch + 90.0f;
-                rot.Normalize();
-                FRotator PlayerRot = FirstPersonCameraComponent->GetComponentRotation();
-                PlayerRot.Roll = 0;
-                PlayerRot.Pitch = 0;
-                PlayerRot.Yaw = 1;
-                //PlayerRot.Normalize();
-                FQuat newQuat = rot.Quaternion() * PlayerRot.Quaternion();
-                newQuat = newQuat * TrapRotation.Quaternion();
                 ABoostTrap* SpawnedActor = World->SpawnActor<ABoostTrap>(BoostTrap, SpawnTransform, SpawnParams);
-                SpawnedActor->SetActorRelativeRotation(newQuat);
+                SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Boost Pad Trap Spawned"));
@@ -239,19 +211,16 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
             if (World)
             {
                 //Creates Spawn Parameters, Transforms and Rotations
+                FHitResult HitResult;
+                FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
                 FActorSpawnParameters SpawnParams;
                 SpawnParams.Owner = this;
                 SpawnParams.SpawnCollisionHandlingOverride =
-                ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+                    ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
-                FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
-                SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-                /*if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
-                {
-                    SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-                }*/
+
                 AC4Trap* SpawnedActor = World->SpawnActor<AC4Trap>(C4Trap, SpawnTransform, SpawnParams);
-                SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+                SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 // Add C4 Trap to TArray of C4 traps already placed
                 PlacedC4Traps.Add(SpawnedActor);
                 if (SpawnedActor)
@@ -268,19 +237,16 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
             if (World)
             {
                 //Creates Spawn Parameters, Transforms and Rotations
+                FHitResult HitResult;
+                FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
                 FActorSpawnParameters SpawnParams;
                 SpawnParams.Owner = this;
                 SpawnParams.SpawnCollisionHandlingOverride =
                     ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
-                FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
-                SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-                /*if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
-                {
-                    SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-                }*/
+
                 ATripWireTrap* SpawnedActor = World->SpawnActor<ATripWireTrap>(TripWireTrap, SpawnTransform, SpawnParams);
-                SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+                SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Trip Wire Trap Spawned"));
@@ -294,23 +260,42 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
             UWorld* const World = GetWorld();
             if (World)
             {
+                FHitResult HitResult;
+                FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
                 FActorSpawnParameters SpawnParams;
                 SpawnParams.Owner = this;
                 SpawnParams.SpawnCollisionHandlingOverride =
                     ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
-                FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
-                SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-                //if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
-                //{
-                //    SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-                //    //UE_LOG(LogTemp, Warning, TEXT("Can not spawn Banana Peel Trap on wall"));
-                //}
+
                 ABananaPeelTrap* SpawnedActor = World->SpawnActor<ABananaPeelTrap>(BananaPeelTrap, SpawnTransform, SpawnParams);
-                SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+                SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Banana Peel Trap Spawned"));
+                }
+            }
+        }
+        break;
+    case 5:
+        if (WhoopieCushionTrap != nullptr)
+        {
+            UWorld* const World = GetWorld();
+            if (World)
+            {
+                FHitResult HitResult;
+                FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
+                FActorSpawnParameters SpawnParams;
+                SpawnParams.Owner = this;
+                SpawnParams.SpawnCollisionHandlingOverride =
+                    ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+                FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
+
+                AWhoopieCushionTrap* SpawnedActor = World->SpawnActor<AWhoopieCushionTrap>(WhoopieCushionTrap, SpawnTransform, SpawnParams);
+                SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
+                if (SpawnedActor)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("Whoopie Cushion Trap Spawned"));
                 }
             }
         }
@@ -390,7 +375,38 @@ void AMasterTrappersAlpha1Character::Die()
     SetActorLocation(RespawnLocation);
     GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
     StartSlip();
+}
 
+FQuat AMasterTrappersAlpha1Character::GetTrapSpawnRotation()
+{
+    //Get world
+    UWorld* const World = GetWorld();
+    if (World)
+    {
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Owner = this;
+        FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
+        FHitResult HitResult;
+        FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
+
+        FVector StartLocation = CursorToWorld->GetComponentLocation();
+        FVector EndLocation = CursorToWorld->GetComponentRotation().Vector() * 30.0f + StartLocation;
+        World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+        FQuat Normal = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
+        Normal.RotateVector(FirstPersonCameraComponent->GetComponentRotation().Vector());
+        FRotator rot = Normal.Rotator();
+        rot.Pitch = rot.Pitch + 90.0f;
+        rot.Normalize();
+        FRotator PlayerRot = FirstPersonCameraComponent->GetComponentRotation();
+        PlayerRot.Roll = 0;
+        PlayerRot.Pitch = 0;
+        PlayerRot.Yaw = 1;
+        FQuat newQuat = rot.Quaternion() * PlayerRot.Quaternion();
+        newQuat = newQuat * TrapRotation.Quaternion();
+    return newQuat;
+    }
+    FQuat Quat = FRotator(0.f,0.f,0.f).Quaternion();
+    return Quat;
 }
 
 void AMasterTrappersAlpha1Character::BeginPlay()
@@ -562,6 +578,18 @@ void AMasterTrappersAlpha1Character::OnFire()
                 else if (currentTactical == 1)
                 {
                     World->SpawnActor<AFlashBangTactical>(FlashBangTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                }
+                else if (currentTactical == 2)
+                {
+                    World->SpawnActor<AMolotovTactical>(MolotovTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                }
+                else if (currentTactical == 3)
+                {
+                    World->SpawnActor<ANinjaStarTactical>(NinjaStarTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                }
+                else if (currentTactical == 4)
+                {
+                    World->SpawnActor<AThrowingAxeTactical>(ThrowingAxeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                 }
         }
 

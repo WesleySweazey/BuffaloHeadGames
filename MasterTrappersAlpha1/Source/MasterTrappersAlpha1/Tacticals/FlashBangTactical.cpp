@@ -48,8 +48,6 @@ AFlashBangTactical::AFlashBangTactical()
     RollVal = 0.f;
 }
 
-
-
 void AFlashBangTactical::BeginPlay()
 {
     Super::BeginPlay();

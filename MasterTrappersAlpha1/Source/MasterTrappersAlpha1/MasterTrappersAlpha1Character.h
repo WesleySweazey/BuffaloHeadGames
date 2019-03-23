@@ -95,6 +95,24 @@ public:
         Category = "Tacticals")
         TSubclassOf<class AFlashBangTactical> FlashBangTactical;
 
+    /** Molotov Blueprint */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Tacticals")
+        TSubclassOf<class AMolotovTactical> MolotovTactical;
+
+    /** Ninja Star Blueprint */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Tacticals")
+        TSubclassOf<class ANinjaStarTactical> NinjaStarTactical;
+
+    /** Throwing Axe Blueprint */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Tacticals")
+        TSubclassOf<class AThrowingAxeTactical> ThrowingAxeTactical;
+
     //Scrolls Through Tactical Inventory Up
     void SwitchTacticalUp();
     //Scrolls Through Tactical Inventory Down
@@ -143,6 +161,12 @@ public:
         BlueprintReadOnly,
         Category = "Traps")
         TSubclassOf<class ABananaPeelTrap> BananaPeelTrap;
+
+    /** Banana peel blueprint */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Traps")
+        TSubclassOf<class AWhoopieCushionTrap> WhoopieCushionTrap;
     
     /** TArray of C4 traps placed */
     UPROPERTY(EditDefaultsOnly,
@@ -199,6 +223,8 @@ public:
 
     //Respawn Point
     FVector RespawnLocation;
+
+    FQuat GetTrapSpawnRotation();
 protected:
     // Called at the Beginning
 	virtual void BeginPlay();
