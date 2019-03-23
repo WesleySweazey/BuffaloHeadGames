@@ -158,30 +158,32 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
             if (World)
             {
                 //Creates Spawn Parameters, Transforms and Rotations
+                FHitResult HitResult;
+                FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
                 FActorSpawnParameters SpawnParams;
                 SpawnParams.Owner = this;
                 SpawnParams.SpawnCollisionHandlingOverride =
-                ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+                    ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
-                FRotator SpawnRotation = CursorToWorld->GetComponentRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
-                //vec3 normal = CursorToWorld->GetNormal
-                SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
+
+                FVector StartLocation = CursorToWorld->GetComponentLocation();
+                FVector EndLocation = CursorToWorld->GetComponentRotation().Vector() * 30.0f + StartLocation;
+                Params.AddIgnoredActor(this);
+                World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+                FQuat Normal = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
+                Normal.RotateVector(FirstPersonCameraComponent->GetComponentRotation().Vector());
+                FRotator rot = Normal.Rotator();
+                rot.Pitch = rot.Pitch + 90.0f;
+                rot.Normalize();
                 FRotator PlayerRot = FirstPersonCameraComponent->GetComponentRotation();
-
-                /*if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
-                {
-                    SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-                }*/
-                //float YawAdjustment = SpawnRotationValue;
-                //// World space
-                //FRotator SpawnNormalize = SpawnRotation.GetNormalized();
-                //FQuat YawRotation(SpawnRotation.Vector(), YawAdjustment);
-                //FQuat Rotation = SpawnSurfaceRotation * YawRotation;
-                // Actor space, GetActorUpVector() if derives from AActor
-                //FQuat YawRotation(SpawnSurfaceRotation->GetActorUpVector(), YawAdjustment);
-
+                PlayerRot.Roll = 0;
+                PlayerRot.Pitch = 0;
+                PlayerRot.Yaw = 1;
+                //PlayerRot.Normalize();
+                FQuat newQuat = rot.Quaternion() * PlayerRot.Quaternion();
+                newQuat = newQuat * TrapRotation.Quaternion();
                 ABearTrap* SpawnedActor = World->SpawnActor<ABearTrap>(BearTrap, SpawnTransform, SpawnParams);
-                SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+                SpawnedActor->SetActorRelativeRotation(newQuat);
 
                 if (SpawnedActor)
                 {

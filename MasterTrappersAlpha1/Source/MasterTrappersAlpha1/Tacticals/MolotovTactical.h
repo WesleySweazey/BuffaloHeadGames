@@ -48,6 +48,12 @@ public:
     UFUNCTION()
         void OnDetonate();
 
+    /** Grenade Blueprint */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "AreaEffect")
+        TSubclassOf<class AFireAreaEffect> FireAreaEffect;
+
     /** called when projectile hits something */
     UFUNCTION()
         void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

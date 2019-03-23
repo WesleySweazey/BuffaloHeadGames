@@ -8,6 +8,8 @@
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Public/WorldCollision.h"
 #include "MasterTrappersAlpha1Character.h"
+#include "AreaEffects/FireAreaEffect.h"
+#include "Engine/World.h"
 
 AMolotovTactical::AMolotovTactical()
 {
@@ -60,6 +62,26 @@ void AMolotovTactical::BeginPlay()
 
 void AMolotovTactical::OnDetonate()
 {
+    UWorld* const World = GetWorld();
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Owner = this;
+    SpawnParams.SpawnCollisionHandlingOverride =
+        ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    FTransform SpawnTransform = GetActorTransform();
+    FRotator SpawnRotation = GetActorRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
+    SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
+    //if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
+    //{
+    //    SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
+    //    //UE_LOG(LogTemp, Warning, TEXT("Can not spawn Banana Peel Trap on wall"));
+    //}
+    AFireAreaEffect* SpawnedActor = World->SpawnActor<AFireAreaEffect>(FireAreaEffect, SpawnTransform, SpawnParams);
+    SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+    if (SpawnedActor)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Fire Area Effect Spawned"));
+    }
+
     UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
     Explosion->SetRelativeScale3D(FVector(4.f));
 
@@ -75,7 +97,7 @@ void AMolotovTactical::OnDetonate()
     CollisionShape.ShapeType = ECollisionShape::Sphere;
     CollisionShape.SetSphere(Radius);
 
-    if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
+    /*if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
     {
         for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
         {
@@ -85,7 +107,7 @@ void AMolotovTactical::OnDetonate()
                 pawn->StartStun();
             }
         }
-    }
+    }*/
     Destroy();
 }
 
