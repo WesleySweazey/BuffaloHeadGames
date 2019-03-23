@@ -39,6 +39,12 @@ public:
     UPROPERTY(EditAnywhere, Category = "FX")
         class USoundCue* ExplosionSound;
 
+    /** Grenade Blueprint */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "AreaEffect")
+        TSubclassOf<class AGasAreaEffect> GasAreaEffect;
+
     /** called when projectile hits something */
     UFUNCTION()
         void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,

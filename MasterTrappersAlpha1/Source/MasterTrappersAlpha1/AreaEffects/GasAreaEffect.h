@@ -13,7 +13,12 @@ UCLASS()
 class MASTERTRAPPERSALPHA1_API AGasAreaEffect : public ABaseAreaEffect
 {
 	GENERATED_BODY()
+public:
+    AGasAreaEffect();
 protected:
+    virtual void PlayEffects() override;
+    virtual void Stop() override;
+
     // Sets default values for this actor's properties
     //AGasAreaEffect();
         /** called when projectile hits something */

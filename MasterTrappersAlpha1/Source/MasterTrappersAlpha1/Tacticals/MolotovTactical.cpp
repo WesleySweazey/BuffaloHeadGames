@@ -133,9 +133,10 @@ void AMolotovTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
                     "AFlashBangTactical::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());
                 pawn->StartStun();
-                this->Destroy();
+                //this->Destroy();
             }
         }
+        OnDetonate();
     }
 }
 
@@ -143,7 +144,7 @@ void AMolotovTactical::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    Radius += 100.0f;
+    //Radius += 100.0f;
 
     // smooth rotating every frame
     FRotator NewRotation = FRotator(PitchVal, YawVal, RollVal);

@@ -12,8 +12,8 @@ class MASTERTRAPPERSALPHA1_API ABaseAreaEffect : public AActor
 	GENERATED_BODY()
 public:
     ABaseAreaEffect();
-    void PlayEffects();
-    void Stop();
+    virtual void PlayEffects();
+    virtual void Stop();
 
     UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
         class USphereComponent* CollisionComp;

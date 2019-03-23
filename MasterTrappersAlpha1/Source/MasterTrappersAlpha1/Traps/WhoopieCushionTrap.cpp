@@ -9,6 +9,8 @@
 #include "MasterTrappersAlpha1Character.h"
 #include "DestructibleActor.h"
 #include "DestructibleComponent.h"
+#include "AreaEffects/GasAreaEffect.h"
+#include "Engine/World.h"
 
 AWhoopieCushionTrap::AWhoopieCushionTrap() : ABaseTrap()
 {
@@ -29,6 +31,26 @@ void AWhoopieCushionTrap::BeginPlay()
 
 void AWhoopieCushionTrap::Detonate()
 {
+    UWorld* const World = GetWorld();
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Owner = this;
+    SpawnParams.SpawnCollisionHandlingOverride =
+        ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    FTransform SpawnTransform = GetActorTransform();
+    FRotator SpawnRotation = GetActorRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
+    SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
+    //if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
+    //{
+    //    SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
+    //    //UE_LOG(LogTemp, Warning, TEXT("Can not spawn Banana Peel Trap on wall"));
+    //}
+    AGasAreaEffect* SpawnedActor = World->SpawnActor<AGasAreaEffect>(GasAreaEffect, SpawnTransform, SpawnParams);
+    SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+    if (SpawnedActor)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Fire Area Effect Spawned"));
+    }
+
     bDetonated = true;
     UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
     Explosion->SetRelativeScale3D(FVector(4.f));
@@ -41,27 +63,27 @@ void AWhoopieCushionTrap::Detonate()
     FVector EndTrace = StartTrace;
     EndTrace.Z += 360.0f;
 
-    FCollisionShape CollisionShape;
-    CollisionShape.ShapeType = ECollisionShape::Sphere;
-    CollisionShape.SetSphere(Radius);
+    //FCollisionShape CollisionShape;
+    //CollisionShape.ShapeType = ECollisionShape::Sphere;
+    //CollisionShape.SetSphere(Radius);
 
-    if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
-    {
-        for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
-        {
-            /*UStaticMeshComponent* SM = Cast<UStaticMeshComponent>((*Actors).Actor->GetRootComponent());
-            ADestructibleActor* DA = Cast<ADestructibleActor>((*Actors).GetActor());
+    //if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
+    //{
+    //    for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
+    //    {
+    //        /*UStaticMeshComponent* SM = Cast<UStaticMeshComponent>((*Actors).Actor->GetRootComponent());
+    //        ADestructibleActor* DA = Cast<ADestructibleActor>((*Actors).GetActor());
 
-            if (SM)
-            {
-                SM->AddRadialImpulse(GetActorLocation(), 1000.0f, 5000.0f, ERadialImpulseFalloff::RIF_Linear, true);
-            }
-            else if (DA)
-            {
-                DA->GetDestructibleComponent()->ApplyRadiusDamage(10.0f, Actors->ImpactPoint, 500.0f, 3000.0f, false);
-            }*/
-        }
-    }
+    //        if (SM)
+    //        {
+    //            SM->AddRadialImpulse(GetActorLocation(), 1000.0f, 5000.0f, ERadialImpulseFalloff::RIF_Linear, true);
+    //        }
+    //        else if (DA)
+    //        {
+    //            DA->GetDestructibleComponent()->ApplyRadiusDamage(10.0f, Actors->ImpactPoint, 500.0f, 3000.0f, false);
+    //        }*/
+    //    }
+    //}
     DetonationLength = 0.3f;
 }
 
@@ -104,7 +126,8 @@ void AWhoopieCushionTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedCompone
                 GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "AWhoopieCushionTrap::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());
-                collidedCharacters.Add(pawn);
+                //collidedCharacters.Add(pawn);
+                Detonate();
             }
         }
     }
