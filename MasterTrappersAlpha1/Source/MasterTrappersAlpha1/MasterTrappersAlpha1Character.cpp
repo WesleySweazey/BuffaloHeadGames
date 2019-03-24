@@ -33,6 +33,7 @@
 #include <string>
 #include "Pickups/BasePickup.h"
 #include "Components/InventoryComponent.h"
+#include "Components/HealthComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -93,10 +94,8 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     currentTactical = 0;
     totalTraps = 6;
     currentTrap = 0;
-    FullHealth = 1000.f;
-    Health = FullHealth;
-    HealthPercentage = 1.0f;
-    bCanBeDamaged = true;
+    
+    
     CurrentSpeed = 0.0f;
 
     //Adding Player Tag
@@ -104,6 +103,9 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 
     //create inventory component
     InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("Inventory Component");
+
+    //create health component
+    HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
     
     //Initialize grenade number
     MaxGrenadeNum = 10;
@@ -371,10 +373,15 @@ void AMasterTrappersAlpha1Character::EndStun()
 
 void AMasterTrappersAlpha1Character::Die()
 {
-    Health = FullHealth;
+    HealthComponent->ResetHealth();
     SetActorLocation(RespawnLocation);
     GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
     StartSlip();
+}
+
+float AMasterTrappersAlpha1Character::GetHealth()
+{
+    return HealthComponent->GetHealth();
 }
 
 FQuat AMasterTrappersAlpha1Character::GetTrapSpawnRotation()
@@ -449,11 +456,11 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     }
 
     CurrentSpeed = GetVelocity().Size();
-    if (GetHealth() > 0.0f)
+    if (HealthComponent->GetHealth() > 0.0f)
     {
-        if (CurrentSpeed <= 0.f/*FMath::IsNearlyZero(CurrentSpeed, 0.001f)*/)
+        if (CurrentSpeed <= 0.)
         {
-            UpdateHealth(-0.5f);
+            HealthComponent->UpdateHealth(-0.5f);
         }
     }
     else
@@ -476,25 +483,6 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     {
         UpdateInventory();
     }
-}
-
-float AMasterTrappersAlpha1Character::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
-{
-    bCanBeDamaged = false;
-    UpdateHealth(-DamageAmount);
-    return DamageAmount;
-}
-
-float AMasterTrappersAlpha1Character::GetHealth()
-{
-    return HealthPercentage;
-}
-
-void AMasterTrappersAlpha1Character::UpdateHealth(float HealthChange)
-{
-    Health += HealthChange;
-    Health = FMath::Clamp(Health, 0.0f, FullHealth);
-    HealthPercentage = Health / FullHealth;
 }
 
 //////////////////////////////////////////////////////////////////////////

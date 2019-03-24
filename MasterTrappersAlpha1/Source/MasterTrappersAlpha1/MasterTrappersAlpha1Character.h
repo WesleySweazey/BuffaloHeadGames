@@ -56,6 +56,10 @@ public:
     UPROPERTY(EditAnywhere, Category = "InventoryComponent")
         class UInventoryComponent* InventoryComponent;
 
+    //Health Comnponent
+    UPROPERTY(EditAnywhere, Category = "HealthComponent")
+        class UHealthComponent* HealthComponent;
+
     FTimerHandle PrintInventoryHandle;
 
     /** Add item to inventory*/
@@ -221,6 +225,10 @@ public:
     //Scrolls Through Inventory Down
     void Die();
 
+    /** Returns player's current health */
+    UFUNCTION(BlueprintPure, Category = "Health")
+        float GetHealth();
+
     //Respawn Point
     FVector RespawnLocation;
 
@@ -231,8 +239,6 @@ protected:
     // Called every frame.
     virtual void Tick(float DeltaSeconds) override;
 
-    /** Takes damage if player movement is 0 */
-    virtual float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser);
 public:
     /** Boolean for shoving feature */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Shoving)
@@ -251,25 +257,11 @@ public:
         FRotator TrapRotation;
     //Health
 
-    /** Float for maximum amount of health */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-        float FullHealth;
-    /** Float for current amount of health */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-        float Health;
-    /** Float for current health percent*/
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-        float HealthPercentage;
+
     /** Float for current movement speed */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
         float CurrentSpeed;
 
-    /** Returns player's current health */
-    UFUNCTION(BlueprintPure, Category = "Health")
-        float GetHealth();
-    /** Updates player's health */
-    UFUNCTION(BlueprintCallable, Category = "Health")
-        void UpdateHealth(float HealthChange);
 
     /** A decal that projects to the cursor location. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
