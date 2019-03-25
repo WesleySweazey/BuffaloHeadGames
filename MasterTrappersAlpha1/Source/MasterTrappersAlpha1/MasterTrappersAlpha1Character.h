@@ -17,7 +17,7 @@ class AMasterTrappersAlpha1Character : public ACharacter
 	GENERATED_BODY()
 
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
-	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
+	UPROPERTY(EditAnywhere, Category=Mesh)
 	class USkeletalMeshComponent* Mesh1P;
 
     /** Pawn mesh: 1st person view (arms; seen only by self) */
@@ -25,7 +25,7 @@ class AMasterTrappersAlpha1Character : public ACharacter
         class UPostProcessComponent* FP_PostProcessComponent;
 
 	/** Gun mesh: 1st person view (seen only by self) */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	UPROPERTY(EditAnywhere, Category = Mesh)
 	class USkeletalMeshComponent* FP_Gun;
 
 	/** Location on gun mesh where projectiles should spawn. */
