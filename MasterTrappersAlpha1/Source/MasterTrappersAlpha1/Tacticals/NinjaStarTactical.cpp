@@ -47,7 +47,7 @@ void ANinjaStarTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
                 GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "ANinjaStarTactical::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());
-                pawn->Die();
+                pawn->Multicast_Die();
                 this->Destroy();
             }
         }

@@ -85,7 +85,7 @@ void AC4Trap::Tick(float DeltaTime)
                         "AC4Trap Killed - "
                         + collidedCharacters[i]->GetName());
                     //collidedCharacters[i]->Destroy();
-                    collidedCharacters[i]->Die();
+                    collidedCharacters[i]->Multicast_Die();
                 }
             }
         }

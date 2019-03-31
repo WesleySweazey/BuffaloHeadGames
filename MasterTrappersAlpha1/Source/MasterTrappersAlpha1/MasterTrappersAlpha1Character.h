@@ -203,8 +203,10 @@ public:
         float StunTimerLength = 2.0f;
 
     //Spawns Trap
+    UFUNCTION(Server, Reliable, WithValidation)
     void SpawnTrap();
     //Activates Placed C4 Trap
+    UFUNCTION(Server, Reliable, WithValidation)
     void ActivateTrap();
 
     //Scrolls Through Trap Inventory Up
@@ -223,7 +225,8 @@ public:
     void EndStun();
 
     //Scrolls Through Inventory Down
-    void Die();
+    UFUNCTION(NetMulticast, Reliable)
+    void Multicast_Die();
 
     /** Returns player's current health */
     UFUNCTION(BlueprintPure, Category = "Health")
@@ -264,7 +267,7 @@ public:
 
 
     /** A decal that projects to the cursor location. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"), Replicated)
         class UDecalComponent* CursorToWorld;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */

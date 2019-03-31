@@ -11,6 +11,7 @@ ABaseTactical::ABaseTactical()
 	PrimaryActorTick.bCanEverTick = true;
     StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("Static Mesh Component");
     RootComponent = StaticMeshComponent;
+    SetReplicates(true);
     Tags.Add("Trap");
 }
 

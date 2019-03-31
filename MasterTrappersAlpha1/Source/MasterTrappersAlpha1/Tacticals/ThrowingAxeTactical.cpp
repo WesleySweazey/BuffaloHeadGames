@@ -45,7 +45,7 @@ void AThrowingAxeTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
                 GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "AThrowingAxeTactical::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());
-                pawn->Die();
+                pawn->Multicast_Die();
                 this->Destroy();
             }
         }

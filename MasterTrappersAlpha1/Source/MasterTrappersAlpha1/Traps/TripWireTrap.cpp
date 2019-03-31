@@ -48,7 +48,7 @@ void ATripWireTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AA
                 UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
                 Destroy();
                 
-               pawn->Die();
+               pawn->Multicast_Die();
             }
         }
     }

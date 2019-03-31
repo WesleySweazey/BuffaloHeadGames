@@ -1,0 +1,35 @@
+{
+	"FileVersion" : 3,
+	"Version" : 1,
+	"VersionName" : "1.0",
+	"FriendlyName" : "GameFrwkSessions Plugin",
+	"Description" : "An example of a minimal plugin.  This can be used as a starting point when creating your own plugin.",
+	"Category" : "Examples",
+	"CreatedBy" : "Epic Games, Inc.",
+	"CreatedByURL" : "http://epicgames.com",
+	"DocsURL" : "",
+	"MarketplaceURL" : "",
+	"SupportURL" : "",
+	"EnabledByDefault" : true,
+	"CanContainContent" : true,
+	"IsBetaVersion" : false,
+	"Installed" : true,
+	"Modules" :
+	[
+		{
+			"Name" : "GameFrwkSessionsPlugin",
+			"Type" : "Developer",
+			"LoadingPhase" : "Default"
+		}
+	],
+	"Plugins": [                     
+     {                                
+       "Name": "OnlineSubsystem",    
+       "Enabled": true                
+     },
+	 {                                
+       "Name": "OnlineSubsystemNull",    
+       "Enabled": true                
+     }                                         
+   ]                                 
+}

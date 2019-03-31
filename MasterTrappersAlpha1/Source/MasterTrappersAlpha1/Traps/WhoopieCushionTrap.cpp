@@ -107,7 +107,7 @@ void AWhoopieCushionTrap::Tick(float DeltaTime)
                         "AWhoopieCushionTrap Killed - "
                         + collidedCharacters[i]->GetName());
                     //collidedCharacters[i]->Destroy();
-                    collidedCharacters[i]->Die();
+                    collidedCharacters[i]->Multicast_Die();
                 }
             }
         }

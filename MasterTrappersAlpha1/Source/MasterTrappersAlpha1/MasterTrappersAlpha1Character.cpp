@@ -34,6 +34,7 @@
 #include "Pickups/BasePickup.h"
 #include "Components/InventoryComponent.h"
 #include "Components/HealthComponent.h"
+#include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -86,6 +87,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     CursorToWorld->SetupAttachment(RootComponent);
     CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
     CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+    CursorToWorld->SetIsReplicated(true);
 
     //Intializing UProperties
     ShoveStrength = 15005.0f;
@@ -111,8 +113,8 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     MaxGrenadeNum = 10;
     CurrentGrenadeNum = 0;
 
-
-    
+    SetReplicates(true);
+    SetReplicateMovement(true);
 }
 
 void AMasterTrappersAlpha1Character::AddToInventory(ABasePickup * actor)
@@ -152,8 +154,15 @@ void AMasterTrappersAlpha1Character::SwitchTacticalDown()
     }
 }
 
-void AMasterTrappersAlpha1Character::SpawnTrap()
+bool AMasterTrappersAlpha1Character::SpawnTrap_Validate()
 {
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
+{
+    if (Role == ROLE_Authority)
+    {
     // Switch statement uses the current trap index
     switch (currentTrap)
     {
@@ -194,7 +203,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
                 FActorSpawnParameters SpawnParams;
                 SpawnParams.Owner = this;
                 SpawnParams.SpawnCollisionHandlingOverride =
-                ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+                    ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 ABoostTrap* SpawnedActor = World->SpawnActor<ABoostTrap>(BoostTrap, SpawnTransform, SpawnParams);
@@ -304,17 +313,25 @@ void AMasterTrappersAlpha1Character::SpawnTrap()
         break;
     }
 }
-
-void AMasterTrappersAlpha1Character::ActivateTrap()
+}
+bool AMasterTrappersAlpha1Character::ActivateTrap_Validate()
 {
-    // If a C4 trap has been placed it will be a detonated
-    if (PlacedC4Traps.Num() > 0)
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::ActivateTrap_Implementation()
+{
+    if (Role == ROLE_Authority)
     {
-        for (int i = 0; i < PlacedC4Traps.Num(); i++)
+        // If a C4 trap has been placed it will be a detonated
+        if (PlacedC4Traps.Num() > 0)
         {
-            UE_LOG(LogTemp, Warning, TEXT("C4 Activated"));
-            PlacedC4Traps[i]->Detonate();
-            PlacedC4Traps.RemoveAt(i);
+            for (int i = 0; i < PlacedC4Traps.Num(); i++)
+            {
+                UE_LOG(LogTemp, Warning, TEXT("C4 Activated"));
+                PlacedC4Traps[i]->Detonate();
+                PlacedC4Traps.RemoveAt(i);
+            }
         }
     }
 }
@@ -371,7 +388,7 @@ void AMasterTrappersAlpha1Character::EndStun()
     FP_PostProcessComponent->bEnabled = false;
 }
 
-void AMasterTrappersAlpha1Character::Die()
+void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
 {
     HealthComponent->ResetHealth();
     SetActorLocation(RespawnLocation);
@@ -466,7 +483,7 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     else
     {
         //Destroy();
-        Die();
+        Multicast_Die();
     }
 
 
@@ -730,4 +747,13 @@ void AMasterTrappersAlpha1Character::SpawnTatical()
     //        AnimInstance->Montage_Play(FireAnimation, 1.f);
     //    }
     //}
+}
+void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, CursorToWorld);
+    //DOREPLIFETIME(AMasterTrappersAlpha1Character, Score);
+    //DOREPLIFETIME(AICA3Character, NumPickups);
+    //DOREPLIFETIME(AWesley_S_FinalCharacter, DefaultMaterial);
 }

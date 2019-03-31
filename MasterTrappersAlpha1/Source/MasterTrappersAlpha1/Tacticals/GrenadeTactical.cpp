@@ -65,7 +65,7 @@ void AGrenadeTactical::OnExplosion()
           /*  GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
                 "AGrenadeTactical Killed - "
                 + collidedCharacters[i]->GetName());*/
-            collidedCharacters[i]->Die();
+            collidedCharacters[i]->Multicast_Die();
             //collidedCharacters[i]->PawnClientRestart();
             //collidedCharacters[i]->SetActorLocation()
         }

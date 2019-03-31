@@ -3,6 +3,7 @@
 #include "BearTrap.h"
 #include "MasterTrappersAlpha1Character.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 ABearTrap::ABearTrap() : ABaseTrap()
 {
@@ -26,7 +27,7 @@ void ABearTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor
                     "ABearTrap::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());
                 //pawn->Destroy();
-                pawn->Die();
+                pawn->Multicast_Die();
             }
         }
     }
