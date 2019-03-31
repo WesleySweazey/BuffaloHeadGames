@@ -314,6 +314,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
     }
 }
 }
+
 bool AMasterTrappersAlpha1Character::ActivateTrap_Validate()
 {
     return true;
@@ -393,7 +394,7 @@ void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
     HealthComponent->ResetHealth();
     SetActorLocation(RespawnLocation);
     GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
-    StartSlip();
+    //StartSlip();
 }
 
 float AMasterTrappersAlpha1Character::GetHealth()
@@ -448,12 +449,17 @@ void AMasterTrappersAlpha1Character::BeginPlay()
 
 }
 
-void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
+bool AMasterTrappersAlpha1Character::Server_SetCursorLocation_Validate()
 {
-    Super::Tick(DeltaSeconds);
+    return true;
+}
 
-    if (CursorToWorld != nullptr)
+void AMasterTrappersAlpha1Character::Server_SetCursorLocation_Implementation()
+{
+    if (Role == ROLE_Authority)
     {
+        if (CursorToWorld != nullptr)
+        {
             if (UWorld* World = GetWorld())
             {
                 FHitResult HitResult;
@@ -470,7 +476,15 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
                 FVector trapFowardVector = temp.Vector();
                 DrawDebugLine(GetWorld(), CursorToWorld->GetComponentLocation(), CursorToWorld->GetComponentLocation() + trapFowardVector * 100.0f, FColor(255, 0, 0), false, 0.1f, 0, 2.333);
             }
+        }
     }
+}
+
+void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    Server_SetCursorLocation();
 
     CurrentSpeed = GetVelocity().Size();
     if (HealthComponent->GetHealth() > 0.0f)
@@ -539,25 +553,109 @@ void AMasterTrappersAlpha1Character::SetupPlayerInputComponent(class UInputCompo
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &AMasterTrappersAlpha1Character::TurnAtRate);
+	PlayerInputComponent->BindAxis("TurnRate", this, &AMasterTrappersAlpha1Character::Multicast_TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &AMasterTrappersAlpha1Character::LookUpAtRate);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &AMasterTrappersAlpha1Character::Multicast_LookUpAtRate);
 
     // Bind fire event
-    PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMasterTrappersAlpha1Character::OnFire);
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMasterTrappersAlpha1Character::SpawnTatical);
 }
 
-void AMasterTrappersAlpha1Character::OnFire()
+void AMasterTrappersAlpha1Character::MoveForward(float Value)
 {
-    // try and fire a projectile
-    
-    
+	if (Value != 0.0f)
+	{
+		// add movement in that direction
+        Value *= Speed;
+		AddMovementInput(GetActorForwardVector(), Value);
+	}
+}
 
-    if (GrenadeTactical != NULL && CurrentGrenadeNum>0)
+void AMasterTrappersAlpha1Character::MoveRight(float Value)
+{
+	if (Value != 0.0f)
+	{
+		// add movement in that direction
+        Value *= Speed;
+		AddMovementInput(GetActorRightVector(), Value);
+	}
+}
+
+bool AMasterTrappersAlpha1Character::Shove_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Shove_Implementation()
+{
+    //Sets shoving bool to true for collision with other players
+    bIsShoving = true;
+    LaunchCharacter(GetActorForwardVector()*ShoveStrength, false, false);
+    TArray<AActor*> OutOverlappingActors;
+    TSubclassOf<AActor> ClassFilter;
+    //Check for overlapping actors
+    GetOverlappingActors(OutOverlappingActors, ClassFilter);
+    for (int i = 0; i < OutOverlappingActors.Num(); i++)
     {
-        UWorld* const World = GetWorld();
-        if (World != NULL)
+        //Check overlapping actors for player tag
+        if (OutOverlappingActors[i]->ActorHasTag("Player"))
         {
+            //Cast as AMasterTrappersAlpha1Character
+            AMasterTrappersAlpha1Character* otherCharacter = Cast<AMasterTrappersAlpha1Character>(OutOverlappingActors[i]);
+            otherCharacter->LaunchCharacter(GetActorForwardVector()*ShoveStrength, false, false);
+        }
+    }
+}
+bool AMasterTrappersAlpha1Character::RotateTrap_Validate(float Value)
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::RotateTrap_Implementation(float Value)
+{
+    if (Role == ROLE_Authority)
+    {
+        if (Value != 0.0f)
+        {
+            // add movement in that direction
+            TrapRotation.Yaw += Value * 90;
+            if (TrapRotation.Yaw > 360.0f)
+            {
+                TrapRotation.Yaw = 360.0f - TrapRotation.Yaw;
+            }
+            FString s = FString::SanitizeFloat(TrapRotation.Yaw);
+            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Rotation - " + s));
+            //AddMovementInput(GetActorRightVector(), Value);
+        }
+    }
+}
+
+void AMasterTrappersAlpha1Character::Multicast_TurnAtRate_Implementation(float Rate)
+{
+	// calculate delta for this frame from the rate information
+	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AMasterTrappersAlpha1Character::Multicast_LookUpAtRate_Implementation(float Rate)
+{
+	// calculate delta for this frame from the rate information
+	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+bool AMasterTrappersAlpha1Character::SpawnTatical_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
+{
+    if (Role == ROLE_Authority)
+    {
+        if (GrenadeTactical != NULL && CurrentGrenadeNum > 0)
+        {
+            UWorld* const World = GetWorld();
+            if (World != NULL)
+            {
                 const FRotator SpawnRotation = GetControlRotation();
                 //const FRotator SpawnRotation = FP_MuzzleLocation->GetComponentRotation();
                 // MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
@@ -568,7 +666,7 @@ void AMasterTrappersAlpha1Character::OnFire()
                 ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
                 // spawn the projectile at the muzzle
-                if (currentTactical == 0 )
+                if (currentTactical == 0)
                 {
                     World->SpawnActor<AGrenadeTactical>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                     CurrentGrenadeNum--;
@@ -597,163 +695,44 @@ void AMasterTrappersAlpha1Character::OnFire()
                 {
                     World->SpawnActor<AThrowingAxeTactical>(ThrowingAxeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                 }
-        }
+            }
 
 
-        // try and play the sound if specified
-        if (FireSound != NULL)
-        {
-            UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-        }
-
-        // try and play a firing animation if specified
-        if (FireAnimation != NULL)
-        {
-            // Get the animation object for the arms mesh
-            UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-            if (AnimInstance != NULL)
+            // try and play the sound if specified
+            if (FireSound != NULL)
             {
-                AnimInstance->Montage_Play(FireAnimation, 1.f);
+                UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+            }
+
+            // try and play a firing animation if specified
+            if (FireAnimation != NULL)
+            {
+                // Get the animation object for the arms mesh
+                UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+                if (AnimInstance != NULL)
+                {
+                    AnimInstance->Montage_Play(FireAnimation, 1.f);
+                }
             }
         }
-    }
 
-    else
-    {
-        if (CurrentGrenadeNum <= 0)
+        else
         {
-            FString s = "Run out of grenade, take some grenade pickups";
-            GEngine->AddOnScreenDebugMessage(1, 3, FColor::Green, *s);
-        }
-        
-    }
-    
-}
+            if (CurrentGrenadeNum <= 0)
+            {
+                FString s = "Run out of grenade, take some grenade pickups";
+                GEngine->AddOnScreenDebugMessage(1, 3, FColor::Green, *s);
+            }
 
-
-void AMasterTrappersAlpha1Character::MoveForward(float Value)
-{
-	if (Value != 0.0f)
-	{
-		// add movement in that direction
-        Value *= Speed;
-		AddMovementInput(GetActorForwardVector(), Value);
-	}
-}
-
-void AMasterTrappersAlpha1Character::MoveRight(float Value)
-{
-	if (Value != 0.0f)
-	{
-		// add movement in that direction
-        Value *= Speed;
-		AddMovementInput(GetActorRightVector(), Value);
-	}
-}
-
-void AMasterTrappersAlpha1Character::Shove()
-{
-    //Sets shoving bool to true for collision with other players
-    bIsShoving = true;
-    LaunchCharacter(GetActorForwardVector()*ShoveStrength, false, false);
-    TArray<AActor*> OutOverlappingActors;
-    TSubclassOf<AActor> ClassFilter;
-    //Check for overlapping actors
-    GetOverlappingActors(OutOverlappingActors, ClassFilter);
-    for (int i = 0; i < OutOverlappingActors.Num(); i++)
-    {
-        //Check overlapping actors for player tag
-        if (OutOverlappingActors[i]->ActorHasTag("Player"))
-        {
-            //Cast as AMasterTrappersAlpha1Character
-            AMasterTrappersAlpha1Character* otherCharacter = Cast<AMasterTrappersAlpha1Character>(OutOverlappingActors[i]);
-            otherCharacter->LaunchCharacter(GetActorForwardVector()*ShoveStrength, false, false);
         }
     }
-}
-
-void AMasterTrappersAlpha1Character::RotateTrap(float Value)
-{
-    if (Value != 0.0f)
-    {
-        // add movement in that direction
-        TrapRotation.Yaw += Value * 90;
-        if (TrapRotation.Yaw > 360.0f)
-        {
-            TrapRotation.Yaw = 360.0f - TrapRotation.Yaw;
-        }
-        FString s = FString::SanitizeFloat(TrapRotation.Yaw);
-        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Rotation - " + s));
-        //AddMovementInput(GetActorRightVector(), Value);
-    }
-    
-}
-
-void AMasterTrappersAlpha1Character::TurnAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-}
-
-void AMasterTrappersAlpha1Character::LookUpAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-}
-
-void AMasterTrappersAlpha1Character::SpawnTatical()
-{
-    //// try and fire a projectile
-    //if (GrenadeTactical != NULL)
-    //{
-    //    UWorld* const World = GetWorld();
-    //    if (World != NULL)
-    //    {
-    //        if (bUsingMotionControllers)
-    //        {
-    //            const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
-    //            const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
-    //            World->SpawnActor<AMasterTrappersAlpha1Projectile>(GrenadeTactical, SpawnLocation, SpawnRotation);
-    //        }
-    //        else
-    //        {
-    //            const FRotator SpawnRotation = GetControlRotation();
-    //            // MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-    //            const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
-
-    //            //Set Spawn Collision Handling Override
-    //            FActorSpawnParameters ActorSpawnParams;
-    //            ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
-    //            // spawn the projectile at the muzzle
-    //            World->SpawnActor<AMasterTrappersAlpha1Projectile>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
-    //        }
-    //    }
-    //}
-
-    //// try and play the sound if specified
-    //if (FireSound != NULL)
-    //{
-    //    UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-    //}
-
-    //// try and play a firing animation if specified
-    //if (FireAnimation != NULL)
-    //{
-    //    // Get the animation object for the arms mesh
-    //    UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-    //    if (AnimInstance != NULL)
-    //    {
-    //        AnimInstance->Montage_Play(FireAnimation, 1.f);
-    //    }
-    //}
 }
 void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
     DOREPLIFETIME(AMasterTrappersAlpha1Character, CursorToWorld);
-    //DOREPLIFETIME(AMasterTrappersAlpha1Character, Score);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, TrapRotation);
     //DOREPLIFETIME(AICA3Character, NumPickups);
     //DOREPLIFETIME(AWesley_S_FinalCharacter, DefaultMaterial);
 }

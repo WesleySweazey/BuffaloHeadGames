@@ -224,7 +224,7 @@ public:
     //Scrolls Through Inventory Down
     void EndStun();
 
-    //Scrolls Through Inventory Down
+    //Multicast die
     UFUNCTION(NetMulticast, Reliable)
     void Multicast_Die();
 
@@ -235,7 +235,13 @@ public:
     //Respawn Point
     FVector RespawnLocation;
 
+    //Gets trap rotation
     FQuat GetTrapSpawnRotation();
+
+    //Multicast die
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_SetCursorLocation();
+
 protected:
     // Called at the Beginning
 	virtual void BeginPlay();
@@ -256,7 +262,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Traps)
         FQuat SpawnSurfaceRotation;
     /** Quaternion for cursor surface rotation */
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Traps)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Traps, Replicated)
         FRotator TrapRotation;
     //Health
 
@@ -296,10 +302,8 @@ public:
     
 protected:
 	
-    /** Fires a projectile. */
-    void OnFire();
-
 	/** Spawn a Tatical. */
+    UFUNCTION(Server, Reliable, WithValidation)
 	void SpawnTatical();
 
 	/** Handles moving forward/backward */
@@ -309,20 +313,24 @@ protected:
 	void MoveRight(float Val);
 
     /** Handles moving shove */
+    UFUNCTION(Server, Reliable, WithValidation)
     void Shove();
 
+    UFUNCTION(Server, Reliable, WithValidation)
     void RotateTrap(float val);
 	/**
 	 * Called via input to turn at a given rate.
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
-	void TurnAtRate(float Rate);
+    UFUNCTION(NetMulticast, Reliable)
+	void Multicast_TurnAtRate(float Rate);
 
 	/**
 	 * Called via input to turn look up/down at a given rate.
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
-	void LookUpAtRate(float Rate);
+    UFUNCTION(NetMulticast, Reliable)
+	void Multicast_LookUpAtRate(float Rate);
 
 protected:
 	// APawn interface
@@ -334,6 +342,5 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
-
 };
 
