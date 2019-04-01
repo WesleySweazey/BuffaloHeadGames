@@ -12,7 +12,7 @@ ABaseTactical::ABaseTactical()
     StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("Static Mesh Component");
     RootComponent = StaticMeshComponent;
     SetReplicates(true);
-    Tags.Add("Trap");
+    Tags.Add("Tactical");
 }
 
 // Called when the game starts or when spawned
