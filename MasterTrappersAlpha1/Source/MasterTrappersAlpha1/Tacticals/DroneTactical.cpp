@@ -9,6 +9,7 @@
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Public/WorldCollision.h"
+#include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
 
 ADroneTactical::ADroneTactical()
@@ -26,8 +27,15 @@ ADroneTactical::ADroneTactical()
     StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     StaticMeshComponent->SetupAttachment(RootComponent);
 
-    //DroneAudio = CreateDefaultSubobject<UAudioComponent>("Drone Audio");
-    //DroneAudio = UGameplayStatics::SpawnSoundAtLocation(this, TargetSpottedSound, GetActorLocation(), FRotator::ZeroRotator, 1.f, 1.f, 0.0f, nullptr, nullptr, true);
+
+    static ConstructorHelpers::FObjectFinder<USoundCue> TargetSpottedSound(TEXT("SoundCue'/Game/StarterContent/Audio/Steam01_Cue.Steam01_Cue'"));
+    if (TargetSpottedSound.Succeeded())
+    {
+        TargetSpottedCue = TargetSpottedSound.Object;
+        DroneAudio = CreateDefaultSubobject<UAudioComponent>("Drone Audio");
+        DroneAudio->SetupAttachment(RootComponent);
+        DroneAudio->SetSound(TargetSpottedCue);
+    }
 }
 
 void ADroneTactical::BeginPlay()
@@ -41,7 +49,7 @@ void ADroneTactical::StartOverlap(UPrimitiveComponent * OverlappedComponent, AAc
     if (OtherActor->ActorHasTag("Player"))
     {
         GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap Start");
-        //DroneAudio->Play();
+        DroneAudio->Play();
 
     }
 }
@@ -51,7 +59,7 @@ void ADroneTactical::EndOverlap(UPrimitiveComponent * OverlappedComp, AActor * O
     if (OtherActor->ActorHasTag("Player"))
     {
         GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap End");
-        //DroneAudio->Stop();
+        DroneAudio->Stop();
 
     }
 }

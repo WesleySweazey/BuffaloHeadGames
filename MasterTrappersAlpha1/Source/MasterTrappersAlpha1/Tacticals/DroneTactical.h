@@ -20,12 +20,14 @@ public:
 
     virtual void BeginPlay() override;
 
+    //sound to be played when enemy is in radius
     UPROPERTY(EditAnywhere, Category = "FX")
-        class USoundBase* TargetSpottedSound;
+        class USoundCue* TargetSpottedCue;
 
     UPROPERTY(EditAnywhere, Category = "FX")
         class UAudioComponent* DroneAudio;
 
+    //enemy tracking radius
     UPROPERTY(VisibleAnywhere, Category = "Overlap")
         class USphereComponent* OverlapComponent;
     UFUNCTION()
