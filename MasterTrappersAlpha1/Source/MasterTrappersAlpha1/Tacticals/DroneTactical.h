@@ -30,10 +30,19 @@ public:
     //enemy tracking radius
     UPROPERTY(VisibleAnywhere, Category = "Overlap")
         class USphereComponent* OverlapComponent;
+    //raycasting variables for drone to detect if wall is in front of it to turn in a random direction
+    
+    FVector DroneDir;
+    
+
+
     UFUNCTION()
         void StartOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
     UFUNCTION()
         void EndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+    UFUNCTION()
+        void CheckForWalls();
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 	

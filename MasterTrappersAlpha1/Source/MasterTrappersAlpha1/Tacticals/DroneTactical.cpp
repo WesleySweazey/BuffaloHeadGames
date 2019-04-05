@@ -10,6 +10,7 @@
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Public/WorldCollision.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Runtime/Engine/Public/DrawDebugHelpers.h"
 
 
 ADroneTactical::ADroneTactical()
@@ -27,8 +28,9 @@ ADroneTactical::ADroneTactical()
     StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     StaticMeshComponent->SetupAttachment(RootComponent);
 
-
+    //create and set drone audio for spotting targets
     static ConstructorHelpers::FObjectFinder<USoundCue> TargetSpottedSound(TEXT("SoundCue'/Game/StarterContent/Audio/Steam01_Cue.Steam01_Cue'"));
+    //if the sound cue was found then proceed with creating  and setting drone audio
     if (TargetSpottedSound.Succeeded())
     {
         TargetSpottedCue = TargetSpottedSound.Object;
@@ -36,11 +38,17 @@ ADroneTactical::ADroneTactical()
         DroneAudio->SetupAttachment(RootComponent);
         DroneAudio->SetSound(TargetSpottedCue);
     }
+
+    
+
+    DroneDir = FVector(4, 0, 0);
 }
 
 void ADroneTactical::BeginPlay()
 {
     Super::BeginPlay();
+    //stops sound from playing right away
+    DroneAudio->Stop();
 
 }
 
@@ -49,8 +57,10 @@ void ADroneTactical::StartOverlap(UPrimitiveComponent * OverlappedComponent, AAc
     if (OtherActor->ActorHasTag("Player"))
     {
         GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap Start");
+        //plays sound when players enter radius
         DroneAudio->Play();
-
+         
+        
     }
 }
 
@@ -59,6 +69,7 @@ void ADroneTactical::EndOverlap(UPrimitiveComponent * OverlappedComp, AActor * O
     if (OtherActor->ActorHasTag("Player"))
     {
         GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap End");
+        //stops playing sound when players leave drone radius 
         DroneAudio->Stop();
 
     }
@@ -68,4 +79,45 @@ void ADroneTactical::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    //constantly check if there is a wall blocking path
+    CheckForWalls();
+
+    SetActorLocation(GetActorLocation() += DroneDir);
+    
+}
+
+void ADroneTactical::CheckForWalls()
+{
+    FHitResult* HitResult = new FHitResult();
+    FVector RayStartPoint = GetActorLocation();
+    FVector RayEndPoint = RayStartPoint + (FVector::ForwardVector * 20);
+    FCollisionQueryParams* CQP = new FCollisionQueryParams();
+
+    /*!HitResult->GetActor()->ActorHasTag("Player")|| !HitResult->GetActor()->ActorHasTag("Tactical") || !HitResult->GetActor()->ActorHasTag("Trap")*/
+
+    if (GetWorld()->LineTraceSingleByChannel(*HitResult, RayStartPoint, RayEndPoint, ECC_Visibility, *CQP))
+    {
+        DrawDebugLine(GetWorld(), RayStartPoint, RayEndPoint, FColor(255, 0, 0), true);
+
+
+        int rand = FMath::RandRange(0, 2);
+        if (rand == 0)
+        {
+            SetActorRotation(GetActorRotation() + FRotator(0, 90, 0));
+            DroneDir = FVector(0, 4, 0);
+            RayEndPoint = RayStartPoint + (FVector::RightVector * 20);
+        }
+        if (rand == 1)
+        {
+            SetActorRotation(GetActorRotation() + FRotator(0, 180, 0));
+            DroneDir = FVector(-4, 0, 0);
+            RayEndPoint = RayStartPoint + (-FVector::ForwardVector * 20);
+        }
+        if (rand == 2)
+        {
+            SetActorRotation(GetActorRotation() + FRotator(0, 270, 0));
+            DroneDir = FVector(0, -4, 0);
+            RayEndPoint = RayStartPoint + (-FVector::RightVector * 20);
+        }
+    }
 }
