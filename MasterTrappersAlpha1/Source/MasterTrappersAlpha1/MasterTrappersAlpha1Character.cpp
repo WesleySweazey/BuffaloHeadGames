@@ -485,6 +485,7 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 
     Server_SetCursorLocation();
+    Server_ChangeFacing(FirstPersonCameraComponent->GetComponentRotation().Vector());
 
     CurrentSpeed = GetVelocity().Size();
     if (HealthComponent->GetHealth() > 0.0f)
@@ -553,12 +554,24 @@ void AMasterTrappersAlpha1Character::SetupPlayerInputComponent(class UInputCompo
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &AMasterTrappersAlpha1Character::Multicast_TurnAtRate);
+	PlayerInputComponent->BindAxis("TurnRate", this, &AMasterTrappersAlpha1Character::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &AMasterTrappersAlpha1Character::Multicast_LookUpAtRate);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &AMasterTrappersAlpha1Character::LookUpAtRate);
 
     // Bind fire event
     PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMasterTrappersAlpha1Character::SpawnTatical);
+}
+
+bool AMasterTrappersAlpha1Character::Server_ChangeFacing_Validate(FVector TargetFacing)
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_ChangeFacing_Implementation(FVector TargetFacing)
+{
+    SetActorRotation(FVector(TargetFacing.X, TargetFacing.Y, 0.0f).Rotation());
+    Facing = FVector(TargetFacing.X, TargetFacing.Y, 0.0f);
+    //ChangeFacing(TargetFacing);
 }
 
 void AMasterTrappersAlpha1Character::MoveForward(float Value)
@@ -579,6 +592,17 @@ void AMasterTrappersAlpha1Character::MoveRight(float Value)
         Value *= Speed;
 		AddMovementInput(GetActorRightVector(), Value);
 	}
+}
+
+void AMasterTrappersAlpha1Character::ChangeFacing(FVector TargetFacing)
+{
+    SetActorRotation(FVector(TargetFacing.X, TargetFacing.Y, 0.0f).Rotation());
+    Facing = FVector(TargetFacing.X, TargetFacing.Y, 0.0f);
+    //Server_ChangeFacing(Facing);
+    /*if (Role < ROLE_Authority)
+    {
+        Server_ChangeFacing(Facing);
+    }*/
 }
 
 bool AMasterTrappersAlpha1Character::Shove_Validate()
@@ -630,13 +654,13 @@ void AMasterTrappersAlpha1Character::RotateTrap_Implementation(float Value)
     }
 }
 
-void AMasterTrappersAlpha1Character::Multicast_TurnAtRate_Implementation(float Rate)
+void AMasterTrappersAlpha1Character::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-void AMasterTrappersAlpha1Character::Multicast_LookUpAtRate_Implementation(float Rate)
+void AMasterTrappersAlpha1Character::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
@@ -733,6 +757,8 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
 
     DOREPLIFETIME(AMasterTrappersAlpha1Character, CursorToWorld);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, TrapRotation);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, Facing);
+    
     //DOREPLIFETIME(AICA3Character, NumPickups);
     //DOREPLIFETIME(AWesley_S_FinalCharacter, DefaultMaterial);
 }

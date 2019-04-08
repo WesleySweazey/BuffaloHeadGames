@@ -46,6 +46,7 @@ private:
     TArray<class ABasePickup*> _inventory;
 
 public:
+
     // grenade setups
     int CurrentGrenadeNum; // current grenade number
     int MaxGrenadeNum;// max grenade number
@@ -209,6 +210,12 @@ public:
     UFUNCTION(Server, Reliable, WithValidation)
     void ActivateTrap();
 
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_ChangeFacing(FVector TargetFacing);
+
+    UPROPERTY(Replicated)
+        FVector Facing;
+
     //Scrolls Through Trap Inventory Up
     void SwitchTrapUp();
     //Scrolls Through Trap Inventory Down
@@ -312,6 +319,9 @@ protected:
 	/** Handles stafing movement, left and right */
 	void MoveRight(float Val);
 
+    /** Change facing actor */
+    void ChangeFacing(FVector TargetFacing);
+
     /** Handles moving shove */
     UFUNCTION(Server, Reliable, WithValidation)
     void Shove();
@@ -322,15 +332,15 @@ protected:
 	 * Called via input to turn at a given rate.
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
-    UFUNCTION(NetMulticast, Reliable)
-	void Multicast_TurnAtRate(float Rate);
+    //UFUNCTION(NetMulticast, Reliable)
+	void TurnAtRate(float Rate);
 
 	/**
 	 * Called via input to turn look up/down at a given rate.
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
-    UFUNCTION(NetMulticast, Reliable)
-	void Multicast_LookUpAtRate(float Rate);
+    //UFUNCTION(NetMulticast, Reliable)
+	void LookUpAtRate(float Rate);
 
 protected:
 	// APawn interface
