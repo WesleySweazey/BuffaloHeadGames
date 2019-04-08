@@ -38,6 +38,7 @@
 #include "MasterTrappersAlpha1/MasterTrappersGameStateBase.h"
 #include "MasterTrappersAlpha1/MasterTrappersAlpha1GameMode.h"
 #include "Runtime/Core/Public/Math/UnrealMathUtility.h"
+#include "Runtime/Engine/Classes/GameFramework/Actor.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -108,6 +109,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 
     //create inventory component
     InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("Inventory Component");
+    
 
     //create health component
     HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");

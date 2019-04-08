@@ -7,7 +7,7 @@
 #include "MasterTrappersAlpha1Character.generated.h"
 
 //inventory : when the inventory get updated this event be fired
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInventoryDelegate, const TArray<APickupActor*>&, InventoryItems);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInventoryDelegate, const TArray<ABasePickup*>&, InventoryItems);
 
 class UInputComponent;
 
@@ -86,8 +86,8 @@ public:
         void UpdateInventory();
 
     //BlueprintAssignable make it can be binded in the blueprint
-    //UPROPERTY(BlueprintAssignable, Category = "Pickup")
-        //FUpdateInventoryDelegate OnUpdateInventory;
+    UPROPERTY(BlueprintAssignable, Category = "Pickup")
+        FUpdateInventoryDelegate OnUpdateInventory;
 
     //Tacticals
 

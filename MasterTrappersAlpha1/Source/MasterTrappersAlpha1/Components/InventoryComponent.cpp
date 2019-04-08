@@ -2,6 +2,8 @@
 
 #include "InventoryComponent.h"
 #include "Pickups/BasePickup.h"
+#include "Runtime/Engine/Classes/Components/SceneComponent.h"
+#include "MasterTrappersAlpha1Character.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -49,7 +51,7 @@ void UInventoryComponent::UpdateTacticalsInventory()
     }
 
     GEngine->AddOnScreenDebugMessage(1, 3, FColor::White, *sInventory);
-    //OnUpdateInventory.Broadcast(_inventory);
+    Cast<AMasterTrappersAlpha1Character>(GetOwner()->GetRootComponent()->GetAttachParent()->GetOwner())->OnUpdateInventory.Broadcast(_inventory_tacticals);
 }
 
 void UInventoryComponent::RemoveFromTacticalInventory()
