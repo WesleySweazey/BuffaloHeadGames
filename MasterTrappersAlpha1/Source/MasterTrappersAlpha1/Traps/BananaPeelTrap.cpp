@@ -25,8 +25,11 @@ void ABananaPeelTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, 
                 GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "ABananaPeelTrap::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());
-                pawn->StartSlip();
-                this->Destroy();
+                if (pawn->Team != Team)
+                {
+                    pawn->StartSlip();
+                    this->Destroy();
+                }
             }
         }
     }

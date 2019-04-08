@@ -13,6 +13,11 @@ class AMasterTrappersAlpha1GameMode : public AGameModeBase
 
 public:
 	AMasterTrappersAlpha1GameMode();
+    // Network new player
+    virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+private:
+    // Handle the new player
+    void HandleNewPlayer(APlayerController* NewPlayer);
 };
 
 

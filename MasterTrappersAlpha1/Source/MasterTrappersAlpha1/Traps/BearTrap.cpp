@@ -29,7 +29,10 @@ void ABearTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor
                     "ABearTrap::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());
                 //pawn->Destroy();
-                pawn->Multicast_Die();
+                if (pawn->Team != Team)
+                {
+                    pawn->Multicast_Die();
+                }
             }
         }
     }

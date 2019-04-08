@@ -47,8 +47,10 @@ void ATripWireTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AA
 
                 UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
                 Destroy();
-                
-               pawn->Multicast_Die();
+                if (pawn->Team != Team)
+                {
+                    pawn->Multicast_Die();
+                }
             }
         }
     }

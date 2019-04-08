@@ -15,7 +15,7 @@ UCLASS(config=Game)
 class AMasterTrappersAlpha1Character : public ACharacter
 {
 	GENERATED_BODY()
-
+// Main UPROPERTIES
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(EditAnywhere, Category=Mesh)
 	class USkeletalMeshComponent* Mesh1P;
@@ -46,6 +46,21 @@ private:
     TArray<class ABasePickup*> _inventory;
 
 public:
+    UPROPERTY(BlueprintReadWrite, Category = "Team", Replicated)//, meta = (EditCondition = "AreTeamsEnabled", ClampMin = "0")
+        int Score;
+    /** Assigns players to teams */
+    void AssignTeams();
+    /** Player's material color */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Team", Replicated)
+        UMaterialInterface* CharacterMaterial;
+    UFUNCTION(NetMulticast, Reliable)
+    void Multicast_AssignColors();
+    /** Player's team number */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Team", Replicated)
+        int Team;
+
+    class AMasterTrappersGameStateBase* GetLocalGameState();
+    class AMasterTrappersAlpha1GameMode* GetLocalGameMode();
 
     // grenade setups
     int CurrentGrenadeNum; // current grenade number
@@ -255,6 +270,7 @@ protected:
     // Called every frame.
     virtual void Tick(float DeltaSeconds) override;
 
+    //Character Movement///////////
 public:
     /** Boolean for shoving feature */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Shoving)

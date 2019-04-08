@@ -35,6 +35,8 @@
 #include "Components/InventoryComponent.h"
 #include "Components/HealthComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "MasterTrappersAlpha1/MasterTrappersGameStateBase.h"
+#include "MasterTrappersAlpha1/MasterTrappersAlpha1GameMode.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -182,8 +184,11 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 ABearTrap* SpawnedActor = World->SpawnActor<ABearTrap>(BearTrap, SpawnTransform, SpawnParams);
+                //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
-
+                //Set Color & Team
+                SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->SetTeam(Team);
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Bear Trap Spawned"));
@@ -207,7 +212,11 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 ABoostTrap* SpawnedActor = World->SpawnActor<ABoostTrap>(BoostTrap, SpawnTransform, SpawnParams);
+                //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
+                //Set Color & Team
+                SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->SetTeam(Team);
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Boost Pad Trap Spawned"));
@@ -231,7 +240,11 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 AC4Trap* SpawnedActor = World->SpawnActor<AC4Trap>(C4Trap, SpawnTransform, SpawnParams);
+                //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
+                //Set Color & Team
+                SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->SetTeam(Team);
                 // Add C4 Trap to TArray of C4 traps already placed
                 PlacedC4Traps.Add(SpawnedActor);
                 if (SpawnedActor)
@@ -257,7 +270,11 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 ATripWireTrap* SpawnedActor = World->SpawnActor<ATripWireTrap>(TripWireTrap, SpawnTransform, SpawnParams);
+                //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
+                //Set Color & Team
+                SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->SetTeam(Team);
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Trip Wire Trap Spawned"));
@@ -280,7 +297,11 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 ABananaPeelTrap* SpawnedActor = World->SpawnActor<ABananaPeelTrap>(BananaPeelTrap, SpawnTransform, SpawnParams);
+                //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
+                //Set Color & Team
+                SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->SetTeam(Team);
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Banana Peel Trap Spawned"));
@@ -303,7 +324,11 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 AWhoopieCushionTrap* SpawnedActor = World->SpawnActor<AWhoopieCushionTrap>(WhoopieCushionTrap, SpawnTransform, SpawnParams);
+                //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
+                //Set Color & Team
+                SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->SetTeam(Team);
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Whoopie Cushion Trap Spawned"));
@@ -692,7 +717,7 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                 // spawn the projectile at the muzzle
                 if (currentTactical == 0)
                 {
-                    World->SpawnActor<AGrenadeTactical>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    AGrenadeTactical* SpawnedActor = World->SpawnActor<AGrenadeTactical>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                     CurrentGrenadeNum--;
                     if (CurrentGrenadeNum == 0)
                     {
@@ -702,22 +727,27 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     {
                         InventoryComponent->RemoveFromTacticalInventory();
                     }
+                    SpawnedActor->SetMaterial(CharacterMaterial);
                 }
                 else if (currentTactical == 1)
                 {
-                    World->SpawnActor<AFlashBangTactical>(FlashBangTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    AFlashBangTactical* SpawnedActor = World->SpawnActor<AFlashBangTactical>(FlashBangTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    SpawnedActor->SetMaterial(CharacterMaterial);
                 }
                 else if (currentTactical == 2)
                 {
-                    World->SpawnActor<AMolotovTactical>(MolotovTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    AMolotovTactical* SpawnedActor = World->SpawnActor<AMolotovTactical>(MolotovTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    SpawnedActor->SetMaterial(CharacterMaterial);
                 }
                 else if (currentTactical == 3)
                 {
-                    World->SpawnActor<ANinjaStarTactical>(NinjaStarTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    ANinjaStarTactical* SpawnedActor = World->SpawnActor<ANinjaStarTactical>(NinjaStarTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    SpawnedActor->SetMaterial(CharacterMaterial);
                 }
                 else if (currentTactical == 4)
                 {
-                    World->SpawnActor<AThrowingAxeTactical>(ThrowingAxeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    AThrowingAxeTactical* SpawnedActor = World->SpawnActor<AThrowingAxeTactical>(ThrowingAxeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    SpawnedActor->SetMaterial(CharacterMaterial);
                 }
             }
 
@@ -751,6 +781,55 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
         }
     }
 }
+
+void AMasterTrappersAlpha1Character::AssignTeams()
+{
+    if (GetLocalGameState()->bIsPlayerOneLoggedIn == false)
+    {
+        Team = 1;
+        GetLocalGameState()->bIsPlayerOneLoggedIn = true;
+    }
+    else if (GetLocalGameState()->bIsPlayerOneLoggedIn == true)
+    {
+        Team = 2;
+        GetLocalGameState()->bIsPlayerTwoLoggedIn = true;
+    }
+}
+
+void AMasterTrappersAlpha1Character::Multicast_AssignColors_Implementation()
+{
+    switch (Team)
+    {
+    case 1:
+        CharacterMaterial = GetLocalGameState()->TeamOneMaterials;
+        break;
+    case 2:
+        CharacterMaterial = GetLocalGameState()->TeamTwoMaterials;
+        break;
+    case 3:
+        CharacterMaterial = GetLocalGameState()->TeamThreeMaterials;
+        break;
+    case 4:
+        CharacterMaterial = GetLocalGameState()->TeamFourMaterials;
+        break;
+    case 5:
+        CharacterMaterial = GetLocalGameState()->TeamFiveMaterials;
+        break;
+    }
+    Mesh1P->SetMaterial(0,CharacterMaterial);
+}
+
+AMasterTrappersGameStateBase * AMasterTrappersAlpha1Character::GetLocalGameState()
+{
+    return Cast<AMasterTrappersGameStateBase>(GetWorld()->GetGameState());
+}
+
+AMasterTrappersAlpha1GameMode * AMasterTrappersAlpha1Character::GetLocalGameMode()
+{
+    return Cast<AMasterTrappersAlpha1GameMode>(GetWorld()->GetAuthGameMode());
+}
+
+//Replicates UPROPERTIES
 void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -758,7 +837,7 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
     DOREPLIFETIME(AMasterTrappersAlpha1Character, CursorToWorld);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, TrapRotation);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, Facing);
-    
-    //DOREPLIFETIME(AICA3Character, NumPickups);
-    //DOREPLIFETIME(AWesley_S_FinalCharacter, DefaultMaterial);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, CharacterMaterial);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, Team);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, Score);
 }

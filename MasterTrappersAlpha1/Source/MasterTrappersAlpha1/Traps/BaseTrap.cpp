@@ -4,6 +4,7 @@
 #include "Components/SphereComponent.h"
 #include "MasterTrappersAlpha1Character.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABaseTrap::ABaseTrap()
@@ -20,6 +21,7 @@ ABaseTrap::ABaseTrap()
 void ABaseTrap::BeginPlay()
 {
     Super::BeginPlay();
+    StaticMeshComponent->SetMaterial(0, TrapMaterial);
 }
 
 // Called every frame
@@ -32,4 +34,12 @@ void ABaseTrap::Tick(float DeltaTime)
 UStaticMeshComponent * ABaseTrap::GetStaticMeshComponent()
 {
     return StaticMeshComponent;
+}
+
+void ABaseTrap::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(ABaseTrap, Team);
+    DOREPLIFETIME(ABaseTrap, TrapMaterial);
 }

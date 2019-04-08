@@ -15,6 +15,8 @@ public:
     // Sets default values for this actor's properties
     ABaseTrap();
 
+    virtual void SetMaterial(UMaterialInterface* mat) { TrapMaterial = mat; }
+    void SetTeam(int value) { Team = value; }
 protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
@@ -27,4 +29,10 @@ protected:
         class UStaticMeshComponent* StaticMeshComponent;
 
     UStaticMeshComponent* GetStaticMeshComponent();
+    //Material color
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Material, meta = (AllowPrivateAccess = "true"), Replicated)
+        UMaterialInterface* TrapMaterial;
+    //Team
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Score", Replicated)
+        int Team;
 };

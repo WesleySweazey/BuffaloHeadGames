@@ -22,10 +22,19 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+    //Set Material
+    virtual void SetMaterial(UMaterialInterface* mat) { TacticalMaterial = mat; }
+    //Set Team
+    void SetTeam(int value) { Team = value; }
     UPROPERTY(VisibleAnywhere, Category = "MeshComponent",
         meta = (AllowPrivateAccess))
         class UStaticMeshComponent* StaticMeshComponent;
 
     UStaticMeshComponent* GetStaticMeshComponent();
+    //Material color
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Material, meta = (AllowPrivateAccess = "true"), Replicated)
+        UMaterialInterface* TacticalMaterial;
+    //Team
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Score", Replicated)
+        int Team;
 };

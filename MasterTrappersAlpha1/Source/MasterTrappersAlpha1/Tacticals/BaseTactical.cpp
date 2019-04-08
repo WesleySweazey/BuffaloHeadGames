@@ -3,6 +3,7 @@
 #include "BaseTactical.h"
 #include "MasterTrappersAlpha1Character.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABaseTactical::ABaseTactical()
@@ -19,7 +20,7 @@ ABaseTactical::ABaseTactical()
 void ABaseTactical::BeginPlay()
 {
 	Super::BeginPlay();
-	
+    StaticMeshComponent->SetMaterial(0, TacticalMaterial);
 }
 
 // Called every frame
@@ -34,3 +35,10 @@ UStaticMeshComponent * ABaseTactical::GetStaticMeshComponent()
     return StaticMeshComponent;
 }
 
+void ABaseTactical::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(ABaseTactical, Team);
+    DOREPLIFETIME(ABaseTactical, TacticalMaterial);
+}
