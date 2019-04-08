@@ -37,6 +37,7 @@
 #include "Net/UnrealNetwork.h"
 #include "MasterTrappersAlpha1/MasterTrappersGameStateBase.h"
 #include "MasterTrappersAlpha1/MasterTrappersAlpha1GameMode.h"
+#include "Runtime/Core/Public/Math/UnrealMathUtility.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -117,6 +118,14 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 
     SetReplicates(true);
     SetReplicateMovement(true);
+
+
+    //Add all possible spawn location
+    RespawnLocations.Add(FVector(-160.0f, 2260.0f, 550.0f));
+    RespawnLocations.Add(FVector(-610.0f,1260.0f,150.0f));
+    RespawnLocations.Add(FVector(-250.0f,500.0f,630.0f));
+    RespawnLocations.Add(FVector(20.0f,-1670.0f,170.0f));
+    RespawnLocations.Add(FVector(-410.0f,-330.0f,170.0f));
 }
 
 void AMasterTrappersAlpha1Character::AddToInventory(ABasePickup * actor)
@@ -417,9 +426,17 @@ void AMasterTrappersAlpha1Character::EndStun()
 void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
 {
     HealthComponent->ResetHealth();
-    SetActorLocation(RespawnLocation);
+    SetActorLocation(GetRandomResponLocation());
     GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
     //StartSlip();
+}
+
+FVector AMasterTrappersAlpha1Character::GetRandomResponLocation()
+{
+    int randIdx = FMath::RandRange(0, 4);
+    FVector loc = RespawnLocations[randIdx];
+    int bp = 1;
+    return loc;
 }
 
 float AMasterTrappersAlpha1Character::GetHealth()

@@ -12,6 +12,8 @@ class AMasterTrappersAlpha1GameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+
+
 	AMasterTrappersAlpha1GameMode();
     // Network new player
     virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
