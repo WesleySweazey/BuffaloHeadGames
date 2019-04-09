@@ -65,7 +65,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
-	Mesh1P->SetOnlyOwnerSee(true);
+	//Mesh1P->SetOnlyOwnerSee(true);
 	Mesh1P->SetupAttachment(FirstPersonCameraComponent);
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
@@ -116,7 +116,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
     
     //Initialize grenade number
-    MaxGrenadeNum = 10;
+    MaxGrenadeNum = 60;
     CurrentGrenadeNum = 0;
 
     //initialize health pickup
@@ -133,11 +133,25 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     RespawnLocations.Add(FVector(-250.0f,500.0f,630.0f));
     RespawnLocations.Add(FVector(20.0f,-1670.0f,170.0f));
     RespawnLocations.Add(FVector(-410.0f,-330.0f,170.0f));
+
+
 }
+
+void AMasterTrappersAlpha1Character::Server_AddToInventory_Implementation(ABasePickup * actor)
+{
+    AddToInventory(actor);
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddToInventory_Validate(ABasePickup * actor)
+{
+    return true;
+}
+
 
 void AMasterTrappersAlpha1Character::AddToInventory(ABasePickup * actor)
 {
-    InventoryComponent->AddToTacticalsInventory(actor);
+    if(Role==ROLE_Authority)
+    InventoryComponent->Server_AddToTacticalsInventory(actor);
     
 }
 
@@ -147,10 +161,23 @@ void AMasterTrappersAlpha1Character::AddToInventory(ABasePickup * actor)
 //
 //}
 
+void AMasterTrappersAlpha1Character::Server_UpdateInventory_Implementation()
+{
+    UpdateInventory();
+}
+
 void AMasterTrappersAlpha1Character::UpdateInventory()
 {
-    InventoryComponent->UpdateTacticalsInventory();
-    OnUpdateInventory.Broadcast(InventoryComponent->_inventory_tacticals);
+    if (Role == ROLE_Authority)
+    {
+        InventoryComponent->Server_UpdateTacticalsInventory();
+        OnUpdateInventory.Broadcast(InventoryComponent->_inventory_tacticals);
+    }
+}
+
+bool AMasterTrappersAlpha1Character::Server_UpdateInventory_Validate()
+{
+    return true;
 }
 
 void AMasterTrappersAlpha1Character::SwitchTacticalUp()
@@ -457,10 +484,14 @@ void AMasterTrappersAlpha1Character::EndStun()
 
 void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
 {
-    HealthComponent->ResetHealth();
-    SetActorLocation(GetRandomResponLocation());
-    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
-    //StartSlip();
+    if (Role == ROLE_Authority)
+    {
+        HealthComponent->ResetHealth();
+        SetActorLocation(GetRandomResponLocation());
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
+        //StartSlip();
+
+    }
 }
 
 FVector AMasterTrappersAlpha1Character::GetRandomResponLocation()
@@ -591,7 +622,7 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     //displaying inventory
     if (CurrentGrenadeNum > 0 || CurrentHealthPickupNum>0)
     {
-        UpdateInventory();
+        Server_UpdateInventory();
     }
 }
 
@@ -772,15 +803,15 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                 {
                     AGrenadeTactical* SpawnedActor = World->SpawnActor<AGrenadeTactical>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                     CurrentGrenadeNum--;
-                    if (CurrentGrenadeNum == 0)
+                    if (CurrentGrenadeNum%5 == 0)
                     {
-                        InventoryComponent->RemoveFromTacticalInventory();
+                        InventoryComponent->Server_RemoveFromTacticalInventory();
 
                     }
-                    else if (CurrentGrenadeNum == 5)
+                    /*else if (CurrentGrenadeNum == 5)
                     {
                         InventoryComponent->RemoveFromTacticalInventory();
-                    }
+                    }*/
                     OnUpdateInventory.Broadcast(InventoryComponent->_inventory_tacticals);
                     SpawnedActor->SetMaterial(CharacterMaterial);
                 }
@@ -895,4 +926,43 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
     DOREPLIFETIME(AMasterTrappersAlpha1Character, CharacterMaterial);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, Team);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, Score);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, CurrentGrenadeNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, MaxGrenadeNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, OnUpdateInventory);
+    
+}
+
+
+
+
+//add grenadeNum everytime by 5 when hit a pickup
+void AMasterTrappersAlpha1Character::AddGrenadeNum()
+{ 
+    CurrentGrenadeNum += 5; 
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddGrenadeNum_Implementation()
+{
+    if(Role==ROLE_Authority)
+    AddGrenadeNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddGrenadeNum_Validate()
+{
+    return true;
+}
+
+
+
+
+int AMasterTrappersAlpha1Character::GetCurrentGrenadeNum()
+{
+    return CurrentGrenadeNum;
+}
+
+int AMasterTrappersAlpha1Character::GetMaxGrenadeNum()
+{
+    return MaxGrenadeNum;
 }

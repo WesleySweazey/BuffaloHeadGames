@@ -48,6 +48,9 @@ AMolotovTactical::AMolotovTactical()
     PitchVal = 0.f;
     YawVal = 5.f;
     RollVal = 0.f;
+
+    SetReplicates(true);
+    SetReplicateMovement(true);
 }
 
 

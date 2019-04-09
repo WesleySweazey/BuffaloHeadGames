@@ -15,6 +15,7 @@ class MASTERTRAPPERSALPHA1_API UInventoryComponent : public UActorComponent
         //Inventory
 public:
     /** Inventory of Pick up Actors */
+    UPROPERTY(Replicated)
     TArray<class ABasePickup*> _inventory_tacticals;
 
 public:	
@@ -32,12 +33,25 @@ public:
     /** Add item to inventory*/
     void AddToTacticalsInventory(class ABasePickup* actor);
 	
-
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_AddToTacticalsInventory(class ABasePickup* actor);
 
     /** Update inventory*/
     UFUNCTION(BlueprintCallable)
         void UpdateTacticalsInventory();
 
+
+    /** Update inventory*/
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_UpdateTacticalsInventory();
+
+   /* UFUNCTION(Server, Reliable, WithValidation)
+        void Server_AddToTacticalsInventory();*/
+
     // remove last element from inventory
+
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_RemoveFromTacticalInventory();
+
     void RemoveFromTacticalInventory();
 };

@@ -15,6 +15,8 @@ UHealthComponent::UHealthComponent()
     Health = FullHealth;
     HealthPercentage = 1.0f;
 	// ...
+
+    SetIsReplicated(true);
 }
 
 

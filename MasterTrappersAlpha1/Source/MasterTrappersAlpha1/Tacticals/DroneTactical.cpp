@@ -39,7 +39,8 @@ ADroneTactical::ADroneTactical()
         DroneAudio->SetSound(TargetSpottedCue);
     }
 
-    
+    SetReplicates(true);
+    SetReplicateMovement(true);
 
     DroneDir = FVector(4, 0, 0);
 }

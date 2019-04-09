@@ -25,6 +25,9 @@ ANinjaStarTactical::ANinjaStarTactical() :ABaseTactical()
     GetStaticMeshComponent()->OnComponentHit.AddDynamic(this, &ANinjaStarTactical::OnHit);
     // Die after 3 seconds by default
     InitialLifeSpan = 3.0f;
+
+    SetReplicates(true);
+    SetReplicateMovement(true);
 }
 
 void ANinjaStarTactical::BeginPlay()

@@ -19,6 +19,9 @@ public:
     UFUNCTION()
         virtual void NotifyActorBeginOverlap(class AActor* OtherActor) override;
 	
+    //UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+    //    void Server_OnInteract();
+
     virtual void OnInteract();
 
 };

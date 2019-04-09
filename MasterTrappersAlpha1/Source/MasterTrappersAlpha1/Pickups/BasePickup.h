@@ -45,13 +45,13 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
         class USoundCue* ExplosionSound;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup,Replicated)
         FString Name;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup, Replicated)
         class UTexture2D* Image;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup, Replicated)
         class UTexture2D* BlankImage;
 
     UPROPERTY(EditAnywhere, Category = Movement)

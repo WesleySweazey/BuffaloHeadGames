@@ -1,8 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+
 #include "GrenadePickup.h"
+
 #include "MasterTrappersAlpha1Character.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
+
+
 
 
 void AGrenadePickup::OnInteract()
@@ -14,17 +19,32 @@ void AGrenadePickup::OnInteract()
     //TODO
     // Hide item and add it to the inventory
     // get player first
-    AMasterTrappersAlpha1Character* player = Cast<AMasterTrappersAlpha1Character>(UGameplayStatics::GetPlayerCharacter(this, 0));
+    AMasterTrappersAlpha1Character* player = Cast<AMasterTrappersAlpha1Character>(GetOwner());
+    
     if (player)
     {
         PlayEffects();
         Show(false);
         if(player->GetCurrentGrenadeNum()<player->GetMaxGrenadeNum())
-        player->AddToInventory(this);
-        player->AddGrenadeNum();
+        player->Server_AddToInventory(this);
+        player->Server_AddGrenadeNum();
+        
     }
 
 }
+
+//void AGrenadePickup::Server_OnInteract_Implementation()
+//{
+//    if (Role == ROLE_Authority)
+//    {
+//        OnInteract();
+//    }
+//}
+//
+//bool AGrenadePickup::Server_OnInteract_Validate()
+//{
+//    return true;
+//}
 
 void AGrenadePickup::NotifyActorBeginOverlap(AActor * OtherActor)
 {
@@ -33,6 +53,7 @@ void AGrenadePickup::NotifyActorBeginOverlap(AActor * OtherActor)
 
 
     AMasterTrappersAlpha1Character* character = Cast<AMasterTrappersAlpha1Character>(OtherActor);
+    this->SetOwner(character);
     if (OtherActor == character)
     {
 

@@ -13,6 +13,7 @@ ABaseTactical::ABaseTactical()
     StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("Static Mesh Component");
     RootComponent = StaticMeshComponent;
     SetReplicates(true);
+    SetReplicateMovement(true);
     Tags.Add("Tactical");
 }
 

@@ -46,6 +46,9 @@ AFlashBangTactical::AFlashBangTactical()
     PitchVal = 0.f;
     YawVal = 5.f;
     RollVal = 0.f;
+
+    SetReplicates(true);
+    SetReplicateMovement(true);
 }
 
 void AFlashBangTactical::BeginPlay()

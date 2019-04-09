@@ -13,6 +13,7 @@
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "MasterTrappersAlpha1Character.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABasePickup::ABasePickup()
@@ -41,6 +42,9 @@ ABasePickup::ABasePickup()
     YawValue = 1.f;
     RollValue = 1.f;
 
+
+    SetReplicates(true);
+    SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
@@ -156,4 +160,17 @@ void ABasePickup::Rotator(float DeltaTime)
 void ABasePickup::switchTexture()
 {
     Image = BlankImage;
+}
+
+
+//Replicates UPROPERTIES
+void ABasePickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(ABasePickup, Name);
+    DOREPLIFETIME(ABasePickup, Image);
+    DOREPLIFETIME(ABasePickup, BlankImage);
+    
+
 }

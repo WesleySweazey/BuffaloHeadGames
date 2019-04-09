@@ -75,11 +75,26 @@ public:
         void PostBeginPlay();
 
     // grenade setups
-    int CurrentGrenadeNum; // current grenade number
+  
+    UPROPERTY(EditAnywhere,Replicated)
+       int CurrentGrenadeNum; // current grenade number
+
+    UPROPERTY(EditAnywhere,Replicated)
     int MaxGrenadeNum;// max grenade number
-    void AddGrenadeNum() { CurrentGrenadeNum += 5; }//every pickup add 2 grenade
-    int GetCurrentGrenadeNum() { return CurrentGrenadeNum; }
-    int GetMaxGrenadeNum() { return MaxGrenadeNum; }
+
+    //add grenade
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddGrenadeNum();
+
+    void AddGrenadeNum();//every pickup add 2 grenade
+
+    
+
+    int GetCurrentGrenadeNum();
+
+
+
+    int GetMaxGrenadeNum();
 
     // healthPickup setups
     int CurrentHealthPickupNum; // current healthPickup number
@@ -97,15 +112,20 @@ public:
 
     FTimerHandle PrintInventoryHandle;
 
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_AddToInventory(class ABasePickup* actor);
+
     /** Add item to inventory*/
     void AddToInventory(class ABasePickup* actor);
 
     /** Update inventory*/
-    UFUNCTION(BlueprintCallable)
-        void UpdateInventory();
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_UpdateInventory();
+
+    void UpdateInventory();
 
     //BlueprintAssignable make it can be binded in the blueprint
-    UPROPERTY(BlueprintAssignable, Category = "Pickup")
+    UPROPERTY(BlueprintAssignable, Category = "Pickup", Replicated)
         FUpdateInventoryDelegate OnUpdateInventory;
 
     //Tacticals

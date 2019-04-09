@@ -49,6 +49,9 @@ AGrenadeTactical::AGrenadeTactical()
     PitchVal = 5.f;
     YawVal = 5.f;
     RollVal = 5.f;
+
+    SetReplicates(true);
+    SetReplicateMovement(true);
 }
 
 

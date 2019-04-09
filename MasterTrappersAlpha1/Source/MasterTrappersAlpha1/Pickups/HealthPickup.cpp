@@ -24,8 +24,8 @@ void AHealthPickup::OnInteract()
         PlayEffects();
         Show(false);
         if (player->GetCurrentHealthPickupNum()<player->GetMaxHealthPickupNum())
-            player->AddToInventory(this);
-        player->AddHealthPickupNum();
+            player->Server_AddToInventory(this);
+       // player->AddHealthPickupNum();
     }
 
 }
