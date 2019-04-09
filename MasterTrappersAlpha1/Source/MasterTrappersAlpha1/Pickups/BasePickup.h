@@ -51,6 +51,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
         class UTexture2D* Image;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
+        class UTexture2D* BlankImage;
+
     UPROPERTY(EditAnywhere, Category = Movement)
         float PitchValue;
 
@@ -60,7 +63,7 @@ public:
     UPROPERTY(EditAnywhere, Category = Movement)
         float RollValue;
 
-    
+    void switchTexture();
 
     virtual void Rotator(float DeltaTime);
 

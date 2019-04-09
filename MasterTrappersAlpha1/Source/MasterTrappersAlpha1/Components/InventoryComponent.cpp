@@ -57,5 +57,7 @@ void UInventoryComponent::UpdateTacticalsInventory()
 void UInventoryComponent::RemoveFromTacticalInventory()
 {
     //ABasePickup*& LastActor = _inventory_tacticals.Last();
+    _inventory_tacticals.Last()->switchTexture();
     _inventory_tacticals.Pop();
+
 }

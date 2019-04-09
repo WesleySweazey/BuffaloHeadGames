@@ -33,6 +33,7 @@ public:
     void AddToTacticalsInventory(class ABasePickup* actor);
 	
 
+
     /** Update inventory*/
     UFUNCTION(BlueprintCallable)
         void UpdateTacticalsInventory();

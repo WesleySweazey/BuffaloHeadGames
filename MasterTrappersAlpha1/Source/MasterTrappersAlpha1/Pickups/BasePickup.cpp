@@ -152,3 +152,8 @@ void ABasePickup::Rotator(float DeltaTime)
     AddActorLocalRotation(QuatRotation, false, 0, ETeleportType::None);
 }
 
+
+void ABasePickup::switchTexture()
+{
+    Image = BlankImage;
+}

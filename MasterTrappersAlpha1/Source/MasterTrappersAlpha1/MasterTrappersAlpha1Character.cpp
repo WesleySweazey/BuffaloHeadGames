@@ -775,11 +775,13 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     if (CurrentGrenadeNum == 0)
                     {
                         InventoryComponent->RemoveFromTacticalInventory();
+
                     }
                     else if (CurrentGrenadeNum == 5)
                     {
                         InventoryComponent->RemoveFromTacticalInventory();
                     }
+                    OnUpdateInventory.Broadcast(InventoryComponent->_inventory_tacticals);
                     SpawnedActor->SetMaterial(CharacterMaterial);
                 }
                 else if (currentTactical == 1)
