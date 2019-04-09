@@ -39,6 +39,7 @@
 #include "MasterTrappersAlpha1/MasterTrappersAlpha1GameMode.h"
 #include "Runtime/Core/Public/Math/UnrealMathUtility.h"
 #include "Runtime/Engine/Classes/GameFramework/Actor.h"
+#include "Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -118,6 +119,10 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     MaxGrenadeNum = 10;
     CurrentGrenadeNum = 0;
 
+    //initialize health pickup
+    MaxHealthPickupNum = 10;
+    CurrentHealthPickupNum = 0;
+
     SetReplicates(true);
     SetReplicateMovement(true);
 
@@ -145,6 +150,7 @@ void AMasterTrappersAlpha1Character::AddToInventory(ABasePickup * actor)
 void AMasterTrappersAlpha1Character::UpdateInventory()
 {
     InventoryComponent->UpdateTacticalsInventory();
+    OnUpdateInventory.Broadcast(InventoryComponent->_inventory_tacticals);
 }
 
 void AMasterTrappersAlpha1Character::SwitchTacticalUp()
@@ -393,6 +399,30 @@ void AMasterTrappersAlpha1Character::SwitchTrapDown()
     }
 }
 
+void AMasterTrappersAlpha1Character::PostBeginPlay()
+{
+    ////TODO Week 7: Assign the AI character a team of -1
+    //if (ActorHasTag("AICharacter"))
+    //{
+    //    playerTeam = -1;
+    //    return;
+    //}
+
+    ////TODO Week 7: Assign Team Colors
+    ////IF Role is Authority
+    //if (Role == ROLE_Authority)
+    //    //CALL Multicast_AssignTeamsColor()
+    //    Multicast_AssignTeamsColor();
+    ////ENDIF
+
+
+    //make a material Instance of this master material. Do NOT do this in the constructor, only after post init.
+    UMaterialInstanceDynamic* RV_MatInst = UMaterialInstanceDynamic::Create(MasterMaterialRef, this);
+    //After you make your custom T2D, assign it as a texture parameter to your material
+    //RV_MatInst->SetTextureParameterValue(FName("T2DParam"), YourCustomT2DRef);
+    //ref copy: Texture2D'/Game/Inventory/hp.hp'
+}
+
 void AMasterTrappersAlpha1Character::StartSlip()
 {
     UWorld* const World = GetWorld();
@@ -552,10 +582,14 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
         CurrentGrenadeNum = MaxGrenadeNum;
     }
 
-   
+    // clmap max health pickup nums
+    if (CurrentHealthPickupNum >= MaxHealthPickupNum)
+    {
+        CurrentHealthPickupNum = MaxHealthPickupNum;
+    }
 
     //displaying inventory
-    if (CurrentGrenadeNum > 0)
+    if (CurrentGrenadeNum > 0 || CurrentHealthPickupNum>0)
     {
         UpdateInventory();
     }

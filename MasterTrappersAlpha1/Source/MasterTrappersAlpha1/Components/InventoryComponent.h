@@ -13,7 +13,7 @@ class MASTERTRAPPERSALPHA1_API UInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
         //Inventory
-private:
+public:
     /** Inventory of Pick up Actors */
     TArray<class ABasePickup*> _inventory_tacticals;
 

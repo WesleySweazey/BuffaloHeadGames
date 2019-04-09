@@ -51,7 +51,7 @@ void UInventoryComponent::UpdateTacticalsInventory()
     }
 
     GEngine->AddOnScreenDebugMessage(1, 3, FColor::White, *sInventory);
-    Cast<AMasterTrappersAlpha1Character>(GetOwner()->GetRootComponent()->GetAttachParent()->GetOwner())->OnUpdateInventory.Broadcast(_inventory_tacticals);
+    //Cast<AMasterTrappersAlpha1Character>(GetOwner()->GetRootComponent()->GetAttachParent()->GetOwner())->OnUpdateInventory.Broadcast(_inventory_tacticals);
 }
 
 void UInventoryComponent::RemoveFromTacticalInventory()

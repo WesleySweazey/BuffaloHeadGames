@@ -14,7 +14,8 @@ class MASTERTRAPPERSALPHA1_API AGrenadePickup : public ABasePickup
 {
 	GENERATED_BODY()
 	
-	
+public:
+
     UFUNCTION()
         virtual void NotifyActorBeginOverlap(class AActor* OtherActor) override;
 	

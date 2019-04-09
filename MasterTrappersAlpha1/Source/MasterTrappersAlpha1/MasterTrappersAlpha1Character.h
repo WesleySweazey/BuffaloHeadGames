@@ -62,12 +62,31 @@ public:
     class AMasterTrappersGameStateBase* GetLocalGameState();
     class AMasterTrappersAlpha1GameMode* GetLocalGameMode();
 
+    UPROPERTY(EditAnywhere, Category = "Pickup")
+        class UMaterialInterface * MasterMaterialRef;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
+        class UTexture2D* BlankImage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
+        class UTexture2D* GrenadeImage;
+
+    UFUNCTION(BlueprintCallable, Category = FPSWizard)
+        void PostBeginPlay();
+
     // grenade setups
     int CurrentGrenadeNum; // current grenade number
     int MaxGrenadeNum;// max grenade number
     void AddGrenadeNum() { CurrentGrenadeNum += 5; }//every pickup add 2 grenade
     int GetCurrentGrenadeNum() { return CurrentGrenadeNum; }
     int GetMaxGrenadeNum() { return MaxGrenadeNum; }
+
+    // healthPickup setups
+    int CurrentHealthPickupNum; // current healthPickup number
+    int MaxHealthPickupNum;// max healthPickup number
+    void AddHealthPickupNum() { CurrentHealthPickupNum += 5; }//every pickup add 2 healthPickup
+    int GetCurrentHealthPickupNum() { return CurrentHealthPickupNum; }
+    int GetMaxHealthPickupNum() { return MaxHealthPickupNum; }
     // Inventory component
     UPROPERTY(EditAnywhere, Category = "InventoryComponent")
         class UInventoryComponent* InventoryComponent;
