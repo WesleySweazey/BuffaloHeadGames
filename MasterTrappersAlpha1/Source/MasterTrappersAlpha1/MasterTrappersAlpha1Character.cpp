@@ -659,7 +659,7 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     {
         if (CurrentSpeed <= 0.)
         {
-            HealthComponent->UpdateHealth(-5.5f);
+            HealthComponent->UpdateHealth(-0.5f);
         }
     }
     else

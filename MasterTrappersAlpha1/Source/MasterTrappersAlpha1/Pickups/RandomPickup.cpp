@@ -118,7 +118,7 @@ void ARandomPickup::NotifyActorBeginOverlap(AActor * OtherActor)
     //11 - trip wire
     //12 - whoopie cushion
     int random = FMath::RandRange(2, 12);
-    random = 5;
+    //random = 5;
     switch (random)
     {
     case(1):
