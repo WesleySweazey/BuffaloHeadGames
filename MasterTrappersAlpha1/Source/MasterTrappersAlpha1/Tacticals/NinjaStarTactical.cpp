@@ -47,9 +47,9 @@ void ANinjaStarTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "ANinjaStarTactical::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());
+                    + OtherActor->GetName());*/
                 pawn->Multicast_Die();
                 this->Destroy();
             }

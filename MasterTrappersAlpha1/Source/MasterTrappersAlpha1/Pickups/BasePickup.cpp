@@ -133,7 +133,6 @@ void ABasePickup::Show(bool visible)
 
     this->BoxCollider->SetCollisionEnabled(collision);
 
-
 }
 
 void ABasePickup::Rotator(float DeltaTime)

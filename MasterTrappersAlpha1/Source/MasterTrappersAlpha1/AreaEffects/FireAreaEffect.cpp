@@ -11,6 +11,7 @@
 AFireAreaEffect::AFireAreaEffect() : ABaseAreaEffect()
 {
     //Super::ABaseAreaEffect();
+    SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -49,9 +50,9 @@ void AFireAreaEffect::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
+                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
                     "AFireAreaEffect::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());
+                    + OtherActor->GetName());*/
                 pawn->GetHealth();
                 //Get Health Component
             }

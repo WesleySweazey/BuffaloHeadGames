@@ -83,7 +83,7 @@ void AFlashBangTactical::OnDetonate()
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>((*Actors).Actor->GetClass());
             if (pawn)
             {
-                pawn->StartStun();
+                pawn->Server_StartStun();
             }
         }
     }
@@ -108,10 +108,10 @@ void AFlashBangTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "AFlashBangTactical::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());
-                pawn->StartStun();
+                    + OtherActor->GetName());*/
+                pawn->Server_StartStun();
                 this->Destroy();
             }
         }

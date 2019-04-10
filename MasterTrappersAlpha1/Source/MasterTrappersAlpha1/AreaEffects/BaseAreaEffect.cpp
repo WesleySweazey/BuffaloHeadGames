@@ -61,10 +61,10 @@ void ABaseAreaEffect::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "ABaseAreaEffect::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());
-                pawn->StartStun();
+                    + OtherActor->GetName());*/
+                pawn->Server_StartStun();
                 //this->Destroy();
             }
         }

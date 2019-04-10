@@ -57,7 +57,7 @@ void ADroneTactical::StartOverlap(UPrimitiveComponent * OverlappedComponent, AAc
 {
     if (OtherActor->ActorHasTag("Player"))
     {
-        GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap Start");
+        //GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap Start");
         //plays sound when players enter radius
         DroneAudio->Play();
          
@@ -69,7 +69,7 @@ void ADroneTactical::EndOverlap(UPrimitiveComponent * OverlappedComp, AActor * O
 {
     if (OtherActor->ActorHasTag("Player"))
     {
-        GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap End");
+        //GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap End");
         //stops playing sound when players leave drone radius 
         DroneAudio->Stop();
 

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "HealthComponent.h"
-
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -45,9 +45,14 @@ float UHealthComponent::TakeDamage(float DamageAmount)
     return DamageAmount;
 }
 
-float UHealthComponent::GetHealth()
+float UHealthComponent::GetPercentageHealth()
 {
     return HealthPercentage;
+}
+
+float UHealthComponent::GetHealth()
+{
+    return Health;
 }
 
 void UHealthComponent::UpdateHealth(float HealthChange)
@@ -57,8 +62,20 @@ void UHealthComponent::UpdateHealth(float HealthChange)
     HealthPercentage = Health / FullHealth;
 }
 
-void UHealthComponent::ResetHealth()
+bool UHealthComponent::Server_ResetHealth_Validate()
+{
+    return true;
+}
+
+void UHealthComponent::Server_ResetHealth_Implementation()
 {
     Health = FullHealth;
 }
 
+//Replicates UPROPERTIES
+void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(UHealthComponent, Health);
+}

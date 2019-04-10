@@ -76,7 +76,7 @@ void UInventoryComponent::UpdateTacticalsInventory()
         sInventory.Append(" | ");
     }
 
-    GEngine->AddOnScreenDebugMessage(1, 3, FColor::White, *sInventory);
+    //GEngine->AddOnScreenDebugMessage(1, 3, FColor::White, *sInventory);
     //Cast<AMasterTrappersAlpha1Character>(GetOwner()->GetRootComponent()->GetAttachParent()->GetOwner())->OnUpdateInventory.Broadcast(_inventory_tacticals);
 }
 
@@ -101,12 +101,12 @@ void UInventoryComponent::RemoveFromTacticalInventory()
 
 
 //Replicates UPROPERTIES
-void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-    DOREPLIFETIME(UInventoryComponent, _inventory_tacticals);
-
-
-
-}
+//void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+//{
+//    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//
+//    DOREPLIFETIME(UInventoryComponent, _inventory_tacticals);
+//
+//
+//
+//}

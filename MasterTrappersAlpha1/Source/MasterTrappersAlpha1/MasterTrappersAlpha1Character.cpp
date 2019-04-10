@@ -117,7 +117,18 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     
     //Initialize grenade number
     MaxGrenadeNum = 60;
-    CurrentGrenadeNum = 0;
+    GrenadeNum = 0;
+    BearTrapNum = 0;
+    //DroneTacticalNum = 0;
+    FlashBangNum = 0; 
+    MolotovNum = 0;
+    NinjaStarNum = 0;
+    ThrowingAxeNum = 0;
+    BananaPeelNum = 0;
+    C4TrapNum = 0;
+    TripWireTrapNum = 0;
+    WhoopieCushionTrapNum = 0;
+    BoostTrapNum = 0;
 
     //initialize health pickup
     MaxHealthPickupNum = 10;
@@ -180,7 +191,12 @@ bool AMasterTrappersAlpha1Character::Server_UpdateInventory_Validate()
     return true;
 }
 
-void AMasterTrappersAlpha1Character::SwitchTacticalUp()
+bool AMasterTrappersAlpha1Character::Server_SwitchTacticalUp_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_SwitchTacticalUp_Implementation()
 {
     //Switch the inventory of Tacticals to the next index 
     currentTactical++;
@@ -190,7 +206,13 @@ void AMasterTrappersAlpha1Character::SwitchTacticalUp()
     }
 }
 
-void AMasterTrappersAlpha1Character::SwitchTacticalDown()
+bool AMasterTrappersAlpha1Character::Server_SwitchTacticalDown_Validate()
+{
+    return true;
+}
+
+
+void AMasterTrappersAlpha1Character::Server_SwitchTacticalDown_Implementation()
 {
     //Switch the inventory of traps to the next index 
     currentTactical--;
@@ -213,7 +235,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
     switch (currentTrap)
     {
     case 0:
-        if (BearTrap != nullptr)
+        if (BearTrap != nullptr && BearTrapNum>0)
         {
             UWorld* const World = GetWorld();
             if (World)
@@ -233,6 +255,8 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
+                BearTrapNum--;
+
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Bear Trap Spawned"));
@@ -241,7 +265,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
         }
         break;
     case 1:
-        if (BoostTrap != nullptr)
+        if (BoostTrap != nullptr && BoostTrapNum>0)
         {
             UWorld* const World = GetWorld();
             if (World)
@@ -261,6 +285,8 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
+
+                BoostTrapNum--;
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Boost Pad Trap Spawned"));
@@ -269,7 +295,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
         }
         break;
     case 2:
-        if (C4Trap != nullptr)
+        if (C4Trap != nullptr && C4TrapNum>0)
         {
             UWorld* const World = GetWorld();
             if (World)
@@ -289,6 +315,8 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
+                C4TrapNum--;
+
                 // Add C4 Trap to TArray of C4 traps already placed
                 PlacedC4Traps.Add(SpawnedActor);
                 if (SpawnedActor)
@@ -299,7 +327,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
         }
         break;
     case 3:
-        if (TripWireTrap != nullptr)
+        if (TripWireTrap != nullptr && TripWireTrapNum>0)
         {
             UWorld* const World = GetWorld();
             if (World)
@@ -319,6 +347,8 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
+
+                TripWireTrapNum--;
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Trip Wire Trap Spawned"));
@@ -327,7 +357,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
         }
         break;
     case 4:
-        if (BananaPeelTrap != nullptr)
+        if (BananaPeelTrap != nullptr && BananaPeelNum>0)
         {
             UWorld* const World = GetWorld();
             if (World)
@@ -346,6 +376,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
+                BananaPeelNum--;
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Banana Peel Trap Spawned"));
@@ -354,7 +385,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
         }
         break;
     case 5:
-        if (WhoopieCushionTrap != nullptr)
+        if (WhoopieCushionTrap != nullptr && WhoopieCushionTrapNum>0)
         {
             UWorld* const World = GetWorld();
             if (World)
@@ -373,6 +404,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
+                WhoopieCushionTrapNum--;
                 if (SpawnedActor)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Whoopie Cushion Trap Spawned"));
@@ -406,7 +438,12 @@ void AMasterTrappersAlpha1Character::ActivateTrap_Implementation()
     }
 }
 
-void AMasterTrappersAlpha1Character::SwitchTrapUp()
+bool AMasterTrappersAlpha1Character::Server_SwitchTrapUp_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_SwitchTrapUp_Implementation()
 {
     //Switch the inventory of traps to the next index 
     currentTrap++;
@@ -416,7 +453,12 @@ void AMasterTrappersAlpha1Character::SwitchTrapUp()
     }
 }
 
-void AMasterTrappersAlpha1Character::SwitchTrapDown()
+bool AMasterTrappersAlpha1Character::Server_SwitchTrapDown_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_SwitchTrapDown_Implementation()
 {
     //Switch the inventory of traps to the next index 
     currentTrap--;
@@ -450,33 +492,53 @@ void AMasterTrappersAlpha1Character::PostBeginPlay()
     //ref copy: Texture2D'/Game/Inventory/hp.hp'
 }
 
-void AMasterTrappersAlpha1Character::StartSlip()
+bool AMasterTrappersAlpha1Character::Server_StartSlip_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_StartSlip_Implementation()
 {
     UWorld* const World = GetWorld();
-    World->GetTimerManager().SetTimer(BananaSlipTimerHandle, this, &AMasterTrappersAlpha1Character::EndSlip, BananaSlipTimerLength, false);
+    World->GetTimerManager().SetTimer(BananaSlipTimerHandle, this, &AMasterTrappersAlpha1Character::Server_EndSlip, BananaSlipTimerLength, false);
     APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
     ACharacter* character = Cast<ACharacter>(this);
     character->DisableInput(PlayerController);
-    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "Start Slip");
+    //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "Start Slip");
 }
 
-void AMasterTrappersAlpha1Character::EndSlip()
+bool AMasterTrappersAlpha1Character::Server_EndSlip_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_EndSlip_Implementation()
 {
     APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
     ACharacter* character = Cast<ACharacter>(this);
     character->EnableInput(PlayerController);
     
-    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,"End Slip");
+    //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,"End Slip");
 }
 
-void AMasterTrappersAlpha1Character::StartStun()
+bool AMasterTrappersAlpha1Character::Server_StartStun_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_StartStun_Implementation()
 {
     UWorld* const World = GetWorld();
-    World->GetTimerManager().SetTimer(StunTimerHandle, this, &AMasterTrappersAlpha1Character::EndStun, StunTimerLength, false);
+    World->GetTimerManager().SetTimer(StunTimerHandle, this, &AMasterTrappersAlpha1Character::Server_EndStun, StunTimerLength, false);
     FP_PostProcessComponent->bEnabled = true;
 }
 
-void AMasterTrappersAlpha1Character::EndStun()
+bool AMasterTrappersAlpha1Character::Server_EndStun_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_EndStun_Implementation()
 {
 
     FP_PostProcessComponent->bEnabled = false;
@@ -486,9 +548,9 @@ void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
 {
     if (Role == ROLE_Authority)
     {
-        HealthComponent->ResetHealth();
+        HealthComponent->Server_ResetHealth();
         SetActorLocation(GetRandomResponLocation());
-        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
+        //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
         //StartSlip();
 
     }
@@ -504,7 +566,7 @@ FVector AMasterTrappersAlpha1Character::GetRandomResponLocation()
 
 float AMasterTrappersAlpha1Character::GetHealth()
 {
-    return HealthComponent->GetHealth();
+    return HealthComponent->GetPercentageHealth();
 }
 
 FQuat AMasterTrappersAlpha1Character::GetTrapSpawnRotation()
@@ -597,20 +659,21 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     {
         if (CurrentSpeed <= 0.)
         {
-            HealthComponent->UpdateHealth(-0.5f);
+            HealthComponent->UpdateHealth(-5.5f);
         }
     }
     else
     {
         //Destroy();
         Multicast_Die();
+        //HealthComponent->ResetHealth();
     }
 
 
     // clmap max grenade nums
-    if (CurrentGrenadeNum >= MaxGrenadeNum)
+    if (GrenadeNum >= MaxGrenadeNum)
     {
-        CurrentGrenadeNum = MaxGrenadeNum;
+        GrenadeNum = MaxGrenadeNum;
     }
 
     // clmap max health pickup nums
@@ -619,8 +682,57 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
         CurrentHealthPickupNum = MaxHealthPickupNum;
     }
 
+    if (BearTrapNum < 0)
+    {
+        BearTrapNum = 0;
+    }
+
+    if (FlashBangNum < 0)
+    {
+        FlashBangNum = 0;
+    }
+
+    if (MolotovNum < 0)
+    {
+        MolotovNum = 0;
+    }
+    if (NinjaStarNum < 0)
+    {
+        NinjaStarNum = 0;
+    }
+
+    if (ThrowingAxeNum < 0)
+    {
+        ThrowingAxeNum = 0;
+    }
+
+    if (BananaPeelNum < 0)
+    {
+        BananaPeelNum = 0;
+    }
+
+    if (BoostTrapNum < 0)
+    {
+        BoostTrapNum = 0;
+    }
+
+    if (C4TrapNum < 0)
+    {
+        C4TrapNum = 0;
+    }
+
+    if (TripWireTrapNum < 0)
+    {
+        TripWireTrapNum = 0;
+    }
+
+    if (WhoopieCushionTrapNum < 0)
+    {
+        WhoopieCushionTrapNum = 0;
+    }
+
     //displaying inventory
-    if (CurrentGrenadeNum > 0 || CurrentHealthPickupNum>0)
+    if (GrenadeNum > 0 || CurrentHealthPickupNum>0)
     {
         Server_UpdateInventory();
     }
@@ -645,12 +757,12 @@ void AMasterTrappersAlpha1Character::SetupPlayerInputComponent(class UInputCompo
     PlayerInputComponent->BindAction("Shove", IE_Pressed, this, &AMasterTrappersAlpha1Character::Shove);
 
     //Bind Tactical Events
-    PlayerInputComponent->BindAction("SwitchTacticalUp", IE_Pressed, this, &AMasterTrappersAlpha1Character::SwitchTacticalUp);
-    PlayerInputComponent->BindAction("SwitchTacticalDown", IE_Pressed, this, &AMasterTrappersAlpha1Character::SwitchTacticalDown);
+    PlayerInputComponent->BindAction("SwitchTacticalUp", IE_Pressed, this, &AMasterTrappersAlpha1Character::Server_SwitchTacticalUp);
+    PlayerInputComponent->BindAction("SwitchTacticalDown", IE_Pressed, this, &AMasterTrappersAlpha1Character::Server_SwitchTacticalDown);
 
     //Bind Trap Events
-    PlayerInputComponent->BindAction("SwitchTrapUp", IE_Pressed, this, &AMasterTrappersAlpha1Character::SwitchTrapUp);
-    PlayerInputComponent->BindAction("SwitchTrapDown", IE_Pressed, this, &AMasterTrappersAlpha1Character::SwitchTrapDown);
+    PlayerInputComponent->BindAction("SwitchTrapUp", IE_Pressed, this, &AMasterTrappersAlpha1Character::Server_SwitchTrapUp);
+    PlayerInputComponent->BindAction("SwitchTrapDown", IE_Pressed, this, &AMasterTrappersAlpha1Character::Server_SwitchTrapDown);
     PlayerInputComponent->BindAction("PlaceTrap", IE_Pressed, this, &AMasterTrappersAlpha1Character::SpawnTrap);
     PlayerInputComponent->BindAction("ActivateTrap", IE_Pressed, this, &AMasterTrappersAlpha1Character::ActivateTrap);
 
@@ -757,7 +869,7 @@ void AMasterTrappersAlpha1Character::RotateTrap_Implementation(float Value)
                 TrapRotation.Yaw = 360.0f - TrapRotation.Yaw;
             }
             FString s = FString::SanitizeFloat(TrapRotation.Yaw);
-            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Rotation - " + s));
+            //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Rotation - " + s));
             //AddMovementInput(GetActorRightVector(), Value);
         }
     }
@@ -784,8 +896,6 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
 {
     if (Role == ROLE_Authority)
     {
-        if (GrenadeTactical != NULL && CurrentGrenadeNum > 0)
-        {
             UWorld* const World = GetWorld();
             if (World != NULL)
             {
@@ -799,43 +909,36 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                 ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
                 // spawn the projectile at the muzzle
-                if (currentTactical == 0)
-                {
-                    AGrenadeTactical* SpawnedActor = World->SpawnActor<AGrenadeTactical>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
-                    CurrentGrenadeNum--;
-                    if (CurrentGrenadeNum%5 == 0)
-                    {
-                        InventoryComponent->Server_RemoveFromTacticalInventory();
-
-                    }
-                    /*else if (CurrentGrenadeNum == 5)
-                    {
-                        InventoryComponent->RemoveFromTacticalInventory();
-                    }*/
-                    OnUpdateInventory.Broadcast(InventoryComponent->_inventory_tacticals);
-                    SpawnedActor->SetMaterial(CharacterMaterial);
-                }
-                else if (currentTactical == 1)
+             if (currentTactical == 0 && GrenadeNum>0)
+            {
+                 AGrenadeTactical* SpawnedActor = World->SpawnActor<AGrenadeTactical>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                SpawnedActor->SetMaterial(CharacterMaterial);
+                GrenadeNum--;
+            }
+                else if (currentTactical == 1 && FlashBangNum>0)
                 {
                     AFlashBangTactical* SpawnedActor = World->SpawnActor<AFlashBangTactical>(FlashBangTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                     SpawnedActor->SetMaterial(CharacterMaterial);
+                    FlashBangNum--;
                 }
-                else if (currentTactical == 2)
+                else if (currentTactical == 2 && MolotovNum>0)
                 {
                     AMolotovTactical* SpawnedActor = World->SpawnActor<AMolotovTactical>(MolotovTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                     SpawnedActor->SetMaterial(CharacterMaterial);
+                    MolotovNum--;
                 }
-                else if (currentTactical == 3)
+                else if (currentTactical == 3 && NinjaStarNum>0)
                 {
                     ANinjaStarTactical* SpawnedActor = World->SpawnActor<ANinjaStarTactical>(NinjaStarTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                     SpawnedActor->SetMaterial(CharacterMaterial);
+                    NinjaStarNum--;
                 }
-                else if (currentTactical == 4)
+                else if (currentTactical == 4 && ThrowingAxeNum>0)
                 {
                     AThrowingAxeTactical* SpawnedActor = World->SpawnActor<AThrowingAxeTactical>(ThrowingAxeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
                     SpawnedActor->SetMaterial(CharacterMaterial);
+                    ThrowingAxeNum--;
                 }
-            }
 
 
             // try and play the sound if specified
@@ -858,10 +961,10 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
 
         else
         {
-            if (CurrentGrenadeNum <= 0)
+            if (GrenadeNum <= 0)
             {
                 FString s = "Run out of grenade, take some grenade pickups";
-                GEngine->AddOnScreenDebugMessage(1, 3, FColor::Green, *s);
+                //GEngine->AddOnScreenDebugMessage(1, 3, FColor::Green, *s);
             }
 
         }
@@ -926,10 +1029,23 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
     DOREPLIFETIME(AMasterTrappersAlpha1Character, CharacterMaterial);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, Team);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, Score);
-    DOREPLIFETIME(AMasterTrappersAlpha1Character, CurrentGrenadeNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, GrenadeNum);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, MaxGrenadeNum);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, OnUpdateInventory);
-    
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, InventoryComponent);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, BearTrapNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, FlashBangNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, MolotovNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, NinjaStarNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, ThrowingAxeNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, BananaPeelNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, BoostTrapNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, C4TrapNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, TripWireTrapNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, WhoopieCushionTrapNum);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, currentTactical);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, currentTrap);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, HealthComponent);
 }
 
 
@@ -938,7 +1054,7 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
 //add grenadeNum everytime by 5 when hit a pickup
 void AMasterTrappersAlpha1Character::AddGrenadeNum()
 { 
-    CurrentGrenadeNum += 5; 
+    GrenadeNum += 5;
 
 }
 
@@ -955,14 +1071,216 @@ bool AMasterTrappersAlpha1Character::Server_AddGrenadeNum_Validate()
 }
 
 
+//add bear traps everytime by 3 when hit a pickup
+void AMasterTrappersAlpha1Character::AddBearTrapNum()
+{
+    BearTrapNum += 2;
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddBearTrapNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddBearTrapNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddBearTrapNum_Validate()
+{
+    return true;
+}
+
 
 
 int AMasterTrappersAlpha1Character::GetCurrentGrenadeNum()
 {
-    return CurrentGrenadeNum;
+    return GrenadeNum;
 }
 
 int AMasterTrappersAlpha1Character::GetMaxGrenadeNum()
 {
     return MaxGrenadeNum;
+}
+
+
+
+//add bear traps everytime by 3 when hit a pickup
+void AMasterTrappersAlpha1Character::AddFlashBangNum()
+{
+    FlashBangNum += 2;
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddFlashBangNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddFlashBangNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddFlashBangNum_Validate()
+{
+    return true;
+}
+
+
+
+
+//add molotov traps everytime by 3 when hit a pickup
+void AMasterTrappersAlpha1Character::AddMolotovNum()
+{
+    MolotovNum += 2;
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddMolotovNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddMolotovNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddMolotovNum_Validate()
+{
+    return true;
+}
+
+
+
+//add ninja star traps everytime by 3 when hit a pickup
+void AMasterTrappersAlpha1Character::AddNinjaStarNum()
+{
+    NinjaStarNum += 2;
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddNinjaStarNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddNinjaStarNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddNinjaStarNum_Validate()
+{
+    return true;
+}
+
+
+//add throwing axes traps everytime by 3 when hit a pickup
+void AMasterTrappersAlpha1Character::AddThrowingAxeNum()
+{
+    ThrowingAxeNum += 2;
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddThrowingAxeNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddThrowingAxeNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddThrowingAxeNum_Validate()
+{
+    return true;
+}
+
+
+//add BananaPeel traps everytime by 3 when hit a pickup
+void AMasterTrappersAlpha1Character::AddBananaPeelNum()
+{
+    BananaPeelNum += 2;
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddBananaPeelNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddBananaPeelNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddBananaPeelNum_Validate()
+{
+    return true;
+}
+
+
+//add BoostTrap traps everytime by 3 when hit a pickup
+void AMasterTrappersAlpha1Character::AddBoostTrapNum()
+{
+    BoostTrapNum += 2;
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddBoostTrapNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddBoostTrapNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddBoostTrapNum_Validate()
+{
+    return true;
+}
+
+
+//add C4Trap everytime by 3 when hit a pickup
+void AMasterTrappersAlpha1Character::AddC4TrapNum()
+{
+    C4TrapNum += 2;
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddC4TrapNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddC4TrapNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddC4TrapNum_Validate()
+{
+    return true;
+}
+
+
+//add throwing axes traps everytime by 3 when hit a pickup
+void AMasterTrappersAlpha1Character::AddTripWireTrapNum()
+{
+    TripWireTrapNum += 2;
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddTripWireTrapNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddTripWireTrapNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddTripWireTrapNum_Validate()
+{
+    return true;
+}
+
+//add WhoopieCushionTrap everytime by 3 when hit a pickup
+void AMasterTrappersAlpha1Character::AddWhoopieCushionTrapNum()
+{
+    WhoopieCushionTrapNum += 2;
+
+}
+
+
+void AMasterTrappersAlpha1Character::Server_AddWhoopieCushionTrapNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddWhoopieCushionTrapNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddWhoopieCushionTrapNum_Validate()
+{
+    return true;
 }

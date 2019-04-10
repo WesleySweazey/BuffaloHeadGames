@@ -15,7 +15,7 @@ class MASTERTRAPPERSALPHA1_API UInventoryComponent : public UActorComponent
         //Inventory
 public:
     /** Inventory of Pick up Actors */
-    UPROPERTY(Replicated)
+//    UPROPERTY(Replicated)
     TArray<class ABasePickup*> _inventory_tacticals;
 
 public:	
@@ -39,7 +39,6 @@ public:
     /** Update inventory*/
     UFUNCTION(BlueprintCallable)
         void UpdateTacticalsInventory();
-
 
     /** Update inventory*/
     UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)

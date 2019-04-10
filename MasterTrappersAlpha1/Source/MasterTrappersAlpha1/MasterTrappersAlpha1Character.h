@@ -77,10 +77,15 @@ public:
     // grenade setups
   
     UPROPERTY(EditAnywhere,Replicated)
-       int CurrentGrenadeNum; // current grenade number
+       int GrenadeNum; // current grenade number
 
     UPROPERTY(EditAnywhere,Replicated)
     int MaxGrenadeNum;// max grenade number
+
+    UFUNCTION(BlueprintCallable)
+        int GetGrenade() { return GrenadeNum; }
+
+    
 
     //add grenade
     UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
@@ -96,6 +101,119 @@ public:
 
     int GetMaxGrenadeNum();
 
+
+    //Bear trap setup
+    UPROPERTY(EditAnywhere, Replicated)
+        int BearTrapNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetBearTrap() { return BearTrapNum; }
+    //add trap
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddBearTrapNum();
+    void AddBearTrapNum();
+
+    //Bear trap setup
+    //UPROPERTY(EditAnywhere, Replicated)
+    //    int DroneTacticalNum; // current trap number
+    //UFUNCTION(BlueprintCallable)
+    //    int GetDroneTactical() { return DroneTacticalNum; }
+    ////add trap
+    //UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+    //    void Server_AddDroneTacticalNum();
+    //void AddDroneTacticalNum();
+
+
+
+    //flash bang  setup
+    UPROPERTY(EditAnywhere, Replicated)
+        int FlashBangNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetFlashBang() { return FlashBangNum; }
+    //add flashbang
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddFlashBangNum();
+    void AddFlashBangNum();
+
+    //Molotov  setup
+    UPROPERTY(EditAnywhere, Replicated)
+        int MolotovNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetMolotov() { return MolotovNum; }
+    //add flashbang
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddMolotovNum();
+    void AddMolotovNum();
+
+    //NinjaStar  setup
+    UPROPERTY(EditAnywhere, Replicated)
+        int NinjaStarNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetNinjaStar() { return NinjaStarNum; }
+    //add flashbang
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddNinjaStarNum();
+    void AddNinjaStarNum();
+
+    //ThrowingAxe  setup
+    UPROPERTY(EditAnywhere, Replicated)
+        int ThrowingAxeNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetThrowingAxe() { return ThrowingAxeNum; }
+    //add flashbang
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddThrowingAxeNum();
+    void AddThrowingAxeNum();
+
+    //BananaPeel  setup
+    UPROPERTY(EditAnywhere, Replicated)
+        int BananaPeelNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetBananaPeel() { return BananaPeelNum; }
+    //add flashbang
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddBananaPeelNum();
+    void AddBananaPeelNum();
+
+    //BoostTrap  setup
+    UPROPERTY(EditAnywhere, Replicated)
+        int BoostTrapNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetBoostTrap() { return BoostTrapNum; }
+    //add flashbang
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddBoostTrapNum();
+    void AddBoostTrapNum();
+
+    //C4Trap  setup
+    UPROPERTY(EditAnywhere, Replicated)
+        int C4TrapNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetC4Trap() { return C4TrapNum; }
+    //add flashbang
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddC4TrapNum();
+    void AddC4TrapNum();
+
+    //TripWireTrap  setup
+    UPROPERTY(EditAnywhere, Replicated)
+        int TripWireTrapNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetTripWireTrap() { return TripWireTrapNum; }
+    //add flashbang
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddTripWireTrapNum();
+    void AddTripWireTrapNum();
+
+    //WhoopieCushionTrap  setup
+    UPROPERTY(EditAnywhere, Replicated)
+        int WhoopieCushionTrapNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetWhoopieCushionTrap() { return WhoopieCushionTrapNum; }
+    //add flashbang
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddWhoopieCushionTrapNum();
+    void AddWhoopieCushionTrapNum();
+
     // healthPickup setups
     int CurrentHealthPickupNum; // current healthPickup number
     int MaxHealthPickupNum;// max healthPickup number
@@ -103,11 +221,11 @@ public:
     int GetCurrentHealthPickupNum() { return CurrentHealthPickupNum; }
     int GetMaxHealthPickupNum() { return MaxHealthPickupNum; }
     // Inventory component
-    UPROPERTY(EditAnywhere, Category = "InventoryComponent")
+    UPROPERTY(EditAnywhere, Category = "InventoryComponent", Replicated)
         class UInventoryComponent* InventoryComponent;
 
     //Health Comnponent
-    UPROPERTY(EditAnywhere, Category = "HealthComponent")
+    UPROPERTY(EditAnywhere, Category = "HealthComponent", Replicated)
         class UHealthComponent* HealthComponent;
 
     FTimerHandle PrintInventoryHandle;
@@ -133,7 +251,7 @@ public:
     /** The inventory's current tacticals index*/
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
-        Category = "Tacticals")
+        Category = "Tacticals", Replicated)
         int currentTactical;
 
     /** Total amount of tacticals there are */
@@ -173,16 +291,18 @@ public:
         TSubclassOf<class AThrowingAxeTactical> ThrowingAxeTactical;
 
     //Scrolls Through Tactical Inventory Up
-    void SwitchTacticalUp();
+    UFUNCTION(Server, Reliable, WithValidation)
+    void Server_SwitchTacticalUp();
     //Scrolls Through Tactical Inventory Down
-    void SwitchTacticalDown();
+    UFUNCTION(Server, Reliable, WithValidation)
+    void Server_SwitchTacticalDown();
 
     //Traps
 
     /** The inventory's current trap index*/
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
-        Category = "Traps")
+        Category = "Traps", Replicated)
         int currentTrap;
 
     /** Total amount of traps there are */
@@ -271,19 +391,25 @@ public:
         FVector Facing;
 
     //Scrolls Through Trap Inventory Up
-    void SwitchTrapUp();
+    UFUNCTION(Server, Reliable, WithValidation)
+    void Server_SwitchTrapUp();
     //Scrolls Through Trap Inventory Down
-    void SwitchTrapDown();
+    UFUNCTION(Server, Reliable, WithValidation)
+    void Server_SwitchTrapDown();
 
     //Scrolls Through Inventory Down
-    void StartSlip();
+    UFUNCTION(Server, Reliable, WithValidation)
+    void Server_StartSlip();
+    UFUNCTION(Server, Reliable, WithValidation)
     //Scrolls Through Inventory Down
-    void EndSlip();
+    void Server_EndSlip();
 
     //Scrolls Through Inventory Down
-    void StartStun();
+    UFUNCTION(Server, Reliable, WithValidation)
+    void Server_StartStun();
     //Scrolls Through Inventory Down
-    void EndStun();
+    UFUNCTION(Server, Reliable, WithValidation)
+    void Server_EndStun();
 
     //Multicast die
     UFUNCTION(NetMulticast, Reliable)

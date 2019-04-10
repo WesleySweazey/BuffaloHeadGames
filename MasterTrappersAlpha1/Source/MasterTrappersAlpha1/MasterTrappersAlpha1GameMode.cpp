@@ -34,7 +34,7 @@ void AMasterTrappersAlpha1GameMode::HandleNewPlayer(APlayerController* NewPlayer
     if (character)
     {
         //Draw a debug message saying character has logged in
-        GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, "Character Logged In");
+        //GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, "Character Logged In");
         //CALL AssignTeams() on the character
         //AFinal_GameStateBase* GameState = Cast<AFinal_GameStateBase>(GetWorld()->GetGameState());
         character->AssignTeams();

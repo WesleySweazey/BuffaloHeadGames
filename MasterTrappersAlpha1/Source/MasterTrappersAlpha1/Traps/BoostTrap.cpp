@@ -22,9 +22,9 @@ void ABoostTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActo
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "ABoostPadTrap::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());
+                    + OtherActor->GetName());*/
                 FVector b = -(this->GetActorRightVector());
                 pawn->LaunchCharacter(b*boostSpeed, false, false);
             }

@@ -23,7 +23,7 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
         float FullHealth;
     /** Float for current amount of health */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health", Replicated)
         float Health;
     /** Float for current health percent*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
@@ -36,10 +36,14 @@ public:
     //take damage
     float TakeDamage(float DamageAmount);
     //reset health on death 
-    void ResetHealth();
+    UFUNCTION(Server, Category = "Health", Reliable, WithValidation)
+    void Server_ResetHealth();
     /** Returns player's current health */
-    UFUNCTION(BlueprintPure, Category = "Health")
+    UFUNCTION(Category = "Health")
         float GetHealth();
+    UFUNCTION(BlueprintCallable, Category = "Health")
+        float GetPercentageHealth();
+
     /** Updates player's health */
     UFUNCTION(BlueprintCallable, Category = "Health")
         void UpdateHealth(float HealthChange);

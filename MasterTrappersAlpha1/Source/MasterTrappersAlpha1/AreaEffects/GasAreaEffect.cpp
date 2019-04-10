@@ -10,7 +10,7 @@
 
 AGasAreaEffect::AGasAreaEffect() : ABaseAreaEffect()
 {
-
+    SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -50,9 +50,9 @@ void AGasAreaEffect::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
+                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
                     "AGasAreaEffect::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());
+                    + OtherActor->GetName());*/
                 pawn->GetHealth();
                 //Get Health Component
             }
