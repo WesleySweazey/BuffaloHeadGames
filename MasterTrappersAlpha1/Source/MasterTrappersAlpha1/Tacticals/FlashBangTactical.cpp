@@ -89,7 +89,7 @@ void AFlashBangTactical::OnDetonate()
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>((*Actors).Actor->GetClass());
             if (pawn)
             {
-                pawn->Server_StartStun();
+                //pawn->Server_StartStun();
             }
         }
     }
@@ -112,12 +112,19 @@ void AFlashBangTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
         if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("AI"))
         {
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
-            if (pawn)
+            if (pawn != GetOwner() && pawn->Team != Team) //if the flash bang not hitting the player himself
             {
                 /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "AFlashBangTactical::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());*/
-                pawn->Server_StartStun();
+                //if (pawn->Role == ROLE_Authority)
+                {
+                    //pawn->Server_StartStun();
+                }
+                //else
+                {
+                    pawn->Client_StartStun();
+                }
                 this->Destroy();
             }
         }

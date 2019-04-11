@@ -417,6 +417,16 @@ public:
     UFUNCTION(Server, Reliable, WithValidation)
     void Server_EndStun();
 
+
+    //Scrolls Through Inventory Down
+    UFUNCTION(Client, Reliable, WithValidation)
+        void Client_StartStun();
+    //Scrolls Through Inventory Down
+    UFUNCTION(Client, Reliable, WithValidation)
+        void Client_EndStun();
+
+
+
     //Multicast die
     UFUNCTION(NetMulticast, Reliable)
     void Multicast_Die();
@@ -487,7 +497,7 @@ public:
 	FVector GunOffset;
 
 	/** Sound to play each time we fire */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay,Replicated)
 	class USoundBase* FireSound;
 
 	/** AnimMontage to play each time we fire */

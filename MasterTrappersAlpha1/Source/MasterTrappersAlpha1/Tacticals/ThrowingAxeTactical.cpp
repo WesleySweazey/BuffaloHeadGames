@@ -11,6 +11,7 @@
 #include "DestructibleActor.h"
 #include "MasterTrappersAlpha1Character.h"
 
+
 AThrowingAxeTactical::AThrowingAxeTactical() :ABaseTactical()
 {
     // Use a ProjectileMovementComponent to govern this projectile's movement
@@ -20,6 +21,11 @@ AThrowingAxeTactical::AThrowingAxeTactical() :ABaseTactical()
     ProjectileMovement->MaxSpeed = 3000.f;
     ProjectileMovement->bRotationFollowsVelocity = false;
     ProjectileMovement->bShouldBounce = true;
+
+    
+
+    GetStaticMeshComponent()->OnComponentHit.AddDynamic(this, &AThrowingAxeTactical::OnHit);
+   
 
     // Die after 3 seconds by default
     InitialLifeSpan = 3.0f;
@@ -83,6 +89,7 @@ void AThrowingAxeTactical::Tick(float DeltaTime)
 
     AddActorLocalRotation(QuatRotation, false, 0, ETeleportType::None);
 }
+
 
 
 

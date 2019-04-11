@@ -120,10 +120,10 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     GrenadeNum = 0;
     BearTrapNum = 0;
     //DroneTacticalNum = 0;
-    FlashBangNum = 0; 
+    FlashBangNum = 10; 
     MolotovNum = 0;
     NinjaStarNum = 0;
-    ThrowingAxeNum = 0;
+    ThrowingAxeNum = 10;
     BananaPeelNum = 0;
     C4TrapNum = 0;
     TripWireTrapNum = 0;
@@ -509,19 +509,28 @@ void AMasterTrappersAlpha1Character::Server_EndSlip_Implementation()
 
 bool AMasterTrappersAlpha1Character::Server_StartStun_Validate()
 {
-    return true;
+    if (Role == ROLE_Authority)
+        return true;
+    else
+        return false;
 }
 
 void AMasterTrappersAlpha1Character::Server_StartStun_Implementation()
 {
-    UWorld* const World = GetWorld();
-    World->GetTimerManager().SetTimer(StunTimerHandle, this, &AMasterTrappersAlpha1Character::Server_EndStun, StunTimerLength, false);
-    FP_PostProcessComponent->bEnabled = true;
+    //if (Role == ROLE_Authority)
+    {
+        UWorld* const World = GetWorld();
+        World->GetTimerManager().SetTimer(StunTimerHandle, this, &AMasterTrappersAlpha1Character::Server_EndStun, StunTimerLength, false);
+        FP_PostProcessComponent->bEnabled = true;
+
+    }
 }
 
 bool AMasterTrappersAlpha1Character::Server_EndStun_Validate()
 {
-    return true;
+  
+        return true;
+
 }
 
 void AMasterTrappersAlpha1Character::Server_EndStun_Implementation()
@@ -529,6 +538,40 @@ void AMasterTrappersAlpha1Character::Server_EndStun_Implementation()
 
     FP_PostProcessComponent->bEnabled = false;
 }
+
+
+
+
+bool AMasterTrappersAlpha1Character::Client_StartStun_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Client_StartStun_Implementation()
+{
+    //if (Role != ROLE_Authority)
+    {
+
+        UWorld* const World = GetWorld();
+        World->GetTimerManager().SetTimer(StunTimerHandle, this, &AMasterTrappersAlpha1Character::Client_EndStun, StunTimerLength, false);
+        FP_PostProcessComponent->bEnabled = true;
+    }
+}
+
+bool AMasterTrappersAlpha1Character::Client_EndStun_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Client_EndStun_Implementation()
+{
+
+    FP_PostProcessComponent->bEnabled = false;
+}
+
+
+
+
 
 void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
 {
@@ -888,6 +931,8 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                 // MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
                 const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
 
+                //if(FP_MuzzleLocation != nullptr)
+
                 //Set Spawn Collision Handling Override
                 FActorSpawnParameters ActorSpawnParams;
                 ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
@@ -900,6 +945,13 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                  {
                      SpawnedActor->SetMaterial(CharacterMaterial);
                      GrenadeNum--;
+                     // try and play the sound if specified
+                     if (FireSound != NULL)
+                     {
+                         UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+                     }
+                     SpawnedActor->Team = Team;
+                     SpawnedActor->SetOwner(this);
                  }
             }
                 else if (currentTactical == 1 && FlashBangNum>0)
@@ -909,6 +961,12 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
                         FlashBangNum--;
+                        SpawnedActor->Team = Team;
+                        SpawnedActor->SetOwner(this);
+                        if (FireSound != NULL)
+                        {
+                            UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+                        }
                     }
                 }
                 else if (currentTactical == 2 && MolotovNum>0)
@@ -918,6 +976,12 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
                         MolotovNum--;
+                        SpawnedActor->Team = Team;
+                        SpawnedActor->SetOwner(this);
+                        if (FireSound != NULL)
+                        {
+                            UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+                        }
                     }
                 }
                 else if (currentTactical == 3 && NinjaStarNum>0)
@@ -927,6 +991,12 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
                         NinjaStarNum--;
+                        SpawnedActor->Team = Team;
+                        SpawnedActor->SetOwner(this);
+                        if (FireSound != NULL)
+                        {
+                            UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+                        }
                     }
                 }
                 else if (currentTactical == 4 && ThrowingAxeNum>0)
@@ -936,15 +1006,17 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
                         ThrowingAxeNum--;
+                        SpawnedActor->Team = Team;
+                        SpawnedActor->SetOwner(this);
+                        if (FireSound != NULL)
+                        {
+                            UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+                        }
                     }
                 }
 
 
-            // try and play the sound if specified
-            if (FireSound != NULL)
-            {
-                UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-            }
+           
 
             // try and play a firing animation if specified
             if (FireAnimation != NULL)
@@ -1045,6 +1117,7 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
     DOREPLIFETIME(AMasterTrappersAlpha1Character, currentTrap);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, HealthComponent);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, m_Score);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, FireSound);
     
 }
 

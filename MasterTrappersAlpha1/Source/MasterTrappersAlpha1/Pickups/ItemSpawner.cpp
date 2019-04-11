@@ -67,7 +67,7 @@ void AItemSpawner::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AAc
                 UWorld* const World = GetWorld();
                 if (World)
                 {
-                    World->GetTimerManager().SetTimer(SpawnerWait, this, &AItemSpawner::SpawnItem, rand() % 10 + 20, false);
+                    World->GetTimerManager().SetTimer(SpawnerWait, this, &AItemSpawner::SpawnItem, 3/*rand() % 10 + 20*/, false);
                 }
             }
         }
