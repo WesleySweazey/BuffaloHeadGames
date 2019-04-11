@@ -10,6 +10,7 @@
 #include "MasterTrappersAlpha1Character.h"
 #include "AreaEffects/FireAreaEffect.h"
 #include "Engine/World.h"
+#include "AreaEffects/BaseAreaEffect.h"
 
 AMolotovTactical::AMolotovTactical()
 {
@@ -65,6 +66,7 @@ void AMolotovTactical::BeginPlay()
 
 void AMolotovTactical::OnDetonate()
 {
+    //Spawns Fire
     UWorld* const World = GetWorld();
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = this;
@@ -73,13 +75,9 @@ void AMolotovTactical::OnDetonate()
     FTransform SpawnTransform = GetActorTransform();
     FRotator SpawnRotation = GetActorRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
     SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-    //if (SpawnRotation.Pitch < 0.2f && SpawnRotation.Pitch > -0.2f)
-    //{
-    //    SpawnRotation += FRotator(180.0f, 0.0f, 0.0f);
-    //    //UE_LOG(LogTemp, Warning, TEXT("Can not spawn Banana Peel Trap on wall"));
-    //}
     AFireAreaEffect* SpawnedActor = World->SpawnActor<AFireAreaEffect>(FireAreaEffect, SpawnTransform, SpawnParams);
     SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+    SpawnedActor->SetTeam(Team);
     if (SpawnedActor)
     {
         UE_LOG(LogTemp, Warning, TEXT("Fire Area Effect Spawned"));
@@ -99,18 +97,6 @@ void AMolotovTactical::OnDetonate()
     FCollisionShape CollisionShape;
     CollisionShape.ShapeType = ECollisionShape::Sphere;
     CollisionShape.SetSphere(Radius);
-
-    /*if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
-    {
-        for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
-        {
-            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>((*Actors).Actor->GetClass());
-            if (pawn)
-            {
-                pawn->StartStun();
-            }
-        }
-    }*/
     Destroy();
 }
 
@@ -127,18 +113,6 @@ void AMolotovTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
     }
     if (OtherActor)
     {
-        if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("AI"))
-        {
-            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
-            if (pawn)
-            {
-               /* GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-                    "AFlashBangTactical::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());*/
-                pawn->Server_StartStun();
-                //this->Destroy();
-            }
-        }
         OnDetonate();
     }
 }
@@ -146,8 +120,6 @@ void AMolotovTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 void AMolotovTactical::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
-    //Radius += 100.0f;
 
     // smooth rotating every frame
     FRotator NewRotation = FRotator(PitchVal, YawVal, RollVal);

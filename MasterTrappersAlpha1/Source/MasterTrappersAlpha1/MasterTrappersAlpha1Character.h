@@ -46,8 +46,14 @@ private:
     TArray<class ABasePickup*> _inventory;
 
 public:
+    //Has players score
     UPROPERTY(BlueprintReadWrite, Category = "Team", Replicated)//, meta = (EditCondition = "AreTeamsEnabled", ClampMin = "0")
-        int Score;
+        int m_Score;
+    //Returns score for UI
+    UFUNCTION(BlueprintCallable)
+        int GetScore() { return m_Score; }
+    //Adds score when kill
+        void AddScore() { m_Score++; }
     /** Assigns players to teams */
     void AssignTeams();
     /** Player's material color */
@@ -418,6 +424,10 @@ public:
     /** Returns player's current health */
     UFUNCTION(BlueprintPure, Category = "Health")
         float GetHealth();
+
+    /** Returns player's current health */
+    UFUNCTION(Category = "Health")
+        UHealthComponent* GetComponentHealth() { return HealthComponent; }
 
     //Respawn Point
     FVector RespawnLocation;

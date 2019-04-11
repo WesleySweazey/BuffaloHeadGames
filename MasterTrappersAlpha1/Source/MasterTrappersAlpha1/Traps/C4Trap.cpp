@@ -81,10 +81,18 @@ void AC4Trap::Tick(float DeltaTime)
             {
                 if (IsOverlappingActor(collidedCharacters[i]))
                 {
-                    /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
-                        "AC4Trap Killed - "
-                        + collidedCharacters[i]->GetName());*/
-                    //collidedCharacters[i]->Destroy();
+                    TArray<AActor*> FoundActors;
+                    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
+
+                    for (int i = 0; i < FoundActors.Num(); i++)
+                    {
+                        AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
+                        if (temp->Team == Team)
+                        {
+                            temp->AddScore();
+                            break;
+                        }
+                    }
                     collidedCharacters[i]->Multicast_Die();
                 }
             }
@@ -96,14 +104,11 @@ void AC4Trap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor *
 {
     if (OtherActor)
     {
-        if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("AI"))
+        if (OtherActor->ActorHasTag("Player"))
         {
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-                    "AC4Trap::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());*/
                 collidedCharacters.Add(pawn);
             }
         }

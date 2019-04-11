@@ -17,7 +17,7 @@ void ABoostTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActo
 {
     if (OtherActor)
     {
-        if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("AI"))
+        if (OtherActor->ActorHasTag("Player"))
         {
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)

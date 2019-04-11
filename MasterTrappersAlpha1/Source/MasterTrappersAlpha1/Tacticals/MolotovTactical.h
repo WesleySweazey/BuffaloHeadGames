@@ -45,10 +45,11 @@ public:
 
     virtual void BeginPlay() override;
 
+    //On Detonate spawns fire
     UFUNCTION()
         void OnDetonate();
 
-    /** Grenade Blueprint */
+    /** Fire Area effect Blueprint */
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
         Category = "AreaEffect")

@@ -17,36 +17,35 @@ public:
 
     UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
         class USphereComponent* CollisionComp;
+    //Set team
+    void SetTeam(int currentTeam) { Team = currentTeam; }
 protected:
     // Sets default values for this actor's properties
-    
-
+    UPROPERTY(EditAnywhere, Category = "FX", Replicated)
     UParticleSystemComponent* ParticleZoneComponent;
 
-    /** Sphere collision component */
-    
-    
-    /** called when projectile hits something */
+    /** called hits something */
     UFUNCTION()
         void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
     
+    //Timer handle for lifetime
     FTimerHandle LifeTimeHandle;
-
 
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
     // Called every frame
     virtual void Tick(float DeltaTime) override;
-
-    /*UPROPERTY(VisibleAnywhere, Category = "MeshComponent",
-        meta = (AllowPrivateAccess))
-        class UStaticMeshComponent* StaticMeshComponent;*/
-    UPROPERTY(EditAnywhere, Category = "FX")
+    //Particle System
+    UPROPERTY(EditAnywhere, Category = "FX", Replicated)
         class UParticleSystem* Particles;
-    UPROPERTY(EditAnywhere, Category = "FX")
+    //Lifetime till dies
+    UPROPERTY(EditAnywhere, Category = "FX", Replicated)
         float LifeTime;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FX")
+    //Sound effect
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FX", Replicated)
         class USoundCue* ExplosionSound;
-    //UStaticMeshComponent* GetStaticMeshComponent();
+    //Team
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Team", Replicated)
+        int Team;
 };

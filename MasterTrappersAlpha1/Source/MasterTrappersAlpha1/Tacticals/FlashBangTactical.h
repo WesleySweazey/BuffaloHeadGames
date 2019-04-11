@@ -18,6 +18,10 @@ public:
     UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
         class USphereComponent* CollisionComp;
 
+    /** Explosion radius component*/
+    UPROPERTY(EditAnywhere, Category = Projectile)
+        class USphereComponent* ExplosionComp;
+
     /** Projectile movement component */
     UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
         class UProjectileMovementComponent* ProjectileMovement;

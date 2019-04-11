@@ -7,6 +7,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABaseAreaEffect::ABaseAreaEffect()
@@ -24,6 +25,7 @@ ABaseAreaEffect::ABaseAreaEffect()
     //CollisionComp->OnComponentHit.AddDynamic(this, &ABaseAreaEffect::OnHit);
     CollisionComp->SetupAttachment(RootComponent);
     Tags.Add("AreaEffect");
+    SetReplicates(true);
 }
 
 void ABaseAreaEffect::PlayEffects()
@@ -64,7 +66,7 @@ void ABaseAreaEffect::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
                 /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
                     "ABaseAreaEffect::OnOverlapBegin Overlapped with - "
                     + OtherActor->GetName());*/
-                pawn->Server_StartStun();
+                //pawn->Server_StartStun();
                 //this->Destroy();
             }
         }
@@ -75,4 +77,15 @@ void ABaseAreaEffect::Stop()
 {
     Destroy();
     ParticleZoneComponent->DestroyComponent();
+}
+
+void ABaseAreaEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(ABaseAreaEffect, Team);
+    DOREPLIFETIME(ABaseAreaEffect, Particles);
+    DOREPLIFETIME(ABaseAreaEffect, LifeTime);
+    DOREPLIFETIME(ABaseAreaEffect, ParticleZoneComponent);
+    DOREPLIFETIME(ABaseAreaEffect, ExplosionSound);
 }

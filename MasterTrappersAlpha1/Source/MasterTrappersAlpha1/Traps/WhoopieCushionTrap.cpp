@@ -11,6 +11,7 @@
 #include "DestructibleComponent.h"
 #include "AreaEffects/GasAreaEffect.h"
 #include "Engine/World.h"
+#include "AreaEffects/BaseAreaEffect.h"
 
 AWhoopieCushionTrap::AWhoopieCushionTrap() : ABaseTrap()
 {
@@ -46,6 +47,7 @@ void AWhoopieCushionTrap::Detonate()
     //}
     AGasAreaEffect* SpawnedActor = World->SpawnActor<AGasAreaEffect>(GasAreaEffect, SpawnTransform, SpawnParams);
     SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+    SpawnedActor->SetTeam(Team);
     if (SpawnedActor)
     {
         UE_LOG(LogTemp, Warning, TEXT("Fire Area Effect Spawned"));

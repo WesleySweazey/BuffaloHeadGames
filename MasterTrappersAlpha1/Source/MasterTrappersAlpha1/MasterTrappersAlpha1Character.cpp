@@ -246,10 +246,12 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FActorSpawnParameters SpawnParams;
                 SpawnParams.Owner = this;
                 SpawnParams.SpawnCollisionHandlingOverride =
-                    ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+                    ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 ABearTrap* SpawnedActor = World->SpawnActor<ABearTrap>(BearTrap, SpawnTransform, SpawnParams);
+                if (SpawnedActor)
+                {
                 //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
@@ -257,8 +259,6 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 SpawnedActor->SetTeam(Team);
                 BearTrapNum--;
 
-                if (SpawnedActor)
-                {
                     UE_LOG(LogTemp, Warning, TEXT("Bear Trap Spawned"));
                 }
             }
@@ -280,15 +280,15 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 ABoostTrap* SpawnedActor = World->SpawnActor<ABoostTrap>(BoostTrap, SpawnTransform, SpawnParams);
+                if (SpawnedActor)
+                {
                 //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
-
                 BoostTrapNum--;
-                if (SpawnedActor)
-                {
+                
                     UE_LOG(LogTemp, Warning, TEXT("Boost Pad Trap Spawned"));
                 }
             }
@@ -310,17 +310,17 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 AC4Trap* SpawnedActor = World->SpawnActor<AC4Trap>(C4Trap, SpawnTransform, SpawnParams);
+                if (SpawnedActor)
+                {
                 //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
                 C4TrapNum--;
-
                 // Add C4 Trap to TArray of C4 traps already placed
                 PlacedC4Traps.Add(SpawnedActor);
-                if (SpawnedActor)
-                {
+                
                     UE_LOG(LogTemp, Warning, TEXT("C4 Trap Spawned"));
                 }
             }
@@ -342,15 +342,15 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 ATripWireTrap* SpawnedActor = World->SpawnActor<ATripWireTrap>(TripWireTrap, SpawnTransform, SpawnParams);
+                if (SpawnedActor)
+                {
                 //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
-
                 TripWireTrapNum--;
-                if (SpawnedActor)
-                {
+                
                     UE_LOG(LogTemp, Warning, TEXT("Trip Wire Trap Spawned"));
                 }
             }
@@ -367,18 +367,19 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FActorSpawnParameters SpawnParams;
                 SpawnParams.Owner = this;
                 SpawnParams.SpawnCollisionHandlingOverride =
-                    ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+                    ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 ABananaPeelTrap* SpawnedActor = World->SpawnActor<ABananaPeelTrap>(BananaPeelTrap, SpawnTransform, SpawnParams);
+                if (SpawnedActor)
+                {
                 //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
                 BananaPeelNum--;
-                if (SpawnedActor)
-                {
+                
                     UE_LOG(LogTemp, Warning, TEXT("Banana Peel Trap Spawned"));
                 }
             }
@@ -399,14 +400,14 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 FTransform SpawnTransform = CursorToWorld->GetComponentTransform();
 
                 AWhoopieCushionTrap* SpawnedActor = World->SpawnActor<AWhoopieCushionTrap>(WhoopieCushionTrap, SpawnTransform, SpawnParams);
+                if(SpawnedActor)
+                {
                 //Set Rotation
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
                 WhoopieCushionTrapNum--;
-                if (SpawnedActor)
-                {
                     UE_LOG(LogTemp, Warning, TEXT("Whoopie Cushion Trap Spawned"));
                 }
             }
@@ -470,21 +471,6 @@ void AMasterTrappersAlpha1Character::Server_SwitchTrapDown_Implementation()
 
 void AMasterTrappersAlpha1Character::PostBeginPlay()
 {
-    ////TODO Week 7: Assign the AI character a team of -1
-    //if (ActorHasTag("AICharacter"))
-    //{
-    //    playerTeam = -1;
-    //    return;
-    //}
-
-    ////TODO Week 7: Assign Team Colors
-    ////IF Role is Authority
-    //if (Role == ROLE_Authority)
-    //    //CALL Multicast_AssignTeamsColor()
-    //    Multicast_AssignTeamsColor();
-    ////ENDIF
-
-
     //make a material Instance of this master material. Do NOT do this in the constructor, only after post init.
     UMaterialInstanceDynamic* RV_MatInst = UMaterialInstanceDynamic::Create(MasterMaterialRef, this);
     //After you make your custom T2D, assign it as a texture parameter to your material
@@ -790,9 +776,7 @@ bool AMasterTrappersAlpha1Character::Server_ChangeFacing_Validate(FVector Target
 
 void AMasterTrappersAlpha1Character::Server_ChangeFacing_Implementation(FVector TargetFacing)
 {
-    SetActorRotation(FVector(TargetFacing.X, TargetFacing.Y, 0.0f).Rotation());
-    Facing = FVector(TargetFacing.X, TargetFacing.Y, 0.0f);
-    //ChangeFacing(TargetFacing);
+    ChangeFacing(TargetFacing);
 }
 
 void AMasterTrappersAlpha1Character::MoveForward(float Value)
@@ -817,13 +801,13 @@ void AMasterTrappersAlpha1Character::MoveRight(float Value)
 
 void AMasterTrappersAlpha1Character::ChangeFacing(FVector TargetFacing)
 {
-    SetActorRotation(FVector(TargetFacing.X, TargetFacing.Y, 0.0f).Rotation());
-    Facing = FVector(TargetFacing.X, TargetFacing.Y, 0.0f);
+    SetActorRotation(TargetFacing.Rotation());
+    Facing = TargetFacing;
     //Server_ChangeFacing(Facing);
-    /*if (Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         Server_ChangeFacing(Facing);
-    }*/
+    }
 }
 
 bool AMasterTrappersAlpha1Character::Shove_Validate()
@@ -912,32 +896,47 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
              if (currentTactical == 0 && GrenadeNum>0)
             {
                  AGrenadeTactical* SpawnedActor = World->SpawnActor<AGrenadeTactical>(GrenadeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
-                SpawnedActor->SetMaterial(CharacterMaterial);
-                GrenadeNum--;
+                 if (SpawnedActor)
+                 {
+                     SpawnedActor->SetMaterial(CharacterMaterial);
+                     GrenadeNum--;
+                 }
             }
                 else if (currentTactical == 1 && FlashBangNum>0)
                 {
                     AFlashBangTactical* SpawnedActor = World->SpawnActor<AFlashBangTactical>(FlashBangTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
-                    SpawnedActor->SetMaterial(CharacterMaterial);
-                    FlashBangNum--;
+                    if (SpawnedActor)
+                    {
+                        SpawnedActor->SetMaterial(CharacterMaterial);
+                        FlashBangNum--;
+                    }
                 }
                 else if (currentTactical == 2 && MolotovNum>0)
                 {
                     AMolotovTactical* SpawnedActor = World->SpawnActor<AMolotovTactical>(MolotovTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
-                    SpawnedActor->SetMaterial(CharacterMaterial);
-                    MolotovNum--;
+                    if (SpawnedActor)
+                    {
+                        SpawnedActor->SetMaterial(CharacterMaterial);
+                        MolotovNum--;
+                    }
                 }
                 else if (currentTactical == 3 && NinjaStarNum>0)
                 {
                     ANinjaStarTactical* SpawnedActor = World->SpawnActor<ANinjaStarTactical>(NinjaStarTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
-                    SpawnedActor->SetMaterial(CharacterMaterial);
-                    NinjaStarNum--;
+                    if (SpawnedActor)
+                    {
+                        SpawnedActor->SetMaterial(CharacterMaterial);
+                        NinjaStarNum--;
+                    }
                 }
                 else if (currentTactical == 4 && ThrowingAxeNum>0)
                 {
                     AThrowingAxeTactical* SpawnedActor = World->SpawnActor<AThrowingAxeTactical>(ThrowingAxeTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
-                    SpawnedActor->SetMaterial(CharacterMaterial);
-                    ThrowingAxeNum--;
+                    if (SpawnedActor)
+                    {
+                        SpawnedActor->SetMaterial(CharacterMaterial);
+                        ThrowingAxeNum--;
+                    }
                 }
 
 
@@ -1028,7 +1027,6 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
     DOREPLIFETIME(AMasterTrappersAlpha1Character, Facing);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, CharacterMaterial);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, Team);
-    DOREPLIFETIME(AMasterTrappersAlpha1Character, Score);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, GrenadeNum);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, MaxGrenadeNum);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, OnUpdateInventory);
@@ -1046,6 +1044,8 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
     DOREPLIFETIME(AMasterTrappersAlpha1Character, currentTactical);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, currentTrap);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, HealthComponent);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, m_Score);
+    
 }
 
 

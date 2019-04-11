@@ -29,7 +29,7 @@ void ATripWireTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AA
 {
     if (OtherActor)
     {
-        if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("AI"))
+        if (OtherActor->ActorHasTag("Player"))
         {
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
@@ -49,6 +49,18 @@ void ATripWireTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AA
                 Destroy();
                 if (pawn->Team != Team)
                 {
+                    TArray<AActor*> FoundActors;
+                    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
+
+                    for (int i = 0; i < FoundActors.Num(); i++)
+                    {
+                        AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
+                        if (temp->Team == Team)
+                        {
+                            temp->AddScore();
+                            break;
+                        }
+                    }
                     pawn->Multicast_Die();
                 }
             }

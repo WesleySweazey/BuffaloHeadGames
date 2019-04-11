@@ -45,10 +45,25 @@ void AThrowingAxeTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-                    "AThrowingAxeTactical::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());*/
-                pawn->Multicast_Die();
+                //Check team
+                if (pawn->Team != Team)
+                {
+                    //Get all players in scene
+                    TArray<AActor*> FoundActors;
+                    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
+
+                    for (int i = 0; i < FoundActors.Num(); i++)
+                    {
+                        AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
+                        //If the trap team equal a players team add score
+                        if (temp->Team == Team)
+                        {
+                            temp->AddScore();
+                            break;
+                        }
+                    }
+                    pawn->Multicast_Die();
+                }
                 this->Destroy();
             }
         }

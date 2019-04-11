@@ -7,6 +7,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
+#include "Components/HealthComponent.h"
 
 AFireAreaEffect::AFireAreaEffect() : ABaseAreaEffect()
 {
@@ -50,11 +51,26 @@ void AFireAreaEffect::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-                    "AFireAreaEffect::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());*/
-                pawn->GetHealth();
                 //Get Health Component
+                pawn->GetComponentHealth()->TakeDamage(5.0f);
+                if (pawn->GetHealth() < 0.0f)
+                {
+                    //Get character Actors
+                    TArray<AActor*> FoundActors;
+                    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
+
+                    for (int i = 0; i < FoundActors.Num(); i++)
+                    {
+                        AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
+                        if (temp->Team == Team)
+                        {
+                            //Add to team
+                            temp->AddScore();
+                            break;
+                        }
+                    }
+                    pawn->Multicast_Die();
+                }
             }
         }
     }

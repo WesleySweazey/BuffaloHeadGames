@@ -24,6 +24,12 @@ AFlashBangTactical::AFlashBangTactical()
     // Set as root component
     RootComponent = CollisionComp;
 
+    ExplosionComp = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionComp"));
+    ExplosionComp->InitSphereRadius(100.0f);
+    ExplosionComp->BodyInstance.SetCollisionProfileName("Projectile");
+    ExplosionComp->OnComponentHit.AddDynamic(this, &AFlashBangTactical::OnHit);
+    ExplosionComp->SetupAttachment(RootComponent);
+
     StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     StaticMeshComponent->SetupAttachment(RootComponent);
 
@@ -122,7 +128,7 @@ void AFlashBangTactical::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    Radius += 100.0f;
+    //Radius += 100.0f;
 
     // smooth rotating every frame
     FRotator NewRotation = FRotator(PitchVal, YawVal, RollVal);

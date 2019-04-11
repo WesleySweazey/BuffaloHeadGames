@@ -28,7 +28,7 @@ AGrenadeTactical::AGrenadeTactical()
 
     ExplosionComp = CreateDefaultSubobject<USphereComponent>(TEXT("ExpComp"));
     ExplosionComp->InitSphereRadius(300.0f);
-    ExplosionComp->BodyInstance.SetCollisionProfileName("Projectile");
+    //ExplosionComp->BodyInstance.SetCollisionProfileName("Projectile");
     ExplosionComp->OnComponentBeginOverlap.AddDynamic(this, &AGrenadeTactical::OnOverlapBegin);
 
     StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -43,6 +43,7 @@ AGrenadeTactical::AGrenadeTactical()
     ProjectileMovement->bShouldBounce = true;
 
     // Die after 3 seconds by default
+    Lifetime = 5.0f;
     InitialLifeSpan = 5.2f;
 
     // Initialize the rotate value
@@ -65,24 +66,38 @@ void AGrenadeTactical::OnExplosion()
     {
         if (GetDistanceTo(collidedCharacters[i])<300.0f)
         {
-          /*  GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
-                "AGrenadeTactical Killed - "
-                + collidedCharacters[i]->GetName());*/
-            collidedCharacters[i]->Multicast_Die();
-            //collidedCharacters[i]->PawnClientRestart();
-            //collidedCharacters[i]->SetActorLocation()
+            //Check team
+                //Get all players in scene
+                TArray<AActor*> FoundActors;
+                UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
+
+                for (int i = 0; i < FoundActors.Num(); i++)
+                {
+                    AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
+                    //If the trap team equal a players team add score
+                    if (temp->Team == Team)
+                    {
+                        temp->AddScore();
+                        break;
+                    }
+                }
+                collidedCharacters[i]->Multicast_Die();
+                Destroy();
         }
     }
     UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
     Explosion->SetRelativeScale3D(FVector(4.f));
+
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 }
 
 void AGrenadeTactical::BeginPlay()
 {
     Super::BeginPlay();
-
-    FTimerHandle handle;
-    GetWorld()->GetTimerManager().SetTimer(handle, this, &AGrenadeTactical::OnDetonate, 5.f, false);  // don't want to loop the explotion, just do once every 5.0 second
+    UWorld* const World = GetWorld();
+    World->GetTimerManager().SetTimer(ExplodeHandle, this, &AGrenadeTactical::OnExplosion, Lifetime, false);
+    //FTimerHandle handle;
+    //GetWorld()->GetTimerManager().SetTimer(handle, this, &AGrenadeTactical::OnDetonate, 5.f, false);  // don't want to loop the explotion, just do once every 5.0 second
     //GetWorld()->GetTimerManager().SetTimer(Explosionhandle, this, &AGrenadeTactical::OnExplosion, 2.5f, false);
 }
 
@@ -127,30 +142,40 @@ void AGrenadeTactical::OnDetonate()
 void AGrenadeTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
     // Only add impulse and destroy projectile if we hit a physics
-    if ((OtherActor != nullptr)/* && (OtherActor != this) && (OtherComp != NULL)*/ /*&& OtherComp->IsSimulatingPhysics()*/)        // I don't care if there's physics happened
-    {
-        OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
-        Destroy();
-
-        //OnDetonate();
-        UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
-        Explosion->SetRelativeScale3D(FVector(4.f));
-    }
-    //if (OtherActor)
+    //if ((OtherActor != nullptr)/* && (OtherActor != this) && (OtherComp != NULL)*/ /*&& OtherComp->IsSimulatingPhysics()*/)        // I don't care if there's physics happened
     //{
-    //    if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("AI"))
-    //    {
-    //        AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
-    //        if (pawn)
-    //        {
-    //            /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-    //                "AGrenadeTactical::OnOverlapBegin Overlapped with - "
-    //                + OtherActor->GetName());*/
-    //            collidedCharacters.Add(pawn);
-    //        }
-    //    }
+    //    OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+
+    //    Destroy();
+
+    //    OnDetonate();
+    //    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    //    Explosion->SetRelativeScale3D(FVector(4.f));
     //}
+    if (OtherActor)
+    {
+        if (OtherActor->ActorHasTag("Player"))
+        {
+            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
+            if (pawn)
+            {
+                //Checks array of previous collisions
+                bool alreadyCollided = false;
+                for (int i = 0; i < collidedCharacters.Num(); i++)
+                {
+                    if (collidedCharacters[i] == pawn)
+                    {
+                        alreadyCollided = true;
+                    }
+                }
+                if (alreadyCollided == false)
+                {
+                    collidedCharacters.Add(pawn);
+                }
+            }
+        }
+        OnExplosion();
+    }
 }
 
 void AGrenadeTactical::Tick(float DeltaTime)
@@ -167,23 +192,29 @@ void AGrenadeTactical::Tick(float DeltaTime)
 
 void AGrenadeTactical::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-    //if (OtherActor)
-    //{
-    //    if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("AI"))
-    //    {
-    //        AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
-    //        if (pawn)
-    //        {
-    //            /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-    //                "AGrenadeTactical::OnOverlapBegin Overlapped with - "
-    //                + OtherActor->GetName());*/
-    //            if (collidedCharacters[0] != pawn)
-    //            {
-    //                collidedCharacters.Add(pawn);
-    //            }
-    //        }
-    //    }
-    //}
+    if (OtherActor)
+    {
+        if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("AI"))
+        {
+            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
+            if (pawn)
+            {
+                //Checks array of previous collisions
+                bool alreadyCollided = false;
+                for (int i = 0; i < collidedCharacters.Num(); i++)
+                {
+                    if (collidedCharacters[i] == pawn)
+                    {
+                        alreadyCollided = true;
+                    }
+                }
+                if (alreadyCollided == false)
+                {
+                    collidedCharacters.Add(pawn);
+                }
+            }
+        }
+    }
 }
 
 

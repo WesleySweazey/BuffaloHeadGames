@@ -12,25 +12,14 @@
 void ARandomPickup::OnInteract(int pickupIdx)
 {
     FString pickup = FString::Printf(TEXT("Picked up: %s"), *Name);
-    //GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, pickup);
-    //Destroy();
 
-    //TODO
-    // Hide item and add it to the inventory
-    // get player first
     AMasterTrappersAlpha1Character* player = Cast<AMasterTrappersAlpha1Character>(GetOwner());
-
-   
 
     if (player)
     {
         PlayEffects();
         Show(false);
-       
-
     }
-
-
     if (pickupIdx == 2)
     {
         player->Server_AddFlashBangNum();
@@ -94,15 +83,8 @@ void ARandomPickup::OnInteract(int pickupIdx)
 void ARandomPickup::NotifyActorBeginOverlap(AActor * OtherActor)
 {
     Super::NotifyActorBeginOverlap(OtherActor);
-
-
-
     AMasterTrappersAlpha1Character* character = Cast<AMasterTrappersAlpha1Character>(OtherActor);
     this->SetOwner(character);
-   /* if (OtherActor == character)
-    {
-        OnInteract();
-    }*/
 
     //1 - drone
     //2 - flash bang
@@ -117,8 +99,8 @@ void ARandomPickup::NotifyActorBeginOverlap(AActor * OtherActor)
     //10 - c4 trap
     //11 - trip wire
     //12 - whoopie cushion
-    int random = FMath::RandRange(2, 12);
-    //random = 5;
+    int random = FMath::RandRange(1, 12);
+
     switch (random)
     {
     case(1):
@@ -160,8 +142,6 @@ void ARandomPickup::NotifyActorBeginOverlap(AActor * OtherActor)
     default:
         break;
     }
-
-    
 }
 
 

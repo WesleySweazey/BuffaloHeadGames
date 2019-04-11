@@ -79,4 +79,10 @@ public:
 
     // Called every frame
     virtual void Tick(float DeltaTime) override;
+
+    //Timer handle before exploding
+    FTimerHandle ExplodeHandle;
+
+    //Lifetime
+    float Lifetime;
 };
