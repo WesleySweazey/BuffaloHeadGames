@@ -8,6 +8,10 @@
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Public/WorldCollision.h"
 #include "MasterTrappersAlpha1Character.h"
+#include "AreaEffects/SmokeAreaEffect.h"
+#include "Engine/World.h"
+#include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 
 AFlashBangTactical::AFlashBangTactical()
 {
@@ -62,19 +66,36 @@ AFlashBangTactical::~AFlashBangTactical()
     //m_Explosion->bAutoDestroy = true;
 }
 
+void AFlashBangTactical::StartSmoke()
+{
+        UWorld* const World = GetWorld();
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Owner = this;
+        SpawnParams.SpawnCollisionHandlingOverride =
+            ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        FTransform SpawnTransform = GetActorTransform();
+        FRotator SpawnRotation = GetActorRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
+        SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
+        ASmokeAreaEffect* SpawnedActor = World->SpawnActor<ASmokeAreaEffect>(SmokeEffect, SpawnTransform, SpawnParams);
+        SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+        SpawnedActor->SetTeam(Team);
+        if (SpawnedActor)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Smoke Area Effect Spawned"));
+        }
+}
+
 void AFlashBangTactical::BeginPlay()
 {
     Super::BeginPlay();
 
     FTimerHandle handle;
     GetWorld()->GetTimerManager().SetTimer(handle, this, &AFlashBangTactical::OnDetonate, 5.f, false);  // don't want to loop the explotion, just do once every 5.0 second
+    GetWorld()->GetTimerManager().SetTimer(smokeTimerHandle, this, &AFlashBangTactical::StartSmoke, 2.0f, false);                                        //Spawns Smoke
 }
 
 void AFlashBangTactical::OnDetonate()
 {
-    m_Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
-    m_Explosion->SetRelativeScale3D(FVector(4.f));
-
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 
     //TArray<FHitResult> HitActors;
@@ -122,6 +143,7 @@ void AFlashBangTactical::OnDetonate()
 
 void AFlashBangTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+    
     // Only add impulse and destroy projectile if we hit a physics
     //if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) /*&& OtherComp->IsSimulatingPhysics()*/)        // I don't care if there's physics happened
     //{

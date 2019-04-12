@@ -16,8 +16,6 @@ class MASTERTRAPPERSALPHA1_API AFlashBangTactical : public ABaseTactical
 public:
     ~AFlashBangTactical();
 
-    UParticleSystemComponent* m_Explosion;
-
     /** Sphere collision component */
     UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
         class USphereComponent* CollisionComp;
@@ -48,6 +46,16 @@ public:
     UPROPERTY(EditAnywhere, Category = "roll")
         float RollVal;
 
+    //Smoke begin
+    FTimerHandle smokeTimerHandle;
+    //Spawn smoke
+    void StartSmoke();
+
+    /** Smoke effect Blueprint */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "AreaEffect")
+        TSubclassOf<class ASmokeAreaEffect> SmokeEffect;
 public:
     AFlashBangTactical();
 

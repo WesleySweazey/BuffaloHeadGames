@@ -20,6 +20,10 @@ void ARandomPickup::OnInteract(int pickupIdx)
         PlayEffects();
         Show(false);
     }
+    if (pickupIdx == 1)
+    {
+        player->Server_AddDroneTacticalNum();
+    }
     if (pickupIdx == 2)
     {
         player->Server_AddFlashBangNum();
@@ -64,7 +68,6 @@ void ARandomPickup::OnInteract(int pickupIdx)
     {
         player->Server_AddWhoopieCushionTrapNum();
     }
-
 }
 
 //void ARandomPickup::Server_OnInteract_Implementation()

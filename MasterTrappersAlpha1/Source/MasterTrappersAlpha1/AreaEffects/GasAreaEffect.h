@@ -16,13 +16,9 @@ class MASTERTRAPPERSALPHA1_API AGasAreaEffect : public ABaseAreaEffect
 public:
     AGasAreaEffect();
 protected:
+    //Play effects
     virtual void PlayEffects() override;
-    virtual void Stop() override;
-
-    // Sets default values for this actor's properties
-    //AGasAreaEffect();
-        /** called when projectile hits something */
-
+    //On hit
         void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
         // Called when the game starts or when spawned
@@ -30,5 +26,7 @@ protected:
 
         // Called every frame
         virtual void Tick(float DeltaTime) override;
-	
+
+        //Check Collision
+        virtual void CheckCollision() override;
 };

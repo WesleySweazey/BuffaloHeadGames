@@ -8,6 +8,8 @@
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "Net/UnrealNetwork.h"
+#include "Engine/World.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 
 // Sets default values
 ABaseAreaEffect::ABaseAreaEffect()
@@ -21,6 +23,7 @@ ABaseAreaEffect::ABaseAreaEffect()
     
     CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
     CollisionComp->InitSphereRadius(5.0f);
+    CollisionComp->SetCollisionProfileName("OverlapAllDynamic");
     //CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
     //CollisionComp->OnComponentHit.AddDynamic(this, &ABaseAreaEffect::OnHit);
     CollisionComp->SetupAttachment(RootComponent);
@@ -40,8 +43,13 @@ void ABaseAreaEffect::BeginPlay()
 {
     Super::BeginPlay();
     UWorld* const World = GetWorld();
-    World->GetTimerManager().SetTimer(LifeTimeHandle, this, &ABaseAreaEffect::Stop, LifeTime, false);
+    World->GetTimerManager().SetTimer(LifeTimeHandle, this, &ABaseAreaEffect::Server_Stop, LifeTime, false);
     PlayEffects();
+}
+
+void ABaseAreaEffect::CheckCollision()
+{
+
 }
 
 // Called every frame
@@ -73,10 +81,18 @@ void ABaseAreaEffect::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
     }
 }
 
-void ABaseAreaEffect::Stop()
+bool ABaseAreaEffect::Server_Stop_Validate()
+{
+    return true;
+}
+
+void ABaseAreaEffect::Server_Stop_Implementation()
 {
     Destroy();
-    ParticleZoneComponent->DestroyComponent();
+    if (ParticleZoneComponent)
+    {
+        ParticleZoneComponent->DestroyComponent();
+    }
 }
 
 void ABaseAreaEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

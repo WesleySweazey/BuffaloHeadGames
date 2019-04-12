@@ -8,6 +8,9 @@
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "Components/HealthComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/World.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 
 AGasAreaEffect::AGasAreaEffect() : ABaseAreaEffect()
 {
@@ -17,9 +20,12 @@ AGasAreaEffect::AGasAreaEffect() : ABaseAreaEffect()
 // Called when the game starts or when spawned
 void AGasAreaEffect::BeginPlay()
 {
+    LifeTime = 11.0f;
     //Super::BeginPlay();
     UWorld* const World = GetWorld();
-    World->GetTimerManager().SetTimer(LifeTimeHandle, this, &AGasAreaEffect::Stop, LifeTime, false);
+    World->GetTimerManager().SetTimer(LifeTimeHandle, this, &ABaseAreaEffect::Server_Stop, LifeTime, false);
+    //Set update timer
+    World->GetTimerManager().SetTimer(damageTimeHandle, this, &AGasAreaEffect::CheckCollision, 1, true);
     //CollisionComp->OnComponentHit.AddDynamic(this, &AGasAreaEffect::OnHit);
     PlayEffects();
 }
@@ -28,7 +34,43 @@ void AGasAreaEffect::BeginPlay()
 void AGasAreaEffect::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+    
+}
+void AGasAreaEffect::CheckCollision()
+{
+    UWorld* const World = GetWorld();
+    if (World)
+    {
+        //Checks collision
+        TArray<AActor*> Actors;
+        CollisionComp->GetOverlappingActors(Actors, AMasterTrappersAlpha1Character::StaticClass());
+        for (int i = 0; i < Actors.Num(); i++)
+        {
+            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(Actors[i]);
+            if (pawn) //player
+            {
+                pawn->GetComponentHealth()->TakeDamage(10.0f);
+                if (pawn->GetHealth() < 0.0f)
+                {
+                    TArray<AActor*> FoundActors;
+                    UGameplayStatics::GetAllActorsOfClass(World, AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
 
+                    for (int i = 0; i < FoundActors.Num(); i++)
+                    {
+                        AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
+                        if (temp->Team == Team)
+                        {
+                            //Add to team
+                            temp->AddScore();
+                            break;
+                        }
+                    }
+                    pawn->Multicast_Die();
+                }
+            }
+        }
+        World->GetTimerManager().SetTimer(damageTimeHandle, this, &AGasAreaEffect::CheckCollision, 1, true);
+    }
 }
 void AGasAreaEffect::PlayEffects()
 {
@@ -76,8 +118,13 @@ void AGasAreaEffect::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
     }
 }
 
-void AGasAreaEffect::Stop()
-{
-    Destroy();
-    ParticleZoneComponent->DestroyComponent();
-}
+//bool AGasAreaEffect::Server_Stop_Validate()
+//{
+//    return true;
+//}
+//
+//void AGasAreaEffect::Server_Stop_Implementation()
+//{
+//    Destroy();
+//    ParticleZoneComponent->DestroyComponent();
+//}

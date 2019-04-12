@@ -12,6 +12,7 @@ class MASTERTRAPPERSALPHA1_API ABasePickup : public AActor
 	GENERATED_BODY()
 	
 private:
+    //For float math
     float RunningTime;
 
 public:

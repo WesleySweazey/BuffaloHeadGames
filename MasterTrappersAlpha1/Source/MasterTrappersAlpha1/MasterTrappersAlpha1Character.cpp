@@ -40,6 +40,8 @@
 #include "Runtime/Core/Public/Math/UnrealMathUtility.h"
 #include "Runtime/Engine/Classes/GameFramework/Actor.h"
 #include "Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h"
+#include "Tacticals/DroneTactical.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -97,7 +99,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     //Intializing UProperties
     ShoveStrength = 15005.0f;
     Speed = 3.0f;
-    totalTacticals = 4;
+    totalTacticals = 5;
     currentTactical = 0;
     totalTraps = 6;
     currentTrap = 0;
@@ -116,10 +118,9 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
     
     //Initialize grenade number
-    MaxGrenadeNum = 60;
     GrenadeNum = 0;
     BearTrapNum = 0;
-    //DroneTacticalNum = 0;
+    DroneTacticalNum = 0;
     FlashBangNum = 10; 
     MolotovNum = 0;
     NinjaStarNum = 0;
@@ -698,17 +699,15 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
         //HealthComponent->ResetHealth();
     }
 
-
-    // clmap max grenade nums
-    if (GrenadeNum >= MaxGrenadeNum)
-    {
-        GrenadeNum = MaxGrenadeNum;
-    }
-
     // clmap max health pickup nums
     if (CurrentHealthPickupNum >= MaxHealthPickupNum)
     {
         CurrentHealthPickupNum = MaxHealthPickupNum;
+    }
+
+    if (DroneTacticalNum < 0)
+    {
+        DroneTacticalNum = 0;
     }
 
     if (BearTrapNum < 0)
@@ -1014,7 +1013,21 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                         }
                     }
                 }
-
+                else if (currentTactical == 5 && DroneTacticalNum>0)
+                {
+                    ADroneTactical* SpawnedActor = World->SpawnActor<ADroneTactical>(DroneTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    if (SpawnedActor)
+                    {
+                        SpawnedActor->SetMaterial(CharacterMaterial);
+                        DroneTacticalNum--;
+                        SpawnedActor->Team = Team;
+                        SpawnedActor->SetOwner(this);
+                        if (FireSound != NULL)
+                        {
+                            UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+                        }
+                    }
+                }
 
            
 
@@ -1100,9 +1113,9 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
     DOREPLIFETIME(AMasterTrappersAlpha1Character, CharacterMaterial);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, Team);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, GrenadeNum);
-    DOREPLIFETIME(AMasterTrappersAlpha1Character, MaxGrenadeNum);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, OnUpdateInventory);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, InventoryComponent);
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, DroneTacticalNum);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, BearTrapNum);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, FlashBangNum);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, MolotovNum);
@@ -1122,7 +1135,23 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
 }
 
 
+//add droneNum everytime by 5 when hit a pickup
+void AMasterTrappersAlpha1Character::AddDroneTacticalNum()
+{
+    DroneTacticalNum += 5;
 
+}
+
+void AMasterTrappersAlpha1Character::Server_AddDroneTacticalNum_Implementation()
+{
+    if (Role == ROLE_Authority)
+        AddDroneTacticalNum();
+}
+
+bool AMasterTrappersAlpha1Character::Server_AddDroneTacticalNum_Validate()
+{
+    return true;
+}
 
 //add grenadeNum everytime by 5 when hit a pickup
 void AMasterTrappersAlpha1Character::AddGrenadeNum()
@@ -1130,7 +1159,6 @@ void AMasterTrappersAlpha1Character::AddGrenadeNum()
     GrenadeNum += 5;
 
 }
-
 
 void AMasterTrappersAlpha1Character::Server_AddGrenadeNum_Implementation()
 {
@@ -1163,20 +1191,6 @@ bool AMasterTrappersAlpha1Character::Server_AddBearTrapNum_Validate()
     return true;
 }
 
-
-
-int AMasterTrappersAlpha1Character::GetCurrentGrenadeNum()
-{
-    return GrenadeNum;
-}
-
-int AMasterTrappersAlpha1Character::GetMaxGrenadeNum()
-{
-    return MaxGrenadeNum;
-}
-
-
-
 //add bear traps everytime by 3 when hit a pickup
 void AMasterTrappersAlpha1Character::AddFlashBangNum()
 {
@@ -1195,9 +1209,6 @@ bool AMasterTrappersAlpha1Character::Server_AddFlashBangNum_Validate()
 {
     return true;
 }
-
-
-
 
 //add molotov traps everytime by 3 when hit a pickup
 void AMasterTrappersAlpha1Character::AddMolotovNum()

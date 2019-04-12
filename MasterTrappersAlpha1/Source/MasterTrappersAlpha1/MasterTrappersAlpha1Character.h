@@ -84,29 +84,12 @@ public:
   
     UPROPERTY(EditAnywhere,Replicated)
        int GrenadeNum; // current grenade number
-
-    UPROPERTY(EditAnywhere,Replicated)
-    int MaxGrenadeNum;// max grenade number
-
     UFUNCTION(BlueprintCallable)
         int GetGrenade() { return GrenadeNum; }
-
-    
-
     //add grenade
     UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
         void Server_AddGrenadeNum();
-
     void AddGrenadeNum();//every pickup add 2 grenade
-
-    
-
-    int GetCurrentGrenadeNum();
-
-
-
-    int GetMaxGrenadeNum();
-
 
     //Bear trap setup
     UPROPERTY(EditAnywhere, Replicated)
@@ -119,16 +102,14 @@ public:
     void AddBearTrapNum();
 
     //Bear trap setup
-    //UPROPERTY(EditAnywhere, Replicated)
-    //    int DroneTacticalNum; // current trap number
-    //UFUNCTION(BlueprintCallable)
-    //    int GetDroneTactical() { return DroneTacticalNum; }
-    ////add trap
-    //UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
-    //    void Server_AddDroneTacticalNum();
-    //void AddDroneTacticalNum();
-
-
+    UPROPERTY(EditAnywhere, Replicated)
+        int DroneTacticalNum; // current trap number
+    UFUNCTION(BlueprintCallable)
+        int GetDroneTactical() { return DroneTacticalNum; }
+    //add trap
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+        void Server_AddDroneTacticalNum();
+    void AddDroneTacticalNum();
 
     //flash bang  setup
     UPROPERTY(EditAnywhere, Replicated)
@@ -265,6 +246,12 @@ public:
         BlueprintReadOnly,
         Category = "Tacticals")
         int totalTacticals;
+
+    /** Drone Blueprint */
+    UPROPERTY(EditDefaultsOnly,
+        BlueprintReadOnly,
+        Category = "Tacticals")
+        TSubclassOf<class ADroneTactical> DroneTactical;
 
     /** Grenade Blueprint */
     UPROPERTY(EditDefaultsOnly,

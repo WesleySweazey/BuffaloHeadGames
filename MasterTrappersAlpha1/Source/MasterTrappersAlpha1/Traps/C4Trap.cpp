@@ -9,6 +9,8 @@
 #include "MasterTrappersAlpha1Character.h"
 #include "DestructibleActor.h"
 #include "DestructibleComponent.h"
+#include "Engine/World.h"
+#include "Net/UnrealNetwork.h"
 
 AC4Trap::AC4Trap() : ABaseTrap()
 {
@@ -32,37 +34,39 @@ void AC4Trap::Detonate()
     bDetonated = true;
     UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
     Explosion->SetRelativeScale3D(FVector(4.f));
+    Explosion->SetIsReplicated(true);
+    UWorld* const World = GetWorld();
+    if(World)
+    UGameplayStatics::PlaySoundAtLocation(World, ExplosionSound, GetActorLocation());
 
-    UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
+    //TArray<FHitResult> HitActors;
 
-    TArray<FHitResult> HitActors;
+    //FVector StartTrace = GetActorLocation();
+    //FVector EndTrace = StartTrace;
+    //EndTrace.Z += 360.0f;
 
-    FVector StartTrace = GetActorLocation();
-    FVector EndTrace = StartTrace;
-    EndTrace.Z += 360.0f;
+    //FCollisionShape CollisionShape;
+    //CollisionShape.ShapeType = ECollisionShape::Sphere;
+    //CollisionShape.SetSphere(Radius);
 
-    FCollisionShape CollisionShape;
-    CollisionShape.ShapeType = ECollisionShape::Sphere;
-    CollisionShape.SetSphere(Radius);
+    //if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
+    //{
+    //    for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
+    //    {
+    //        /*UStaticMeshComponent* SM = Cast<UStaticMeshComponent>((*Actors).Actor->GetRootComponent());
+    //        ADestructibleActor* DA = Cast<ADestructibleActor>((*Actors).GetActor());
 
-    if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
-    {
-        for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
-        {
-            /*UStaticMeshComponent* SM = Cast<UStaticMeshComponent>((*Actors).Actor->GetRootComponent());
-            ADestructibleActor* DA = Cast<ADestructibleActor>((*Actors).GetActor());
-
-            if (SM)
-            {
-                SM->AddRadialImpulse(GetActorLocation(), 1000.0f, 5000.0f, ERadialImpulseFalloff::RIF_Linear, true);
-            }
-            else if (DA)
-            {
-                DA->GetDestructibleComponent()->ApplyRadiusDamage(10.0f, Actors->ImpactPoint, 500.0f, 3000.0f, false);
-            }*/
-        }
-    }
-    DetonationLength = 0.3f;
+    //        if (SM)
+    //        {
+    //            SM->AddRadialImpulse(GetActorLocation(), 1000.0f, 5000.0f, ERadialImpulseFalloff::RIF_Linear, true);
+    //        }
+    //        else if (DA)
+    //        {
+    //            DA->GetDestructibleComponent()->ApplyRadiusDamage(10.0f, Actors->ImpactPoint, 500.0f, 3000.0f, false);
+    //        }*/
+    //    }
+    //}
+    //DetonationLength = 0.3f;
 }
 
 void AC4Trap::Tick(float DeltaTime)

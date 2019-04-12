@@ -8,6 +8,9 @@
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "Components/HealthComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/World.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 
 AFireAreaEffect::AFireAreaEffect() : ABaseAreaEffect()
 {
@@ -20,23 +23,64 @@ void AFireAreaEffect::BeginPlay()
 {
     //Super::BeginPlay();
     UWorld* const World = GetWorld();
-    World->GetTimerManager().SetTimer(LifeTimeHandle, this, &AFireAreaEffect::Stop, LifeTime, false);
+    //Set destory timer
+    World->GetTimerManager().SetTimer(LifeTimeHandle, this, &ABaseAreaEffect::Server_Stop, LifeTime, false);
+    //Set update timer
+    World->GetTimerManager().SetTimer(damageTimeHandle, this, &AFireAreaEffect::CheckCollision, 1, true);
     //->OnComponentHit.AddDynamic(this, &AFireAreaEffect::OnHit);
     PlayEffects();
 }
 
 void AFireAreaEffect::PlayEffects()
 {
-    ParticleZoneComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particles, GetActorTransform());
+    ParticleZoneComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particles, GetActorTransform(),true);
     ParticleZoneComponent->SetRelativeScale3D(FVector(4.f));
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
+}
+
+void AFireAreaEffect::CheckCollision()
+{
+    UWorld* const World = GetWorld();
+    if (World)
+    {
+        //Checks collision
+        TArray<AActor*> Actors;
+        CollisionComp->GetOverlappingActors(Actors, AMasterTrappersAlpha1Character::StaticClass());
+        for (int i = 0; i < Actors.Num(); i++)
+        {
+            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(Actors[i]);
+            if (pawn) //player
+            {
+                pawn->GetComponentHealth()->TakeDamage(15.0f);
+                if (pawn->GetHealth() < 0.0f)
+                {
+                    TArray<AActor*> FoundActors;
+                    UGameplayStatics::GetAllActorsOfClass(World, AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
+
+                    for (int i = 0; i < FoundActors.Num(); i++)
+                    {
+                        AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
+                        if (temp->Team == Team)
+                        {
+                            //Add to team
+                            temp->AddScore();
+                            break;
+                        }
+                    }
+                    pawn->Multicast_Die();
+                }
+                
+            }
+        }
+        World->GetTimerManager().SetTimer(damageTimeHandle, this, &AFireAreaEffect::CheckCollision, 1, true);
+    }
 }
 
 // Called every frame
 void AFireAreaEffect::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
+    
 }
 
 void AFireAreaEffect::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -76,8 +120,13 @@ void AFireAreaEffect::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
     }
 }
 
-void AFireAreaEffect::Stop()
-{
-    Destroy();
-    ParticleZoneComponent->DestroyComponent();
-}
+//bool AFireAreaEffect::Server_Stop_Validate()
+//{
+//    return true;
+//}
+//
+//void AFireAreaEffect::Server_Stop_Implementation()
+//{
+//    Destroy();
+//    ParticleZoneComponent->DestroyComponent();
+//}

@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "BaseAreaEffect.generated.h"
+
 
 UCLASS()
 class MASTERTRAPPERSALPHA1_API ABaseAreaEffect : public AActor
@@ -13,7 +15,8 @@ class MASTERTRAPPERSALPHA1_API ABaseAreaEffect : public AActor
 public:
     ABaseAreaEffect();
     virtual void PlayEffects();
-    virtual void Stop();
+    UFUNCTION(NetMulticast, Reliable, WithValidation)
+    virtual void Server_Stop();
 
     UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
         class USphereComponent* CollisionComp;
@@ -30,9 +33,14 @@ protected:
     
     //Timer handle for lifetime
     FTimerHandle LifeTimeHandle;
+    //Timer handle for damage
+    FTimerHandle damageTimeHandle;
 
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
+
+    //Check Collision
+    virtual void CheckCollision();
 
     // Called every frame
     virtual void Tick(float DeltaTime) override;

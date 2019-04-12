@@ -25,7 +25,6 @@ void AGrenadePickup::OnInteract()
     {
         PlayEffects();
         Show(false);
-        if(player->GetCurrentGrenadeNum()<player->GetMaxGrenadeNum())
         player->Server_AddToInventory(this);
         player->Server_AddGrenadeNum();
         

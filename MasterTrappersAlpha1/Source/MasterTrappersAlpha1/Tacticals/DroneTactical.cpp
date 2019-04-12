@@ -3,6 +3,7 @@
 #include "DroneTactical.h"
 #include "Components/SphereComponent.h"
 #include "Components/AudioComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
 #include "MasterTrappersAlpha1Character.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
@@ -11,7 +12,7 @@
 #include "Runtime/Engine/Public/WorldCollision.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Public/DrawDebugHelpers.h"
-
+#include "Engine/World.h"
 
 ADroneTactical::ADroneTactical()
 {
@@ -41,7 +42,7 @@ ADroneTactical::ADroneTactical()
 
     SetReplicates(true);
     SetReplicateMovement(true);
-
+    RunningTime = 0.0f;
     DroneDir = FVector(4, 0, 0);
 }
 
@@ -50,7 +51,6 @@ void ADroneTactical::BeginPlay()
     Super::BeginPlay();
     //stops sound from playing right away
     DroneAudio->Stop();
-
 }
 
 void ADroneTactical::StartOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -60,8 +60,6 @@ void ADroneTactical::StartOverlap(UPrimitiveComponent * OverlappedComponent, AAc
         //GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap Start");
         //plays sound when players enter radius
         DroneAudio->Play();
-         
-        
     }
 }
 
@@ -81,9 +79,15 @@ void ADroneTactical::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     //constantly check if there is a wall blocking path
-    CheckForWalls();
-
-    SetActorLocation(GetActorLocation() += DroneDir);
+    //CheckForWalls();
+    //Floating part
+    FVector NewLocation = GetActorLocation();
+    float DeltaHeight = (FMath::Sin(RunningTime + DeltaTime) - FMath::Sin(RunningTime));
+    //Scale our height by a factor of 20
+    NewLocation.Z += DeltaHeight * 20.0f;
+    RunningTime += DeltaTime * 8;
+    SetActorLocation(NewLocation);
+    //SetActorLocation(GetActorLocation() += DroneDir);
     
 }
 

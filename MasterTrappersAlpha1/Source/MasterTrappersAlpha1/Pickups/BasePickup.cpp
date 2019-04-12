@@ -14,6 +14,7 @@
 #include "Runtime//Engine/Classes/Sound/SoundCue.h"
 #include "MasterTrappersAlpha1Character.h"
 #include "Net/UnrealNetwork.h"
+#include "Engine/World.h"
 
 // Sets default values
 ABasePickup::ABasePickup()
@@ -42,7 +43,7 @@ ABasePickup::ABasePickup()
     YawValue = 1.f;
     RollValue = 1.f;
 
-
+    RunningTime = 0.0f;
     SetReplicates(true);
     SetReplicateMovement(true);
 }
@@ -110,13 +111,10 @@ void ABasePickup::Tick(float DeltaTime)
 
 void ABasePickup::PlayEffects()
 {
-
-
-    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
-    Explosion->SetRelativeScale3D(FVector(4.f));
+    /*UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    Explosion->SetRelativeScale3D(FVector(4.f));*/
 
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
-
 }
 
 void ABasePickup::Show(bool visible)
