@@ -23,7 +23,7 @@
 /wd4838
 /we4668
 /I .
-/I C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Source\GameFrwkSessionsPlugin\Private
+/I C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Source\GameFrwkSessionsPlugin\Private
 /I ..\Intermediate\Build\Win64\UE4Editor\Inc\CoreUObject
 /I Runtime
 /I Runtime\CoreUObject\Public
@@ -401,10 +401,10 @@
 /I ThirdParty
 /I ThirdParty\libSampleRate\Public
 /I ThirdParty\libSampleRate
-/I C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Inc\GameFrwkSessionsPlugin
-/I C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Source
-/I C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Source\GameFrwkSessionsPlugin\Public
-/I C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Source\GameFrwkSessionsPlugin
+/I C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Inc\GameFrwkSessionsPlugin
+/I C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Source
+/I C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Source\GameFrwkSessionsPlugin\Public
+/I C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Source\GameFrwkSessionsPlugin
 /I ..\Plugins\Online\OnlineSubsystem\Intermediate\Build\Win64\UE4Editor\Inc\OnlineSubsystem
 /I ..\Plugins\Online\OnlineSubsystem
 /I ..\Plugins\Online\OnlineSubsystem\Source
@@ -424,12 +424,12 @@
 /I "C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\shared"
 /I "C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um"
 /I "C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt"
-/FI"C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Intermediate\Build\Win64\MasterTrappersAlpha1Editor\Development\Engine\SharedPCH.Engine.h"
-/Yu"C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Intermediate\Build\Win64\MasterTrappersAlpha1Editor\Development\Engine\SharedPCH.Engine.h"
-/Fp"C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Intermediate\Build\Win64\MasterTrappersAlpha1Editor\Development\Engine\SharedPCH.Engine.h.pch"
-"C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\Module.GameFrwkSessionsPlugin.gen.cpp"
-/FI"C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\Definitions.GameFrwkSessionsPlugin.h"
-/Fo"C:\Users\russ0221\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\Module.GameFrwkSessionsPlugin.gen.cpp.obj"
+/FI"C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Intermediate\Build\Win64\MasterTrappersAlpha1Editor\Development\Engine\SharedPCH.Engine.h"
+/Yu"C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Intermediate\Build\Win64\MasterTrappersAlpha1Editor\Development\Engine\SharedPCH.Engine.h"
+/Fp"C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Intermediate\Build\Win64\MasterTrappersAlpha1Editor\Development\Engine\SharedPCH.Engine.h.pch"
+"C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\Module.GameFrwkSessionsPlugin.gen.cpp"
+/FI"C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\Definitions.GameFrwkSessionsPlugin.h"
+/Fo"C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\Module.GameFrwkSessionsPlugin.gen.cpp.obj"
 /TP
 /GR-
 /W4

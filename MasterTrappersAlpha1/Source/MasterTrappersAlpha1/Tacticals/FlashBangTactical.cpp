@@ -26,8 +26,8 @@ AFlashBangTactical::AFlashBangTactical()
 
     ExplosionComp = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionComp"));
     ExplosionComp->InitSphereRadius(100.0f);
-    ExplosionComp->BodyInstance.SetCollisionProfileName("Projectile");
-    ExplosionComp->OnComponentHit.AddDynamic(this, &AFlashBangTactical::OnHit);
+    ExplosionComp->SetCollisionProfileName("OverlapAllDynamic");
+    //ExplosionComp->OnComponentHit.AddDynamic(this, &AFlashBangTactical::OnHit);
     ExplosionComp->SetupAttachment(RootComponent);
 
     StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -42,7 +42,7 @@ AFlashBangTactical::AFlashBangTactical()
     ProjectileMovement->bShouldBounce = true;
 
     // Die after 3 seconds by default
-    InitialLifeSpan = 3.0f;
+    InitialLifeSpan = 6.0f;
 
     FRotator NewRotation = FRotator(90.0f, 0.0f, 0.0f);
 
@@ -57,6 +57,11 @@ AFlashBangTactical::AFlashBangTactical()
     SetReplicateMovement(true);
 }
 
+AFlashBangTactical::~AFlashBangTactical()
+{
+    //m_Explosion->bAutoDestroy = true;
+}
+
 void AFlashBangTactical::BeginPlay()
 {
     Super::BeginPlay();
@@ -67,14 +72,33 @@ void AFlashBangTactical::BeginPlay()
 
 void AFlashBangTactical::OnDetonate()
 {
-    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
-    Explosion->SetRelativeScale3D(FVector(4.f));
+    m_Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    m_Explosion->SetRelativeScale3D(FVector(4.f));
 
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 
-    TArray<FHitResult> HitActors;
-
-    FVector StartTrace = GetActorLocation();
+    //TArray<FHitResult> HitActors;
+    TArray<AActor*> Actors;
+    ExplosionComp->GetOverlappingActors(Actors, AMasterTrappersAlpha1Character::StaticClass());
+    for (int i = 0; i < Actors.Num(); i++)
+    {
+        AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(Actors[i]);
+        if (pawn) //if the flash bang not hitting the player himself
+        {
+            /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+            "AFlashBangTactical::OnOverlapBegin Overlapped with - "
+            + OtherActor->GetName());*/
+            if (Role < ROLE_Authority)
+            {
+                pawn->Server_StartStun();
+            }
+            else
+            {
+                pawn->Client_StartStun();
+            }
+        }
+    }
+    /*FVector StartTrace = GetActorLocation();
     FVector EndTrace = StartTrace;
     EndTrace.Z += 360.0f;
 
@@ -89,46 +113,46 @@ void AFlashBangTactical::OnDetonate()
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>((*Actors).Actor->GetClass());
             if (pawn)
             {
-                //pawn->Server_StartStun();
+                pawn->Server_StartStun();
             }
         }
     }
-    Destroy();
+    Destroy();*/
 }
 
 void AFlashBangTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
     // Only add impulse and destroy projectile if we hit a physics
-    if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) /*&& OtherComp->IsSimulatingPhysics()*/)        // I don't care if there's physics happened
-    {
-        /*OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+    //if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) /*&& OtherComp->IsSimulatingPhysics()*/)        // I don't care if there's physics happened
+    //{
+    //    /*OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
-        Destroy();*/
+    //    Destroy();*/
 
-        //OnDetonate();
-    }
-    if (OtherActor)
-    {
-        if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("AI"))
-        {
-            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
-            if (pawn != GetOwner() && pawn->Team != Team) //if the flash bang not hitting the player himself
-            {
-                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-                    "AFlashBangTactical::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());*/
-                //if (pawn->Role == ROLE_Authority)
-                {
-                    //pawn->Server_StartStun();
-                }
-                //else
-                {
-                    pawn->Client_StartStun();
-                }
-                this->Destroy();
-            }
-        }
-    }
+    //    //OnDetonate();
+    //}
+    //if (OtherActor)
+    //{
+    //    if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("AI"))
+    //    {
+    //        AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
+    //        if (pawn != GetOwner() && pawn->Team != Team) //if the flash bang not hitting the player himself
+    //        {
+    //            /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+    //                "AFlashBangTactical::OnOverlapBegin Overlapped with - "
+    //                + OtherActor->GetName());*/
+    //            if (Role == ROLE_Authority)
+    //            {
+    //                pawn->Server_StartStun();
+    //            }
+    //            else
+    //            {
+    //                pawn->Client_StartStun();
+    //            }
+    //            this->Destroy();
+    //        }
+    //    }
+    //}
 }
 
 void AFlashBangTactical::Tick(float DeltaTime)

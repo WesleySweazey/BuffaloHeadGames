@@ -14,6 +14,10 @@ class MASTERTRAPPERSALPHA1_API AFlashBangTactical : public ABaseTactical
 {
 	GENERATED_BODY()
 public:
+    ~AFlashBangTactical();
+
+    UParticleSystemComponent* m_Explosion;
+
     /** Sphere collision component */
     UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
         class USphereComponent* CollisionComp;
