@@ -32,12 +32,35 @@ void AC4Trap::BeginPlay()
 void AC4Trap::Detonate()
 {
     bDetonated = true;
-    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
-    Explosion->SetRelativeScale3D(FVector(4.f));
-    Explosion->SetIsReplicated(true);
+    m_Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    m_Explosion->SetRelativeScale3D(FVector(4.f));
+    m_Explosion->SetIsReplicated(true);
     UWorld* const World = GetWorld();
     if(World)
     UGameplayStatics::PlaySoundAtLocation(World, ExplosionSound, GetActorLocation());
+
+    TArray<AActor*> Actors;
+    SphereComponent->GetOverlappingActors(Actors, AMasterTrappersAlpha1Character::StaticClass());
+    for (int i = 0; i < Actors.Num(); i++)
+    {
+        AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(Actors[i]);
+        if (pawn) //if the flash bang not hitting the player himself
+        {
+            TArray<AActor*> FoundActors;
+            UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
+
+            for (int j = 0; j < FoundActors.Num(); j++)
+            {
+                AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[j]);
+                if (temp->Team == Team)
+                {
+                    temp->AddScore();
+                    break;
+                }
+            }
+            pawn->Multicast_Die();
+        }
+    }
 
     //TArray<FHitResult> HitActors;
 
@@ -72,7 +95,7 @@ void AC4Trap::Detonate()
 void AC4Trap::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    if (bDetonated == true)
+    /*if (bDetonated == true)
     {
         if (DetonationLength < 0)
         {
@@ -101,7 +124,7 @@ void AC4Trap::Tick(float DeltaTime)
                 }
             }
         }
-    }
+    }*/
 }
 
 void AC4Trap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -117,6 +140,13 @@ void AC4Trap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor *
             }
         }
     }
+}
+//Replicates UPROPERTIES
+void AC4Trap::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AC4Trap, m_Explosion);
 }
 
 

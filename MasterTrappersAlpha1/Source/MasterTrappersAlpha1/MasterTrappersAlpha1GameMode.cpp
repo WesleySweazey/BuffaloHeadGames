@@ -5,6 +5,9 @@
 #include "MasterTrappersAlpha1Character.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
+#include "Runtime/Engine/Classes/GameFramework/PlayerStart.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 
 AMasterTrappersAlpha1GameMode::AMasterTrappersAlpha1GameMode()
 	: Super()
@@ -39,6 +42,9 @@ void AMasterTrappersAlpha1GameMode::HandleNewPlayer(APlayerController* NewPlayer
         //AFinal_GameStateBase* GameState = Cast<AFinal_GameStateBase>(GetWorld()->GetGameState());
         character->AssignTeams();
         character->Multicast_AssignColors();
+        TArray<AActor*> playerStarts;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
+        NewPlayer->StartSpot = playerStarts[character->Team];
         //CALL AssignNetIndex() on the character
         //character->AssignNetIndex();
     }

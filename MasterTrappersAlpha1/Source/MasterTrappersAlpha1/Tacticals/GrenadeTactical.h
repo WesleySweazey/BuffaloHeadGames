@@ -15,6 +15,10 @@ class MASTERTRAPPERSALPHA1_API AGrenadeTactical : public ABaseTactical
 {
     GENERATED_BODY()
 public:
+    //Explosion member
+    UPROPERTY(VisibleAnywhere, Category = "Collision", Replicated)
+        class UParticleSystemComponent* m_Explosion;
+
     /** Sphere collision component */
     UPROPERTY(/*VisibleDefaultsOnly*/EditAnywhere, Category = Projectile)
         class USphereComponent* CollisionComp;

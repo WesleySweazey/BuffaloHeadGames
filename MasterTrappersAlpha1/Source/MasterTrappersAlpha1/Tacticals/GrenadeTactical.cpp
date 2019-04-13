@@ -10,12 +10,15 @@
 #include "DestructibleComponent.h"
 #include "DestructibleActor.h"
 #include "MasterTrappersAlpha1Character.h"
-
+#include "Components/StaticMeshComponent.h"
+#include "Engine/World.h"
+#include "Runtime/Engine/Public/TimerManager.h"
+#include "Net/UnrealNetwork.h"
 AGrenadeTactical::AGrenadeTactical()
 {
     // Use a sphere as a simple collision representation
     CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-    CollisionComp->InitSphereRadius(5.0f);
+    CollisionComp->InitSphereRadius(150.0f);
     CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
     CollisionComp->OnComponentHit.AddDynamic(this, &AGrenadeTactical::OnHit);		// set up a notification for when this component hits something blocking
 
@@ -27,11 +30,12 @@ AGrenadeTactical::AGrenadeTactical()
     RootComponent = CollisionComp;
 
     ExplosionComp = CreateDefaultSubobject<USphereComponent>(TEXT("ExpComp"));
-    ExplosionComp->InitSphereRadius(300.0f);
+    ExplosionComp->InitSphereRadius(50.0f);
+    ExplosionComp->SetCollisionProfileName("OverlapAllDynamic");
     //ExplosionComp->BodyInstance.SetCollisionProfileName("Projectile");
     ExplosionComp->OnComponentBeginOverlap.AddDynamic(this, &AGrenadeTactical::OnOverlapBegin);
 
-    StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    StaticMeshComponent->SetCollisionProfileName("BlockAll");
     StaticMeshComponent->SetupAttachment(RootComponent);
 
     // Use a ProjectileMovementComponent to govern this projectile's movement
@@ -61,33 +65,58 @@ void AGrenadeTactical::OnExplosion()
 {
    /* GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
         "OnExplosion ");*/
-
-    for (int i = 0; i < collidedCharacters.Num(); i++)
+    TArray<AActor*> FirstFoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
     {
-        if (GetDistanceTo(collidedCharacters[i])<300.0f)
+        for (int i = 0; i < FirstFoundActors.Num(); i++)
         {
-            //Check team
-                //Get all players in scene
+            if (this->GetDistanceTo(FirstFoundActors[i])<150.0f)
+            {
+                AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
+
                 TArray<AActor*> FoundActors;
                 UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
-
-                for (int i = 0; i < FoundActors.Num(); i++)
+                for (int j= 0; j < FoundActors.Num(); j++)
                 {
-                    AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
-                    //If the trap team equal a players team add score
+                    AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[j]);
                     if (temp->Team == Team)
                     {
                         temp->AddScore();
                         break;
                     }
                 }
-                collidedCharacters[i]->Multicast_Die();
-                Destroy();
+                pawn->Multicast_Die();
+            }
         }
     }
-    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
-    Explosion->SetRelativeScale3D(FVector(4.f));
+    //TArray<AActor*> Actors;
+    //CollisionComp->GetOverlappingActors(Actors, AMasterTrappersAlpha1Character::StaticClass());
+    //for (int i = 0; i < Actors.Num(); i++)
+    //{
+    //    AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(Actors[i]);
+    //    if (pawn) //if the flash bang not hitting the player himself
+    //    {
+    //        TArray<AActor*> FoundActors;
+    //        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
 
+    //        for (int i = 0; i < FoundActors.Num(); i++)
+    //        {
+    //            AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
+    //            if (temp->Team == Team)
+    //            {
+    //                temp->AddScore();
+    //                break;
+    //            }
+    //        }
+    //        pawn->Multicast_Die();
+    //    }
+    //}
+
+    m_Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    if (m_Explosion)
+    {
+        m_Explosion->SetRelativeScale3D(FVector(4.f));
+    }
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 }
 
@@ -217,5 +246,10 @@ void AGrenadeTactical::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent,
     }
 }
 
+//Replicates UPROPERTIES
+void AGrenadeTactical::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-
+    DOREPLIFETIME(AGrenadeTactical, m_Explosion);
+}

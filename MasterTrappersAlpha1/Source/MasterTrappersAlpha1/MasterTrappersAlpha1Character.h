@@ -61,6 +61,8 @@ public:
         UMaterialInterface* CharacterMaterial;
     UFUNCTION(NetMulticast, Reliable)
     void Multicast_AssignColors();
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_SetColor();
     /** Player's team number */
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Team", Replicated)
         int Team;

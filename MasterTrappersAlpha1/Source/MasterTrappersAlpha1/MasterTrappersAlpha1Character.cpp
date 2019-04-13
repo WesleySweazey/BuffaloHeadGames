@@ -42,6 +42,7 @@
 #include "Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h"
 #include "Tacticals/DroneTactical.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "GameFrwkSessionsPlugin/LobbyGameMode.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -97,14 +98,15 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     CursorToWorld->SetIsReplicated(true);
 
     //Intializing UProperties
-    ShoveStrength = 15005.0f;
+    ShoveStrength = 150.0f;
     Speed = 3.0f;
     totalTacticals = 5;
     currentTactical = 0;
     totalTraps = 6;
     currentTrap = 0;
     
-    
+    Team = 0;
+
     CurrentSpeed = 0.0f;
 
     //Adding Player Tag
@@ -140,13 +142,13 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 
 
     //Add all possible spawn location
-    RespawnLocations.Add(FVector(-160.0f, 2260.0f, 550.0f));
-    RespawnLocations.Add(FVector(-610.0f,1260.0f,150.0f));
-    RespawnLocations.Add(FVector(-250.0f,500.0f,630.0f));
-    RespawnLocations.Add(FVector(20.0f,-1670.0f,170.0f));
-    RespawnLocations.Add(FVector(-410.0f,-330.0f,170.0f));
-
-
+    TArray<AActor*> playerStarts;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
+    //NewPlayer->StartSpot = playerStarts[Team];
+    for (int i = 0; i < playerStarts.Num(); i++)
+    {
+        RespawnLocations.Add(playerStarts[i]->GetActorLocation());
+    }
 }
 
 void AMasterTrappersAlpha1Character::Server_AddToInventory_Implementation(ABasePickup * actor)
@@ -474,6 +476,16 @@ void AMasterTrappersAlpha1Character::PostBeginPlay()
 {
     //make a material Instance of this master material. Do NOT do this in the constructor, only after post init.
     UMaterialInstanceDynamic* RV_MatInst = UMaterialInstanceDynamic::Create(MasterMaterialRef, this);
+    /*if (GetWorld()->GetNetMode() != NM_DedicatedServer)
+    {*/
+        //if (Team == 0)
+        //{
+            //Team = 1;
+    if(Role == ROLE_Authority)
+            Server_SetColor();
+            //this->Multicast_AssignColors();
+        //}
+    //}
     //After you make your custom T2D, assign it as a texture parameter to your material
     //RV_MatInst->SetTextureParameterValue(FName("T2DParam"), YourCustomT2DRef);
     //ref copy: Texture2D'/Game/Inventory/hp.hp'
@@ -570,10 +582,6 @@ void AMasterTrappersAlpha1Character::Client_EndStun_Implementation()
     FP_PostProcessComponent->bEnabled = false;
 }
 
-
-
-
-
 void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
 {
     if (Role == ROLE_Authority)
@@ -588,7 +596,7 @@ void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
 
 FVector AMasterTrappersAlpha1Character::GetRandomResponLocation()
 {
-    int randIdx = FMath::RandRange(0, 4);
+    int randIdx = rand() % RespawnLocations.Num();
     FVector loc = RespawnLocations[randIdx];
     int bp = 1;
     return loc;
@@ -640,7 +648,8 @@ void AMasterTrappersAlpha1Character::BeginPlay()
     RespawnLocation = GetActorLocation();
 	// Show gun mesh componen.
 	Mesh1P->SetHiddenInGame(false, true);
-
+    if (Role < ROLE_Authority)
+        Server_SetColor();
     // Display inventory after every 2 seconds
     //GetWorld()->GetTimerManager().SetTimer(PrintInventoryHandle, this, &AMasterTrappersAlpha1Character::UpdateInventory, 2.f, false);
 
@@ -808,7 +817,7 @@ void AMasterTrappersAlpha1Character::SetupPlayerInputComponent(class UInputCompo
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AMasterTrappersAlpha1Character::LookUpAtRate);
 
     // Bind fire event
-    PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMasterTrappersAlpha1Character::SpawnTatical);
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMasterTrappersAlpha1Character::SpawnTatical);    
 }
 
 bool AMasterTrappersAlpha1Character::Server_ChangeFacing_Validate(FVector TargetFacing)
@@ -1057,7 +1066,9 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
 
 void AMasterTrappersAlpha1Character::AssignTeams()
 {
-    if (GetLocalGameState()->bIsPlayerOneLoggedIn == false)
+    Team = 1;
+
+    /*if (GetLocalGameState()->bIsPlayerOneLoggedIn == false)
     {
         Team = 1;
         GetLocalGameState()->bIsPlayerOneLoggedIn = true;
@@ -1066,7 +1077,7 @@ void AMasterTrappersAlpha1Character::AssignTeams()
     {
         Team = 2;
         GetLocalGameState()->bIsPlayerTwoLoggedIn = true;
-    }
+    }*/
 }
 
 void AMasterTrappersAlpha1Character::Multicast_AssignColors_Implementation()
@@ -1089,7 +1100,21 @@ void AMasterTrappersAlpha1Character::Multicast_AssignColors_Implementation()
         CharacterMaterial = GetLocalGameState()->TeamFiveMaterials;
         break;
     }
-    Mesh1P->SetMaterial(0,CharacterMaterial);
+    if (CharacterMaterial)
+    {
+        Mesh1P->SetMaterial(0, CharacterMaterial);
+        Server_SetColor();
+    }
+}
+
+bool AMasterTrappersAlpha1Character::Server_SetColor_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_SetColor_Implementation()
+{
+    Mesh1P->SetMaterial(0, CharacterMaterial);
 }
 
 AMasterTrappersGameStateBase * AMasterTrappersAlpha1Character::GetLocalGameState()
@@ -1133,7 +1158,6 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
     DOREPLIFETIME(AMasterTrappersAlpha1Character, FireSound);
     
 }
-
 
 //add droneNum everytime by 5 when hit a pickup
 void AMasterTrappersAlpha1Character::AddDroneTacticalNum()

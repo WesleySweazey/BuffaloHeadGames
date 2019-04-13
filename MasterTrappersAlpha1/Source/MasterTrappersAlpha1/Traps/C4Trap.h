@@ -55,9 +55,14 @@ public:
     /** Returns CollisionComp subobject **/
     FORCEINLINE class USphereComponent* GetCollisionComp() const { return CollisionComp; }
 
+    //Detonation functions
     void Detonate();
     bool bDetonated;
 
+    //Explosion member
+    UPROPERTY(VisibleAnywhere, Category = "Collision", Replicated)
+        class UParticleSystemComponent* m_Explosion;
+    //Collided characters
     UPROPERTY(VisibleAnywhere, Category = "Collision")
     TArray<AMasterTrappersAlpha1Character*> collidedCharacters;
 };

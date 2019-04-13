@@ -49,9 +49,10 @@ void ALobbyGameMode::StartGame()
 	bUseSeamlessTravel = true;
 	
     /*We are hosting the game and load the map in listen mode*/
-    //CALL ServerTravel() on the World and pass in "/Game/Levels/Sandbox/TestMap?listen" World'/Game/FirstPersonCPP/Maps/FirstPersonExampleMap.FirstPersonExampleMap'
-    //World->ServerTravel("/Game/FirstPersonCPP/Maps/FirstPersonExampleMap?listen");
-    World->ServerTravel("/Game/FirstPersonCPP/Maps/MeatHouse?listen");
+    //CALL ServerTravel() on the World and pass in "/Game/Levels/Sandbox/TestMap?listen"
+    //World->ServerTravel("/Game/Levels/Sandbox/TestMap?listen");
+    World->ServerTravel("/Game/FirstPersonCPP/Maps/Alpha2?listen");
+    //World->ServerTravel("/Game/FirstPersonCPP/Maps/MeatHouse?listen");
     //World->ServerTravel("/Game/Levels/Sandbox/LV_Sandbox?listen");
     //World->SeamlessTravel("/Game/Levels/Sandbox/TestMap?listen", true);
 }
