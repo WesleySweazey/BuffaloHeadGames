@@ -14,6 +14,7 @@ class MASTERTRAPPERSALPHA1_API ABaseAreaEffect : public AActor
 	GENERATED_BODY()
 public:
     ABaseAreaEffect();
+    //Play Effects
     virtual void PlayEffects();
     UFUNCTION(NetMulticast, Reliable, WithValidation)
     virtual void Server_Stop();

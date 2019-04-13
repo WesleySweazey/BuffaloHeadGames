@@ -24,6 +24,7 @@ public:
     UPROPERTY(EditDefaultsOnly)
     USceneComponent* SceneComponent;
 
+    //Sphere collision
     UPROPERTY(VisibleAnywhere, Category = "Collision",
         meta = (AllowPrivateAccess))
         class USphereComponent* SphereComponent;
@@ -33,7 +34,7 @@ public:
 
     //Timer handle for next item spawn time
     FTimerHandle SpawnerWait;
-
+    //item spawn function
     void SpawnItem();
 
     /** Random Pickup Blueprint */
@@ -41,7 +42,7 @@ public:
         BlueprintReadOnly,
         Category = "RandomPickup")
         TSubclassOf<class ARandomPickup> RandomPickup;
-
+    //overlapping function
     UFUNCTION()
         void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
             AActor* OtherActor,

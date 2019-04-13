@@ -14,7 +14,7 @@ void ARandomPickup::OnInteract(int pickupIdx)
     FString pickup = FString::Printf(TEXT("Picked up: %s"), *Name);
 
     AMasterTrappersAlpha1Character* player = Cast<AMasterTrappersAlpha1Character>(GetOwner());
-
+    //Random interact add items to player inventory
     if (player)
     {
         PlayEffects();
@@ -88,7 +88,7 @@ void ARandomPickup::NotifyActorBeginOverlap(AActor * OtherActor)
     Super::NotifyActorBeginOverlap(OtherActor);
     AMasterTrappersAlpha1Character* character = Cast<AMasterTrappersAlpha1Character>(OtherActor);
     this->SetOwner(character);
-
+    //Random item
     //1 - drone
     //2 - flash bang
     //3 - grenade

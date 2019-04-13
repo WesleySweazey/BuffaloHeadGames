@@ -20,7 +20,7 @@ private:
 public: 
     //Constructor
     ADroneTactical();
-
+    //Begin
     virtual void BeginPlay() override;
 
     //sound to be played when enemy is in radius

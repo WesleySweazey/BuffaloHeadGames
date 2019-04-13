@@ -36,6 +36,7 @@ void AGasAreaEffect::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     
 }
+//Check Collision
 void AGasAreaEffect::CheckCollision()
 {
     UWorld* const World = GetWorld();

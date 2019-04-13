@@ -38,30 +38,31 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
+//apply damage to health
 float UHealthComponent::TakeDamage(float DamageAmount)
 {
     bCanBeDamaged = false;
     UpdateHealth(-DamageAmount);
     return DamageAmount;
 }
-
+//Get health percent
 float UHealthComponent::GetPercentageHealth()
 {
     return HealthPercentage;
 }
-
+//Get health component
 float UHealthComponent::GetHealth()
 {
     return Health;
 }
-
+//update health component
 void UHealthComponent::UpdateHealth(float HealthChange)
 {
     Health += HealthChange;
     Health = FMath::Clamp(Health, 0.0f, FullHealth);
     HealthPercentage = Health / FullHealth;
 }
-
+//server ResetHealth
 bool UHealthComponent::Server_ResetHealth_Validate()
 {
     return true;

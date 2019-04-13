@@ -38,7 +38,7 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	// ...
 }
 
-
+//Actor Add To Tacticals Inventory
 void UInventoryComponent::Server_AddToTacticalsInventory_Implementation(ABasePickup * actor)
 {
     //if(Role == ROLE_Authority)
@@ -55,7 +55,7 @@ void UInventoryComponent::AddToTacticalsInventory(ABasePickup * actor)
     _inventory_tacticals.Add(actor);
 
 }
-
+//Update Tactical sInventory
 void UInventoryComponent::Server_UpdateTacticalsInventory_Implementation()
 {
     UpdateTacticalsInventory();

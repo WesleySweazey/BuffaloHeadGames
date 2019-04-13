@@ -38,10 +38,10 @@ public:
     /** Projectile movement component */
     UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
         class UProjectileMovementComponent* ProjectileMovement;
-
+    //Particle
     UPROPERTY(EditAnywhere, Category = "FX")
         class UParticleSystem* ExplosionParticles;
-
+    //Sound
     UPROPERTY(EditAnywhere, Category = "FX")
         class USoundCue* ExplosionSound;
 
@@ -59,16 +59,17 @@ public:
 
 public:
     AGrenadeTactical();
-
+    //Timer handle
     FTimerHandle Explosionhandle;
+    //On Explosion
     UFUNCTION()
     void OnExplosion();
-
+    //Colliding character
     UPROPERTY(VisibleAnywhere, Category = "Collision")
         TArray<AMasterTrappersAlpha1Character*> collidedCharacters;
-
+    //Begin
     virtual void BeginPlay() override;
-
+    //Detonation
     UFUNCTION()
         void OnDetonate();
 

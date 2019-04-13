@@ -27,10 +27,10 @@ public:
     /** Projectile movement component */
     UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
         class UProjectileMovementComponent* ProjectileMovement;
-
+    //Particle
     UPROPERTY(EditAnywhere, Category = "FX")
         class UParticleSystem* ExplosionParticles;
-
+    //Sound
     UPROPERTY(EditAnywhere, Category = "FX")
         class USoundCue* ExplosionSound;
 
@@ -58,9 +58,9 @@ public:
         TSubclassOf<class ASmokeAreaEffect> SmokeEffect;
 public:
     AFlashBangTactical();
-
+    //Begin
     virtual void BeginPlay() override;
-
+    //Detonation
     UFUNCTION()
         void OnDetonate();
 

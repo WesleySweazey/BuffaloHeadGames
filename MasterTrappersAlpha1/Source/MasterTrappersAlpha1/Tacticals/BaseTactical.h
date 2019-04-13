@@ -29,7 +29,7 @@ public:
     UPROPERTY(VisibleAnywhere, Category = "MeshComponent",
         meta = (AllowPrivateAccess))
         class UStaticMeshComponent* StaticMeshComponent;
-
+    //Static mesh
     UStaticMeshComponent* GetStaticMeshComponent();
     //Material color
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Material, meta = (AllowPrivateAccess = "true"), Replicated)

@@ -15,13 +15,13 @@ class MASTERTRAPPERSALPHA1_API AGrenadePickup : public ABasePickup
 	GENERATED_BODY()
 	
 public:
-
+    //Over lapping
     UFUNCTION()
         virtual void NotifyActorBeginOverlap(class AActor* OtherActor) override;
 	
     //UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
     //    void Server_OnInteract();
-
+    //Interact Function
     virtual void OnInteract();
 
 };

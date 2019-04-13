@@ -30,14 +30,14 @@ void AFireAreaEffect::BeginPlay()
     //->OnComponentHit.AddDynamic(this, &AFireAreaEffect::OnHit);
     PlayEffects();
 }
-
+//Plays particle effect
 void AFireAreaEffect::PlayEffects()
 {
     ParticleZoneComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particles, GetActorTransform(),true);
     ParticleZoneComponent->SetRelativeScale3D(FVector(4.f));
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 }
-
+//Check Collision
 void AFireAreaEffect::CheckCollision()
 {
     UWorld* const World = GetWorld();

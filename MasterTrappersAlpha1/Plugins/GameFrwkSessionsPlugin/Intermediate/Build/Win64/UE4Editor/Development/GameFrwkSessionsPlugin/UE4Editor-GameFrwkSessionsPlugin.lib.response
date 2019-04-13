@@ -8,7 +8,6 @@
 /NODEFAULTLIB
 "C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Intermediate\Build\Win64\MasterTrappersAlpha1Editor\Development\Engine\SharedPCH.Engine.h.obj"
 "C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\Module.GameFrwkSessionsPlugin.cpp.obj"
-"C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\LobbyGameMode.cpp.obj"
 "C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\Module.GameFrwkSessionsPlugin.gen.cpp.obj"
 "C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\PCLaunch.rc.res"
 /OUT:"C:\Users\swea0001\Desktop\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\UE4Editor-GameFrwkSessionsPlugin.lib"

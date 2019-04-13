@@ -29,7 +29,7 @@ void ASmokeAreaEffect::BeginPlay()
     //->OnComponentHit.AddDynamic(this, &AFireAreaEffect::OnHit);
     PlayEffects();
 }
-
+//Play Effects
 void ASmokeAreaEffect::PlayEffects()
 {
     ParticleZoneComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particles, GetActorTransform(), true);

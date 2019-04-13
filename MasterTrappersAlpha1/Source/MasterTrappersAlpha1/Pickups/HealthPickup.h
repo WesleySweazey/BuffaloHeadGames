@@ -16,10 +16,10 @@ class MASTERTRAPPERSALPHA1_API AHealthPickup : public ABasePickup
 	
 	
 public:
-
+    //Over lapping
     UFUNCTION()
         virtual void NotifyActorBeginOverlap(class AActor* OtherActor) override;
-
+    //Interact Function
     virtual void OnInteract();
 	
 };

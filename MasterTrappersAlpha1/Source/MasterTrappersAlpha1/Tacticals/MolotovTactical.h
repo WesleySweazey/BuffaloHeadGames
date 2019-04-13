@@ -21,10 +21,10 @@ public:
     /** Projectile movement component */
     UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
         class UProjectileMovementComponent* ProjectileMovement;
-
+    //Particle
     UPROPERTY(EditAnywhere, Category = "FX")
         class UParticleSystem* ExplosionParticles;
-
+    //Sound
     UPROPERTY(EditAnywhere, Category = "FX")
         class USoundCue* ExplosionSound;
 
@@ -42,7 +42,7 @@ public:
 
 public:
     AMolotovTactical();
-
+    //Begin
     virtual void BeginPlay() override;
 
     //On Detonate spawns fire

@@ -12,6 +12,7 @@ AMasterTrappersGameStateBase::AMasterTrappersGameStateBase()
     //SetReplicates(true);
 }
 
+//Multicast set score
 void AMasterTrappersGameStateBase::Multicast_SetScoreTeamOne_Implementation(int Score)
 {
     TeamOneScore = Score;
@@ -22,7 +23,7 @@ void AMasterTrappersGameStateBase::Multicast_SetScoreTeamTwo_Implementation(int 
     TeamTwoScore = Score;
 }
 
-//TODO Week 7: REPLICATE Variables
+//REPLICATE Variables
 void AMasterTrappersGameStateBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);

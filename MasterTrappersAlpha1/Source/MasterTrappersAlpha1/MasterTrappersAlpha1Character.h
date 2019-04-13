@@ -69,16 +69,16 @@ public:
 
     class AMasterTrappersGameStateBase* GetLocalGameState();
     class AMasterTrappersAlpha1GameMode* GetLocalGameMode();
-
+    //Master Material 
     UPROPERTY(EditAnywhere, Category = "Pickup")
         class UMaterialInterface * MasterMaterialRef;
-
+    //Icon
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
         class UTexture2D* BlankImage;
-
+    //Grenade Image
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
         class UTexture2D* GrenadeImage;
-
+    //Post Begin play
     UFUNCTION(BlueprintCallable, Category = FPSWizard)
         void PostBeginPlay();
 
@@ -543,8 +543,8 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
-    FVector GetRandomResponLocation();
-
+    FVector GetRandomRespawnLocation();
+    //Respawn locations start points
     TArray<FVector> RespawnLocations;
 };
 

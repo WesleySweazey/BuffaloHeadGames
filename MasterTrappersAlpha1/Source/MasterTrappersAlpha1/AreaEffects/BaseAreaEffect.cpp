@@ -30,7 +30,7 @@ ABaseAreaEffect::ABaseAreaEffect()
     Tags.Add("AreaEffect");
     SetReplicates(true);
 }
-
+//Plays particle effect
 void ABaseAreaEffect::PlayEffects()
 {
     ParticleZoneComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particles, GetActorTransform());
@@ -46,7 +46,7 @@ void ABaseAreaEffect::BeginPlay()
     World->GetTimerManager().SetTimer(LifeTimeHandle, this, &ABaseAreaEffect::Server_Stop, LifeTime, false);
     PlayEffects();
 }
-
+//Pure void check collision
 void ABaseAreaEffect::CheckCollision()
 {
 
@@ -80,7 +80,7 @@ void ABaseAreaEffect::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
         }
     }
 }
-
+//stop particle effects
 bool ABaseAreaEffect::Server_Stop_Validate()
 {
     return true;
@@ -94,7 +94,7 @@ void ABaseAreaEffect::Server_Stop_Implementation()
         ParticleZoneComponent->DestroyComponent();
     }
 }
-
+//Replications
 void ABaseAreaEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);

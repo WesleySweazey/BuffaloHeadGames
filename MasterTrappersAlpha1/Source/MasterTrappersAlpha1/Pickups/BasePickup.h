@@ -31,27 +31,28 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
+    //Rotation
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
         FRotator RotationRate;
-
+    //Mesh
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
         class UStaticMeshComponent* ItemMesh;
-
+    //BoxCollider
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
         class UBoxComponent* BoxCollider;
-
+    //Particles
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
         class UParticleSystem* ExplosionParticles;
-
+    //Sound
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
         class USoundCue* ExplosionSound;
-
+    //Name
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup,Replicated)
         FString Name;
-
+    //Icon image
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup, Replicated)
         class UTexture2D* Image;
-
+    //Blank image
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup, Replicated)
         class UTexture2D* BlankImage;
 
@@ -63,9 +64,9 @@ public:
 
     UPROPERTY(EditAnywhere, Category = Movement)
         float RollValue;
-
+    //Change icon image
     void switchTexture();
-
+    //Rotates
     virtual void Rotator(float DeltaTime);
 
     //UFUNCTION()

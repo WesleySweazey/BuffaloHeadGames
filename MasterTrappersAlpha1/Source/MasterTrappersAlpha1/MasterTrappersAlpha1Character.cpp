@@ -150,7 +150,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
         RespawnLocations.Add(playerStarts[i]->GetActorLocation());
     }
 }
-
+// Server Add Inventory Functions
 void AMasterTrappersAlpha1Character::Server_AddToInventory_Implementation(ABasePickup * actor)
 {
     AddToInventory(actor);
@@ -175,6 +175,8 @@ void AMasterTrappersAlpha1Character::AddToInventory(ABasePickup * actor)
 //
 //}
 
+// Server Update Inventory Functions
+
 void AMasterTrappersAlpha1Character::Server_UpdateInventory_Implementation()
 {
     UpdateInventory();
@@ -194,6 +196,7 @@ bool AMasterTrappersAlpha1Character::Server_UpdateInventory_Validate()
     return true;
 }
 
+// Server Switch Tactical Functions
 bool AMasterTrappersAlpha1Character::Server_SwitchTacticalUp_Validate()
 {
     return true;
@@ -225,6 +228,7 @@ void AMasterTrappersAlpha1Character::Server_SwitchTacticalDown_Implementation()
     }
 }
 
+// Spawn Trap
 bool AMasterTrappersAlpha1Character::SpawnTrap_Validate()
 {
     return true;
@@ -420,6 +424,8 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
 }
 }
 
+//Activate traps
+
 bool AMasterTrappersAlpha1Character::ActivateTrap_Validate()
 {
     return true;
@@ -441,6 +447,8 @@ void AMasterTrappersAlpha1Character::ActivateTrap_Implementation()
         }
     }
 }
+
+//Server switch traps
 
 bool AMasterTrappersAlpha1Character::Server_SwitchTrapUp_Validate()
 {
@@ -491,6 +499,8 @@ void AMasterTrappersAlpha1Character::PostBeginPlay()
     //ref copy: Texture2D'/Game/Inventory/hp.hp'
 }
 
+//Server Slip Functions
+
 bool AMasterTrappersAlpha1Character::Server_StartSlip_Validate()
 {
     return true;
@@ -519,6 +529,8 @@ void AMasterTrappersAlpha1Character::Server_EndSlip_Implementation()
     
     //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,"End Slip");
 }
+
+//Server Stun Functions
 
 bool AMasterTrappersAlpha1Character::Server_StartStun_Validate()
 {
@@ -552,8 +564,7 @@ void AMasterTrappersAlpha1Character::Server_EndStun_Implementation()
     FP_PostProcessComponent->bEnabled = false;
 }
 
-
-
+//Client Stun Functions
 
 bool AMasterTrappersAlpha1Character::Client_StartStun_Validate()
 {
@@ -581,20 +592,20 @@ void AMasterTrappersAlpha1Character::Client_EndStun_Implementation()
 
     FP_PostProcessComponent->bEnabled = false;
 }
-
+//Multicasting Die
 void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
 {
     if (Role == ROLE_Authority)
     {
         HealthComponent->Server_ResetHealth();
-        SetActorLocation(GetRandomResponLocation());
+        SetActorLocation(GetRandomRespawnLocation());
         //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
         //StartSlip();
 
     }
 }
 
-FVector AMasterTrappersAlpha1Character::GetRandomResponLocation()
+FVector AMasterTrappersAlpha1Character::GetRandomRespawnLocation()
 {
     int randIdx = rand() % RespawnLocations.Num();
     FVector loc = RespawnLocations[randIdx];
