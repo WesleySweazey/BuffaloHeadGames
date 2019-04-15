@@ -31,22 +31,42 @@ void AMasterTrappersAlpha1GameMode::HandleStartingNewPlayer_Implementation(APlay
 //TODO Week 7: Handle the new player that has logged in, assign team and net index
 void AMasterTrappersAlpha1GameMode::HandleNewPlayer(APlayerController* NewPlayer)
 {
-    //DECLARE a ACharacterBase* called character and assign it to the Cast of NewPlayer->GetPawn()
-    AMasterTrappersAlpha1Character* character = Cast<AMasterTrappersAlpha1Character>(NewPlayer->GetPawn());
-    //IF the character is not nullptr
-    if (character)
-    {
-        //Draw a debug message saying character has logged in
-        //GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, "Character Logged In");
-        //CALL AssignTeams() on the character
-        //AFinal_GameStateBase* GameState = Cast<AFinal_GameStateBase>(GetWorld()->GetGameState());
-        character->AssignTeams();
-        character->Multicast_AssignColors();
-        TArray<AActor*> playerStarts;
-        UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
-        NewPlayer->StartSpot = playerStarts[character->Team];
-        //CALL AssignNetIndex() on the character
-        //character->AssignNetIndex();
-    }
-    //ENDIF
+    ////DECLARE a ACharacterBase* called character and assign it to the Cast of NewPlayer->GetPawn()
+    //AMasterTrappersAlpha1Character* character = Cast<AMasterTrappersAlpha1Character>(NewPlayer->GetPawn());
+    ////IF the character is not nullptr
+    //if (character)
+    //{
+    //    //Draw a debug message saying character has logged in
+    //    //GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, "Character Logged In");
+    //    //CALL AssignTeams() on the character
+    //    //AFinal_GameStateBase* GameState = Cast<AFinal_GameStateBase>(GetWorld()->GetGameState());
+    //    character->AssignTeams();
+    //    character->Multicast_AssignColors();
+    //    TArray<AActor*> playerStarts;
+    //    UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
+    //    NewPlayer->StartSpot = playerStarts[character->Team];
+    //    //CALL AssignNetIndex() on the character
+    //    //character->AssignNetIndex();
+    //}
+    ////ENDIF
+}
+
+void AMasterTrappersAlpha1GameMode::PostBeginPlay()
+{
+    //AMasterTrappersAlpha1Character* character = Cast<AMasterTrappersAlpha1Character>(NewPlayer->GetPawn());
+    ////IF the character is not nullptr
+    //if (character)
+    //{
+    //    //Draw a debug message saying character has logged in
+    //    //GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, "Character Logged In");
+    //    //CALL AssignTeams() on the character
+    //    //AFinal_GameStateBase* GameState = Cast<AFinal_GameStateBase>(GetWorld()->GetGameState());
+    //    character->AssignTeams();
+    //    character->Multicast_AssignColors();
+    //    TArray<AActor*> playerStarts;
+    //    UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
+    //    NewPlayer->StartSpot = playerStarts[character->Team];
+    //    //CALL AssignNetIndex() on the character
+    //    //character->AssignNetIndex();
+    //}
 }

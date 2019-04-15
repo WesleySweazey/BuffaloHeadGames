@@ -98,7 +98,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     CursorToWorld->SetIsReplicated(true);
 
     //Intializing UProperties
-    ShoveStrength = 150.0f;
+    ShoveStrength = 15000.0f;
     Speed = 3.0f;
     totalTacticals = 5;
     currentTactical = 0;
@@ -489,9 +489,12 @@ void AMasterTrappersAlpha1Character::PostBeginPlay()
         //if (Team == 0)
         //{
             //Team = 1;
-    if(Role == ROLE_Authority)
-            Server_SetColor();
-            //this->Multicast_AssignColors();
+    if (Role == ROLE_Authority)
+    {
+        this->AssignTeams();
+        //Server_SetColor();
+        this->Multicast_AssignColors();
+    }
         //}
     //}
     //After you make your custom T2D, assign it as a texture parameter to your material
@@ -662,7 +665,7 @@ void AMasterTrappersAlpha1Character::BeginPlay()
     if (Role < ROLE_Authority)
         Server_SetColor();
     // Display inventory after every 2 seconds
-    //GetWorld()->GetTimerManager().SetTimer(PrintInventoryHandle, this, &AMasterTrappersAlpha1Character::UpdateInventory, 2.f, false);
+    GetWorld()->GetTimerManager().SetTimer(PostBeginPLayTimerHandle, this, &AMasterTrappersAlpha1Character::PostBeginPlay, 2.f, false);
 
 }
 
@@ -1077,18 +1080,33 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
 
 void AMasterTrappersAlpha1Character::AssignTeams()
 {
-    Team = 1;
-
-    /*if (GetLocalGameState()->bIsPlayerOneLoggedIn == false)
+    if (GetLocalGameState()->bIsPlayerOneLoggedIn == false)
     {
         Team = 1;
         GetLocalGameState()->bIsPlayerOneLoggedIn = true;
+        GetLocalGameState()->numberOfPlayersLoggedIn++;
     }
-    else if (GetLocalGameState()->bIsPlayerOneLoggedIn == true)
+    else if (GetLocalGameState()->numberOfPlayersLoggedIn == 1)
     {
         Team = 2;
         GetLocalGameState()->bIsPlayerTwoLoggedIn = true;
-    }*/
+        GetLocalGameState()->numberOfPlayersLoggedIn++;
+    }
+    else if (GetLocalGameState()->numberOfPlayersLoggedIn == 2)
+    {
+        Team = 3;
+        GetLocalGameState()->numberOfPlayersLoggedIn++;
+    }
+    else if (GetLocalGameState()->numberOfPlayersLoggedIn == 3)
+    {
+        Team = 4;
+        GetLocalGameState()->numberOfPlayersLoggedIn++;
+    }
+    else if (GetLocalGameState()->numberOfPlayersLoggedIn == 4)
+    {
+        Team = 5;
+        GetLocalGameState()->numberOfPlayersLoggedIn++;
+    }
 }
 
 void AMasterTrappersAlpha1Character::Multicast_AssignColors_Implementation()
@@ -1111,8 +1129,9 @@ void AMasterTrappersAlpha1Character::Multicast_AssignColors_Implementation()
         CharacterMaterial = GetLocalGameState()->TeamFiveMaterials;
         break;
     }
-    if (CharacterMaterial)
+    if (CharacterMaterial != nullptr)
     {
+        //Mesh->SetMaterial(0, CharacterMaterial);
         Mesh1P->SetMaterial(0, CharacterMaterial);
         Server_SetColor();
     }
@@ -1125,7 +1144,10 @@ bool AMasterTrappersAlpha1Character::Server_SetColor_Validate()
 
 void AMasterTrappersAlpha1Character::Server_SetColor_Implementation()
 {
-    Mesh1P->SetMaterial(0, CharacterMaterial);
+    if (CharacterMaterial != nullptr)
+    {
+        Mesh1P->SetMaterial(0, CharacterMaterial);
+    }
 }
 
 AMasterTrappersGameStateBase * AMasterTrappersAlpha1Character::GetLocalGameState()

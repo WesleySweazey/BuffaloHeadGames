@@ -25,9 +25,21 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (ClampMin = 0), Replicated)
         int TeamTwoScore;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (ClampMin = 0), Replicated)
+        int TeamThreeScore;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (ClampMin = 0), Replicated)
+        int TeamFourScore;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (ClampMin = 0), Replicated)
+        int TeamFiveScore;
+
     //Getters for Score
     int GetScoreTeamOne() { return TeamOneScore; }
     int GetScoreTeamTwo() { return TeamTwoScore; }
+    int GetScoreTeamThree() { return TeamThreeScore; }
+    int GetScoreTeamFour() { return TeamFourScore; }
+    int GetScoreTeamFive() { return TeamFiveScore; }
 
     UFUNCTION(NetMulticast, Reliable)
         void Multicast_SetScoreTeamOne(int Score);

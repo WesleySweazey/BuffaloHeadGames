@@ -23,7 +23,7 @@ public:
 	void Logout(AController* Exiting) override;
 
     UPROPERTY(EditAnywhere, Category = "Max Players")
-        uint32 MaxNumberOfPlayers = 2;
+        uint32 MaxNumberOfPlayers = 3;
 
 private:
 

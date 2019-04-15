@@ -78,6 +78,10 @@ public:
     //Grenade Image
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pickup)
         class UTexture2D* GrenadeImage;
+
+    //Post begin play timer hangle
+    FTimerHandle PostBeginPLayTimerHandle;
+
     //Post Begin play
     UFUNCTION(BlueprintCallable, Category = FPSWizard)
         void PostBeginPlay();

@@ -20,6 +20,9 @@ public:
 private:
     // Handle the new player
     void HandleNewPlayer(APlayerController* NewPlayer);
+
+    FTimerHandle PostBeginPlayHandle;
+    void PostBeginPlay();
 };
 
 

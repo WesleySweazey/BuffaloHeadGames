@@ -32,6 +32,9 @@ void AMasterTrappersGameStateBase::GetLifetimeReplicatedProps(TArray< FLifetimeP
     //DOREPLIFETIME(AFinal_GameStateBase, TeamsEnabled);
     DOREPLIFETIME(AMasterTrappersGameStateBase, TeamOneScore);
     DOREPLIFETIME(AMasterTrappersGameStateBase, TeamTwoScore);
+    DOREPLIFETIME(AMasterTrappersGameStateBase, TeamThreeScore);
+    DOREPLIFETIME(AMasterTrappersGameStateBase, TeamFourScore);
+    DOREPLIFETIME(AMasterTrappersGameStateBase, TeamFiveScore);
 
     DOREPLIFETIME(AMasterTrappersGameStateBase, bIsPlayerOneLoggedIn);
     DOREPLIFETIME(AMasterTrappersGameStateBase, bIsPlayerTwoLoggedIn);
@@ -43,7 +46,9 @@ void AMasterTrappersGameStateBase::GetLifetimeReplicatedProps(TArray< FLifetimeP
 
     DOREPLIFETIME(AMasterTrappersGameStateBase, TeamOneMaterials);
     DOREPLIFETIME(AMasterTrappersGameStateBase, TeamTwoMaterials);
-    DOREPLIFETIME(AMasterTrappersGameStateBase, TeamOneMaterials);
+    DOREPLIFETIME(AMasterTrappersGameStateBase, TeamThreeMaterials);
+    DOREPLIFETIME(AMasterTrappersGameStateBase, TeamFourMaterials);
+    DOREPLIFETIME(AMasterTrappersGameStateBase, TeamFiveMaterials);
 }
 
 
