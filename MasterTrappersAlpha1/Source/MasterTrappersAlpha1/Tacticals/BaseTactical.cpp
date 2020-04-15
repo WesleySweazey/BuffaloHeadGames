@@ -31,6 +31,16 @@ void ABaseTactical::Tick(float DeltaTime)
 
 }
 
+bool ABaseTactical::Server_SetMaterial_Validate(UMaterialInterface* mat)
+{
+    return true;
+}
+
+void ABaseTactical::Server_SetMaterial_Implementation(UMaterialInterface* mat)
+{
+    StaticMeshComponent->SetMaterial(0, mat);
+}
+
 UStaticMeshComponent * ABaseTactical::GetStaticMeshComponent()
 {
     return StaticMeshComponent;

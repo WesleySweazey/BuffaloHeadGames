@@ -102,7 +102,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     Speed = 3.0f;
     totalTacticals = 5;
     currentTactical = 0;
-    totalTraps = 6;
+    totalTraps = 5;
     currentTrap = 0;
     
     Team = 0;
@@ -263,6 +263,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->Server_SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
                 BearTrapNum--;
 
@@ -293,6 +294,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->Server_SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
                 BoostTrapNum--;
                 
@@ -323,6 +325,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->Server_SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
                 C4TrapNum--;
                 // Add C4 Trap to TArray of C4 traps already placed
@@ -355,6 +358,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->Server_SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
                 TripWireTrapNum--;
                 
@@ -384,6 +388,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->Server_SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
                 BananaPeelNum--;
                 
@@ -413,6 +418,7 @@ void AMasterTrappersAlpha1Character::SpawnTrap_Implementation()
                 SpawnedActor->SetActorRelativeRotation(GetTrapSpawnRotation());
                 //Set Color & Team
                 SpawnedActor->SetMaterial(CharacterMaterial);
+                SpawnedActor->Server_SetMaterial(CharacterMaterial);
                 SpawnedActor->SetTeam(Team);
                 WhoopieCushionTrapNum--;
                     UE_LOG(LogTemp, Warning, TEXT("Whoopie Cushion Trap Spawned"));
@@ -494,6 +500,10 @@ void AMasterTrappersAlpha1Character::PostBeginPlay()
         this->AssignTeams();
         //Server_SetColor();
         this->Multicast_AssignColors();
+    }
+    else
+    {
+        Mesh1P->SetMaterial(0, CharacterMaterial);
     }
         //}
     //}
@@ -662,7 +672,7 @@ void AMasterTrappersAlpha1Character::BeginPlay()
     RespawnLocation = GetActorLocation();
 	// Show gun mesh componen.
 	Mesh1P->SetHiddenInGame(false, true);
-    if (Role < ROLE_Authority)
+    //if (Role < ROLE_Authority)
         Server_SetColor();
     // Display inventory after every 2 seconds
     GetWorld()->GetTimerManager().SetTimer(PostBeginPLayTimerHandle, this, &AMasterTrappersAlpha1Character::PostBeginPlay, 2.f, false);
@@ -951,8 +961,8 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                 const FRotator SpawnRotation = GetControlRotation();
                 //const FRotator SpawnRotation = FP_MuzzleLocation->GetComponentRotation();
                 // MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-                const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
-
+                //const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+                const FVector SpawnLocation = FP_MuzzleLocation->GetComponentLocation();
                 //if(FP_MuzzleLocation != nullptr)
 
                 //Set Spawn Collision Handling Override
@@ -966,6 +976,7 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                  if (SpawnedActor)
                  {
                      SpawnedActor->SetMaterial(CharacterMaterial);
+                     SpawnedActor->Server_SetMaterial(CharacterMaterial);
                      GrenadeNum--;
                      // try and play the sound if specified
                      if (FireSound != NULL)
@@ -982,6 +993,7 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     if (SpawnedActor)
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
+                        SpawnedActor->Server_SetMaterial(CharacterMaterial);
                         FlashBangNum--;
                         SpawnedActor->Team = Team;
                         SpawnedActor->SetOwner(this);
@@ -997,6 +1009,7 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     if (SpawnedActor)
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
+                        SpawnedActor->Server_SetMaterial(CharacterMaterial);
                         MolotovNum--;
                         SpawnedActor->Team = Team;
                         SpawnedActor->SetOwner(this);
@@ -1012,6 +1025,7 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     if (SpawnedActor)
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
+                        SpawnedActor->Server_SetMaterial(CharacterMaterial);
                         NinjaStarNum--;
                         SpawnedActor->Team = Team;
                         SpawnedActor->SetOwner(this);
@@ -1027,6 +1041,7 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     if (SpawnedActor)
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
+                        SpawnedActor->Server_SetMaterial(CharacterMaterial);
                         ThrowingAxeNum--;
                         SpawnedActor->Team = Team;
                         SpawnedActor->SetOwner(this);
@@ -1042,6 +1057,7 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     if (SpawnedActor)
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
+                        SpawnedActor->Server_SetMaterial(CharacterMaterial);
                         DroneTacticalNum--;
                         SpawnedActor->Team = Team;
                         SpawnedActor->SetOwner(this);

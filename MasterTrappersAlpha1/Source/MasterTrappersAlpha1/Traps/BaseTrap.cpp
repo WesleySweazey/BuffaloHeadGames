@@ -21,7 +21,8 @@ ABaseTrap::ABaseTrap()
 void ABaseTrap::BeginPlay()
 {
     Super::BeginPlay();
-    StaticMeshComponent->SetMaterial(0, TrapMaterial);
+    StaticMeshComponent->SetMaterial(0, TrapMaterial); 
+    Server_SetMaterial(TrapMaterial);
 }
 
 // Called every frame
@@ -35,6 +36,22 @@ UStaticMeshComponent * ABaseTrap::GetStaticMeshComponent()
 {
     return StaticMeshComponent;
 }
+
+bool ABaseTrap::Server_SetMaterial_Validate(UMaterialInterface* mat)
+{
+    return true;
+}
+
+void ABaseTrap::Server_SetMaterial_Implementation(UMaterialInterface* mat)
+{
+    StaticMeshComponent->SetMaterial(0, mat);
+}
+
+//void ABaseTrap::Multicast_Destory_Implementation()
+//{
+//
+//}
+
 
 void ABaseTrap::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

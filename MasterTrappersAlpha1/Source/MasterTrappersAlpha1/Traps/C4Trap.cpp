@@ -32,9 +32,9 @@ void AC4Trap::BeginPlay()
 void AC4Trap::Detonate()
 {
     bDetonated = true;
-    m_Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
-    m_Explosion->SetRelativeScale3D(FVector(4.f));
-    m_Explosion->SetIsReplicated(true);
+    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    Explosion->SetRelativeScale3D(FVector(4.f));
+    Explosion->SetIsReplicated(true);
     UWorld* const World = GetWorld();
     if(World)
     UGameplayStatics::PlaySoundAtLocation(World, ExplosionSound, GetActorLocation());
@@ -58,6 +58,7 @@ void AC4Trap::Detonate()
                     break;
                 }
             }
+            Destroy();
             pawn->Multicast_Die();
         }
     }
@@ -141,13 +142,13 @@ void AC4Trap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor *
         }
     }
 }
-//Replicates UPROPERTIES
-void AC4Trap::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-    DOREPLIFETIME(AC4Trap, m_Explosion);
-}
+////Replicates UPROPERTIES
+//void AC4Trap::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+//{
+//    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//
+//    DOREPLIFETIME(AC4Trap, m_Explosion);
+//}
 
 
 

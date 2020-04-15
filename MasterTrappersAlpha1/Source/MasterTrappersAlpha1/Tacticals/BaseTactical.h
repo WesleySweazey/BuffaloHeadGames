@@ -24,6 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
     //Set Material
     virtual void SetMaterial(UMaterialInterface* mat) { TacticalMaterial = mat; }
+    UFUNCTION(Server, Reliable, WithValidation)
+        virtual void Server_SetMaterial(UMaterialInterface* mat);
     //Set Team
     void SetTeam(int value) { Team = value; }
     UPROPERTY(VisibleAnywhere, Category = "MeshComponent",

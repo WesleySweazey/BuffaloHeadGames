@@ -59,9 +59,9 @@ public:
     void Detonate();
     bool bDetonated;
 
-    //Explosion member
-    UPROPERTY(VisibleAnywhere, Category = "Collision", Replicated)
-        class UParticleSystemComponent* m_Explosion;
+    ////Explosion member
+    //UPROPERTY(VisibleAnywhere, Category = "Collision", Replicated)
+    //    class UParticleSystemComponent* m_Explosion;
     //Collided characters
     UPROPERTY(VisibleAnywhere, Category = "Collision")
     TArray<AMasterTrappersAlpha1Character*> collidedCharacters;
