@@ -27,6 +27,10 @@ public:
     /** Projectile movement component */
     UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
         class UProjectileMovementComponent* ProjectileMovement;
+    
+    //Particle
+    UPROPERTY(EditAnywhere, Category = "FX")
+        class UParticleSystem* SmokeParticles;
     //Particle
     UPROPERTY(EditAnywhere, Category = "FX")
         class UParticleSystem* ExplosionParticles;

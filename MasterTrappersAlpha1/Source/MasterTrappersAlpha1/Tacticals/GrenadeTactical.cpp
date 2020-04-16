@@ -16,35 +16,40 @@
 #include "Net/UnrealNetwork.h"
 AGrenadeTactical::AGrenadeTactical()
 {
-    // Use a sphere as a simple collision representation
-    CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-    CollisionComp->InitSphereRadius(150.0f);
-    CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
-    CollisionComp->OnComponentHit.AddDynamic(this, &AGrenadeTactical::OnHit);		// set up a notification for when this component hits something blocking
+    //// Use a sphere as a simple collision representation
+    //CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+    //CollisionComp->InitSphereRadius(0.5f);
+    //CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
+    //CollisionComp->OnComponentHit.AddDynamic(this, &AGrenadeTactical::OnHit);		// set up a notification for when this component hits something blocking
 
-    // Players can't walk on it
-    CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
-    CollisionComp->CanCharacterStepUpOn = ECB_No;
+    //// Players can't walk on it
+    //CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
+    //CollisionComp->CanCharacterStepUpOn = ECB_No;
 
-    // Set as root component
-    RootComponent = CollisionComp;
+    //// Set as root component
+    //RootComponent = CollisionComp;
 
-    ExplosionComp = CreateDefaultSubobject<USphereComponent>(TEXT("ExpComp"));
-    ExplosionComp->InitSphereRadius(50.0f);
-    ExplosionComp->SetCollisionProfileName("OverlapAllDynamic");
-    //ExplosionComp->BodyInstance.SetCollisionProfileName("Projectile");
-    ExplosionComp->OnComponentBeginOverlap.AddDynamic(this, &AGrenadeTactical::OnOverlapBegin);
-
-    StaticMeshComponent->SetCollisionProfileName("BlockAll");
-    StaticMeshComponent->SetupAttachment(RootComponent);
-
-    // Use a ProjectileMovementComponent to govern this projectile's movement
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
     ProjectileMovement->UpdatedComponent = CollisionComp;
     ProjectileMovement->InitialSpeed = 1000.0f;
     ProjectileMovement->MaxSpeed = 3000.f;
     ProjectileMovement->bRotationFollowsVelocity = false;
     ProjectileMovement->bShouldBounce = true;
+
+    ExplosionComp = CreateDefaultSubobject<USphereComponent>(TEXT("ExpComp"));
+    ExplosionComp->InitSphereRadius(50.0f);
+    ExplosionComp->SetCollisionProfileName("OverlapAllDynamic");
+    //ExplosionComp->BodyInstance.SetCollisionProfileName("Projectile");
+    //ExplosionComp->OnComponentBeginOverlap.AddDynamic(this, &AGrenadeTactical::OnOverlapBegin);
+    ExplosionComp->SetupAttachment(RootComponent);
+
+    //StaticMeshComponent->SetCollisionProfileName("BlockAll");
+    //StaticMeshComponent->SetupAttachment(RootComponent);
+
+    // Use a ProjectileMovementComponent to govern this projectile's movement
+    
+   // ProjectileMovement->AddRadialImpulse
+    //ProjectileMovement->Simu
 
     // Die after 3 seconds by default
     Lifetime = 5.0f;
@@ -63,14 +68,19 @@ AGrenadeTactical::AGrenadeTactical()
 
 void AGrenadeTactical::OnExplosion()
 {
-   /* GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
+    /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
         "OnExplosion ");*/
+    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    Explosion->SetRelativeScale3D(FVector(4.f));
+    Explosion->SetIsReplicated(true);
+
+    
     TArray<AActor*> FirstFoundActors;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
     {
         for (int i = 0; i < FirstFoundActors.Num(); i++)
         {
-            if (this->GetDistanceTo(FirstFoundActors[i])<150.0f)
+            if (this->GetDistanceTo(FirstFoundActors[i])<650.0f)
             {
                 AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
 
@@ -112,12 +122,13 @@ void AGrenadeTactical::OnExplosion()
     //    }
     //}
 
-    m_Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+   /* m_Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
     if (m_Explosion)
     {
         m_Explosion->SetRelativeScale3D(FVector(4.f));
-    }
+    }*/
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
+    
 }
 
 void AGrenadeTactical::BeginPlay()
@@ -132,8 +143,11 @@ void AGrenadeTactical::BeginPlay()
 
 void AGrenadeTactical::OnDetonate()
 {
+    //UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    //Explosion->SetRelativeScale3D(FVector(4.f));
     UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
     Explosion->SetRelativeScale3D(FVector(4.f));
+    Explosion->SetIsReplicated(true);
 
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 

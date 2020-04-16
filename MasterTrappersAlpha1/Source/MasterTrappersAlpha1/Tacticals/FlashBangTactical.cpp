@@ -16,34 +16,36 @@
 AFlashBangTactical::AFlashBangTactical()
 {
     // Use a sphere as a simple collision representation
-    CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-    CollisionComp->InitSphereRadius(5.0f);
-    CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
-    CollisionComp->OnComponentHit.AddDynamic(this, &AFlashBangTactical::OnHit);		// set up a notification for when this component hits something blocking
+    //CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+    //CollisionComp->InitSphereRadius(500.0f);
+    //CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
+    //CollisionComp->OnComponentHit.AddDynamic(this, &AFlashBangTactical::OnHit);		// set up a notification for when this component hits something blocking
 
-    // Players can't walk on it
-    CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
-    CollisionComp->CanCharacterStepUpOn = ECB_No;
+    //// Players can't walk on it
+    //CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
+    //CollisionComp->CanCharacterStepUpOn = ECB_No;
 
-    // Set as root component
-    RootComponent = CollisionComp;
+    //// Set as root component
+    //RootComponent = CollisionComp;
 
-    ExplosionComp = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionComp"));
-    ExplosionComp->InitSphereRadius(100.0f);
-    ExplosionComp->SetCollisionProfileName("OverlapAllDynamic");
-    //ExplosionComp->OnComponentHit.AddDynamic(this, &AFlashBangTactical::OnHit);
-    ExplosionComp->SetupAttachment(RootComponent);
+    
 
-    StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    StaticMeshComponent->SetupAttachment(RootComponent);
+    //StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    //StaticMeshComponent->SetupAttachment(RootComponent);
 
     // Use a ProjectileMovementComponent to govern this projectile's movement
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
-    ProjectileMovement->UpdatedComponent = CollisionComp;
+    ProjectileMovement->UpdatedComponent = StaticMeshComponent;
     ProjectileMovement->InitialSpeed = 1000.0f;
     ProjectileMovement->MaxSpeed = 3000.f;
     ProjectileMovement->bRotationFollowsVelocity = false;
     ProjectileMovement->bShouldBounce = true;
+
+    ExplosionComp = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionComp"));
+    ExplosionComp->InitSphereRadius(2000.0f);
+    ExplosionComp->SetCollisionProfileName("OverlapAllDynamic");
+    //ExplosionComp->OnComponentHit.AddDynamic(this, &AFlashBangTactical::OnHit);
+    ExplosionComp->SetupAttachment(RootComponent);
 
     // Die after 3 seconds by default
     InitialLifeSpan = 6.0f;
@@ -97,7 +99,9 @@ void AFlashBangTactical::BeginPlay()
 void AFlashBangTactical::OnDetonate()
 {
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
-
+    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    Explosion->SetRelativeScale3D(FVector(4.f));
+    Explosion->SetIsReplicated(true);
     //TArray<FHitResult> HitActors;
     TArray<AActor*> Actors;
     ExplosionComp->GetOverlappingActors(Actors, AMasterTrappersAlpha1Character::StaticClass());
@@ -189,6 +193,7 @@ void AFlashBangTactical::Tick(float DeltaTime)
     FQuat QuatRotation = FQuat(NewRotation);
 
     AddActorLocalRotation(QuatRotation, false, 0, ETeleportType::None);
+    //ProjectileMovement->UpdateComponentVelocity();
 }
 
 

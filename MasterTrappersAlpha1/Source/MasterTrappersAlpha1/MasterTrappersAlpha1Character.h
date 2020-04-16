@@ -442,6 +442,7 @@ public:
     UFUNCTION(Server, Reliable, WithValidation)
         void Server_SetCursorLocation();
 
+    void Client_SetCursorLocation();
 protected:
     // Called at the Beginning
 	virtual void BeginPlay();
@@ -546,7 +547,8 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
-
+    FVector LocalFacingDirection;
+    FRotator LocalFacingRot;
     FVector GetRandomRespawnLocation();
     //Respawn locations start points
     TArray<FVector> RespawnLocations;

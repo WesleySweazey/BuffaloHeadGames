@@ -684,10 +684,33 @@ bool AMasterTrappersAlpha1Character::Server_SetCursorLocation_Validate()
     return true;
 }
 
+void AMasterTrappersAlpha1Character::Client_SetCursorLocation()
+{
+    if (CursorToWorld != nullptr)
+    {
+        if (UWorld* World = GetWorld())
+        {
+            FHitResult HitResult;
+            FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
+            FVector StartLocation = FirstPersonCameraComponent->GetComponentLocation();
+            FVector EndLocation = FirstPersonCameraComponent->GetComponentRotation().Vector() * 2000.0f + StartLocation;
+            Params.AddIgnoredActor(this);
+            World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+            FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
+            SpawnSurfaceRotation = SurfaceRotation;
+            CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
+            FRotator temp = TrapRotation;
+            temp.Yaw -= 90;
+            FVector trapFowardVector = temp.Vector();
+            DrawDebugLine(GetWorld(), CursorToWorld->GetComponentLocation(), CursorToWorld->GetComponentLocation() + trapFowardVector * 100.0f, FColor(255, 0, 0), false, 0.1f, 0, 2.333);
+        }
+    }
+}
+
 void AMasterTrappersAlpha1Character::Server_SetCursorLocation_Implementation()
 {
-    if (Role == ROLE_Authority)
-    {
+    /*if (Role == ROLE_Authority)
+    {*/
         if (CursorToWorld != nullptr)
         {
             if (UWorld* World = GetWorld())
@@ -707,7 +730,7 @@ void AMasterTrappersAlpha1Character::Server_SetCursorLocation_Implementation()
                 DrawDebugLine(GetWorld(), CursorToWorld->GetComponentLocation(), CursorToWorld->GetComponentLocation() + trapFowardVector * 100.0f, FColor(255, 0, 0), false, 0.1f, 0, 2.333);
             }
         }
-    }
+   // }
 }
 
 void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
@@ -715,7 +738,13 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 
     Server_SetCursorLocation();
-    Server_ChangeFacing(FirstPersonCameraComponent->GetComponentRotation().Vector());
+    if (Role < ROLE_Authority)
+    {
+        Client_SetCursorLocation();
+    }
+    LocalFacingRot = FirstPersonCameraComponent->GetComponentRotation();
+    LocalFacingDirection = LocalFacingRot.Vector();
+    Server_ChangeFacing(LocalFacingDirection);
 
     CurrentSpeed = GetVelocity().Size();
     if (HealthComponent->GetHealth() > 0.0f)
@@ -878,6 +907,8 @@ void AMasterTrappersAlpha1Character::ChangeFacing(FVector TargetFacing)
 {
     SetActorRotation(TargetFacing.Rotation());
     Facing = TargetFacing;
+    //Facing.Y = 0.0f;
+    //Facing.X = 0.0f;
     //Server_ChangeFacing(Facing);
     if (Role < ROLE_Authority)
     {
@@ -953,21 +984,25 @@ bool AMasterTrappersAlpha1Character::SpawnTatical_Validate()
 
 void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
 {
-    if (Role == ROLE_Authority)
+    /*if (Role == ROLE_Authority)
     {
-            UWorld* const World = GetWorld();
+     */       UWorld* const World = GetWorld();
             if (World != NULL)
             {
-                const FRotator SpawnRotation = GetControlRotation();
+                const FRotator SpawnRotation = GetControlRotation(); //LocalFacingRot;//GetControlRotation()
+                //GEngine->AddOnScreenDebugMessage(0, 10.5f, FColor::Yellow, *SpawnRotation.ToString());
                 //const FRotator SpawnRotation = FP_MuzzleLocation->GetComponentRotation();
                 // MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
                 //const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
-                const FVector SpawnLocation = FP_MuzzleLocation->GetComponentLocation();
+                //const FVector SpawnLocation = FP_MuzzleLocation->GetComponentLocation();
+                const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
+                GEngine->AddOnScreenDebugMessage(0, 10.5f, FColor::Blue, *GetActorLocation().ToString());
+                GEngine->AddOnScreenDebugMessage(0, 10.5f, FColor::Red, *SpawnLocation.ToString());
                 //if(FP_MuzzleLocation != nullptr)
 
                 //Set Spawn Collision Handling Override
                 FActorSpawnParameters ActorSpawnParams;
-                ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+                ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;//AdjustIfPossibleButDontSpawnIfColliding
 
                 // spawn the projectile at the muzzle
              if (currentTactical == 0 && GrenadeNum>0)
@@ -1080,17 +1115,17 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                     AnimInstance->Montage_Play(FireAnimation, 1.f);
                 }
             }
-        }
+        //}
 
-        else
-        {
-            if (GrenadeNum <= 0)
-            {
-                FString s = "Run out of grenade, take some grenade pickups";
-                //GEngine->AddOnScreenDebugMessage(1, 3, FColor::Green, *s);
-            }
+        //else
+        //{
+        //    if (GrenadeNum <= 0)
+        //    {
+        //        FString s = "Run out of grenade, take some grenade pickups";
+        //        //GEngine->AddOnScreenDebugMessage(1, 3, FColor::Green, *s);
+        //    }
 
-        }
+        //}
     }
 }
 
