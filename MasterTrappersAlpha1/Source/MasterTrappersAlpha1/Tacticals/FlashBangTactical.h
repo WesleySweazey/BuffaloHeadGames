@@ -65,8 +65,8 @@ public:
     //Begin
     virtual void BeginPlay() override;
     //Detonation
-    UFUNCTION()
-        void OnDetonate();
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_OnDetonate();
 
     /** called when projectile hits something */
     UFUNCTION()

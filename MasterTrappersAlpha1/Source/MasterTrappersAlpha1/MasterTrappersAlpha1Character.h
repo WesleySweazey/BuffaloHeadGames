@@ -20,7 +20,7 @@ class AMasterTrappersAlpha1Character : public ACharacter
 	UPROPERTY(EditAnywhere, Category=Mesh)
 	class USkeletalMeshComponent* Mesh1P;
 
-    /** Pawn mesh: 1st person view (arms; seen only by self) */
+    /** Pos tProcess Component: for flash bang effect */
     UPROPERTY(EditAnywhere, Category = Camera)
         class UPostProcessComponent* FP_PostProcessComponent;
 
@@ -412,12 +412,18 @@ public:
 
 
     //Scrolls Through Inventory Down
-    UFUNCTION(Client, Reliable, WithValidation)
+    UFUNCTION(NetMulticast, Reliable)//, WithValidation)
+        void Multicast_StartStun();
+    //Scrolls Through Inventory Down
+    UFUNCTION(NetMulticast, Reliable)//, WithValidation)
+        void Multicast_EndStun();
+
+    //Scrolls Through Inventory Down
+    UFUNCTION(Client, Reliable, WithValidation)//, WithValidation)
         void Client_StartStun();
     //Scrolls Through Inventory Down
-    UFUNCTION(Client, Reliable, WithValidation)
+    UFUNCTION(Client, Reliable, WithValidation)//, WithValidation)
         void Client_EndStun();
-
 
 
     //Multicast die
@@ -550,6 +556,7 @@ public:
     FVector LocalFacingDirection;
     FRotator LocalFacingRot;
     FVector GetRandomRespawnLocation();
+    FVector SavedPosition;
     //Respawn locations start points
     TArray<FVector> RespawnLocations;
 };

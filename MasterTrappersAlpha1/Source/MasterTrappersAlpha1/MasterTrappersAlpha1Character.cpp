@@ -65,6 +65,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
     FP_PostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
+    //FP_PostProcessComponent->SetIsReplicated(true);
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
@@ -149,6 +150,8 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     {
         RespawnLocations.Add(playerStarts[i]->GetActorLocation());
     }
+
+    SavedPosition = FirstPersonCameraComponent->GetComponentLocation();
 }
 // Server Add Inventory Functions
 void AMasterTrappersAlpha1Character::Server_AddToInventory_Implementation(ABasePickup * actor)
@@ -547,10 +550,7 @@ void AMasterTrappersAlpha1Character::Server_EndSlip_Implementation()
 
 bool AMasterTrappersAlpha1Character::Server_StartStun_Validate()
 {
-    if (Role == ROLE_Authority)
         return true;
-    else
-        return false;
 }
 
 void AMasterTrappersAlpha1Character::Server_StartStun_Implementation()
@@ -579,20 +579,31 @@ void AMasterTrappersAlpha1Character::Server_EndStun_Implementation()
 
 //Client Stun Functions
 
+void AMasterTrappersAlpha1Character::Client_StartStun_Implementation()
+{
+    /* if (Role == ROLE_Authority)
+     {*/
+
+    UWorld* const World = GetWorld();
+    World->GetTimerManager().SetTimer(StunTimerHandle, this, &AMasterTrappersAlpha1Character::Client_EndStun, StunTimerLength, false);
+    FP_PostProcessComponent->bEnabled = true;
+    //}
+}
+
 bool AMasterTrappersAlpha1Character::Client_StartStun_Validate()
 {
     return true;
 }
 
-void AMasterTrappersAlpha1Character::Client_StartStun_Implementation()
+void AMasterTrappersAlpha1Character::Multicast_StartStun_Implementation()//
 {
-    //if (Role != ROLE_Authority)
-    {
+   /* if (Role == ROLE_Authority)
+    {*/
 
         UWorld* const World = GetWorld();
-        World->GetTimerManager().SetTimer(StunTimerHandle, this, &AMasterTrappersAlpha1Character::Client_EndStun, StunTimerLength, false);
+        World->GetTimerManager().SetTimer(StunTimerHandle, this, &AMasterTrappersAlpha1Character::Multicast_EndStun, StunTimerLength, false);
         FP_PostProcessComponent->bEnabled = true;
-    }
+    //}
 }
 
 bool AMasterTrappersAlpha1Character::Client_EndStun_Validate()
@@ -601,6 +612,12 @@ bool AMasterTrappersAlpha1Character::Client_EndStun_Validate()
 }
 
 void AMasterTrappersAlpha1Character::Client_EndStun_Implementation()
+{
+
+    FP_PostProcessComponent->bEnabled = false;
+}
+
+void AMasterTrappersAlpha1Character::Multicast_EndStun_Implementation()//
 {
 
     FP_PostProcessComponent->bEnabled = false;
@@ -745,7 +762,7 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     LocalFacingRot = FirstPersonCameraComponent->GetComponentRotation();
     LocalFacingDirection = LocalFacingRot.Vector();
     Server_ChangeFacing(LocalFacingDirection);
-
+    SavedPosition = FirstPersonCameraComponent->GetComponentLocation();
     CurrentSpeed = GetVelocity().Size();
     if (HealthComponent->GetHealth() > 0.0f)
     {
@@ -1240,7 +1257,6 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
     DOREPLIFETIME(AMasterTrappersAlpha1Character, HealthComponent);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, m_Score);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, FireSound);
-    
 }
 
 //add droneNum everytime by 5 when hit a pickup

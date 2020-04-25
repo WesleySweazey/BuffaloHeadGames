@@ -12,6 +12,9 @@
 #include "Engine/World.h"
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "Engine.h"
+#include "Net/UnrealNetwork.h"
+//#include "Runtime/Engine/Public/EngineGlobals.h"
 
 AFlashBangTactical::AFlashBangTactical()
 {
@@ -42,7 +45,7 @@ AFlashBangTactical::AFlashBangTactical()
     ProjectileMovement->bShouldBounce = true;
 
     ExplosionComp = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionComp"));
-    ExplosionComp->InitSphereRadius(2000.0f);
+    ExplosionComp->InitSphereRadius(10.0f);
     ExplosionComp->SetCollisionProfileName("OverlapAllDynamic");
     //ExplosionComp->OnComponentHit.AddDynamic(this, &AFlashBangTactical::OnHit);
     ExplosionComp->SetupAttachment(RootComponent);
@@ -92,37 +95,94 @@ void AFlashBangTactical::BeginPlay()
     Super::BeginPlay();
 
     FTimerHandle handle;
-    GetWorld()->GetTimerManager().SetTimer(handle, this, &AFlashBangTactical::OnDetonate, 5.f, false);  // don't want to loop the explotion, just do once every 5.0 second
-    GetWorld()->GetTimerManager().SetTimer(smokeTimerHandle, this, &AFlashBangTactical::StartSmoke, 2.0f, false);                                        //Spawns Smoke
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->GetTimerManager().SetTimer(handle, this, &AFlashBangTactical::Server_OnDetonate_Implementation, 5.f, false);  // don't want to loop the explotion, just do once every 5.0 second
+    }
+    GetWorld()->GetTimerManager().SetTimer(smokeTimerHandle, this, &AFlashBangTactical::StartSmoke, 4.0f, false);                                        //Spawns Smoke
 }
 
-void AFlashBangTactical::OnDetonate()
+bool AFlashBangTactical::Server_OnDetonate_Validate()
+{
+    return true;
+}
+
+void AFlashBangTactical::Server_OnDetonate_Implementation()
 {
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
     UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
     Explosion->SetRelativeScale3D(FVector(4.f));
     Explosion->SetIsReplicated(true);
-    //TArray<FHitResult> HitActors;
-    TArray<AActor*> Actors;
-    ExplosionComp->GetOverlappingActors(Actors, AMasterTrappersAlpha1Character::StaticClass());
-    for (int i = 0; i < Actors.Num(); i++)
+
+    TArray<AActor*> FirstFoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
     {
-        AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(Actors[i]);
-        if (pawn) //if the flash bang not hitting the player himself
+        GEngine->AddOnScreenDebugMessage(-1, 30.0f, FColor::Yellow, "Num of actors: " + FString::SanitizeFloat(FirstFoundActors.Num()));
+        for (int i = 0; i < FirstFoundActors.Num(); i++)
         {
-            /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-            "AFlashBangTactical::OnOverlapBegin Overlapped with - "
-            + OtherActor->GetName());*/
-            if (Role < ROLE_Authority)
+            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
+            FVector pawnPos = pawn->SavedPosition;
+            //FVector::Distance(this->GetActorLocation(), pawnPos);
+            //this->GetDistanceTo(pawnPos)
+            float dist = FVector::Distance(this->GetActorLocation(), pawnPos);
+            GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + "Distance: " + FString::SanitizeFloat(FVector::Distance(this->GetActorLocation(), pawnPos)));
+            GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + " Flash position: X" + FString::SanitizeFloat(this->GetActorLocation().X) + " Actor position: Y" + FString::SanitizeFloat(this->GetActorLocation().Y) + " Actor position: Z" + FString::SanitizeFloat(this->GetActorLocation().Z));
+            if (dist < 400.0f)
             {
-                pawn->Server_StartStun();
-            }
-            else
-            {
+                
+                //GEngine->AddOnScreenDebugMessage(-1, 45.0f, FColor::Red, pawn->GetName() + " Actor position: X" + FString::SanitizeFloat(pawn->GetActorLocation().X) + " Actor position: Y" + FString::SanitizeFloat(pawn->GetActorLocation().Y) + " Actor position: Z" + FString::SanitizeFloat(pawn->GetActorLocation().Z));
+                GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + " Actor position: X" + FString::SanitizeFloat(pawn->SavedPosition.X) + " Actor position: Y" + FString::SanitizeFloat(pawn->SavedPosition.Y) + " Actor position: Z" + FString::SanitizeFloat(pawn->SavedPosition.Z));
+                //GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + " Flash position: X" + FString::SanitizeFloat(this->GetActorLocation().X) + " Actor position: Y" + FString::SanitizeFloat(this->GetActorLocation().Y) + " Actor position: Z" + FString::SanitizeFloat(this->GetActorLocation().Z));
+                
+                //pawn->GetMesh1P();
+                TArray<AActor*> FoundActors;
+                UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
+                for (int j = 0; j < FoundActors.Num(); j++)
+                {
+                    AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[j]);
+                    if (temp->Team == Team)
+                    {
+                        temp->AddScore();
+                        break;
+                    }
+                }
+                //pawn->Multicast_Die();
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "AFlashBangTactical::Start flash");
                 pawn->Client_StartStun();
             }
         }
     }
+
+    //TArray<FHitResult> HitActors;
+    //TArray<AActor*> Actors;
+    //ExplosionComp->GetOverlappingActors(Actors, AMasterTrappersAlpha1Character::StaticClass());
+    //for (int i = 0; i < Actors.Num(); i++)
+    //{
+    //    AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(Actors[i]);
+    //    if (pawn) //if the flash bang not hitting the player himself
+    //    {
+    //        //for (int i = 0; i < Actors.Num(); i++)
+    //        //{
+    //        float distanceToFlash = this->GetDistanceTo(pawn);
+
+    //            if (distanceToFlash < 650.0f)
+    //            {
+    //                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+    //                    "AFlashBangTactical::OnOverlapBegin Overlapped with - "
+    //                    + pawn->GetName() + " Distance: " + FString::SanitizeFloat(distanceToFlash));
+    //                pawn->Client_StartStun();
+    //            }
+    //        //}
+    //        /*if (Role < ROLE_Authority)
+    //        {
+    //            pawn->Server_StartStun();
+    //        }
+    //        else
+    //        {*/
+    //            //pawn->Client_StartStun();
+    //        //}
+    //    }
+    //}
     /*FVector StartTrace = GetActorLocation();
     FVector EndTrace = StartTrace;
     EndTrace.Z += 360.0f;
