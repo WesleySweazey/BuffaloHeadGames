@@ -10,13 +10,15 @@
 #include "DestructibleComponent.h"
 #include "DestructibleActor.h"
 #include "MasterTrappersAlpha1Character.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/World.h"
 
 ANinjaStarTactical::ANinjaStarTactical() :ABaseTactical()
 {
 
     // Use a ProjectileMovementComponent to govern this projectile's movement
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
-    ProjectileMovement->UpdatedComponent = StaticMeshComponent;
+    ProjectileMovement->SetUpdatedComponent(GetStaticMeshComponent());
     ProjectileMovement->InitialSpeed = 1000.0f;
     ProjectileMovement->MaxSpeed = 3000.f;
     ProjectileMovement->bRotationFollowsVelocity = false;
@@ -44,13 +46,29 @@ void ANinjaStarTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
     {
         if (OtherActor->ActorHasTag("Player"))
         {
+
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
             if (pawn)
             {
-                /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-                    "ANinjaStarTactical::OnOverlapBegin Overlapped with - "
-                    + OtherActor->GetName());*/
-                pawn->Multicast_Die();
+                //Check team
+                if (pawn->Team != Team)
+                {
+                    //Get all players in scene
+                    TArray<AActor*> FoundActors;
+                    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
+
+                    for (int i = 0; i < FoundActors.Num(); i++)
+                    {
+                        AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
+                        //If the trap team equal a players team add score
+                        if (temp->Team == Team)
+                        {
+                            temp->AddScore();
+                            break;
+                        }
+                    }
+                    pawn->Multicast_Die();
+                }
                 this->Destroy();
             }
         }

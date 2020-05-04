@@ -41,6 +41,9 @@ public:
         float RollVal;
 
 public:
+    UPROPERTY(EditAnywhere, Category = "Projectile")
+        FVector FowardVelocity;
+
     AMolotovTactical();
     //Begin
     virtual void BeginPlay() override;
@@ -48,16 +51,20 @@ public:
     //On Detonate spawns fire
     UFUNCTION()
         void OnDetonate();
-
+    
     /** Fire Area effect Blueprint */
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,
         Category = "AreaEffect")
         TSubclassOf<class AFireAreaEffect> FireAreaEffect;
 
-    /** called when projectile hits something */
-    UFUNCTION()
-        void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+    //On Explosion
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+    ///** called when projectile hits something */
+    //UFUNCTION()
+    //    void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
     /** Returns CollisionComp subobject **/
     FORCEINLINE class USphereComponent* GetCollisionComp() const { return CollisionComp; }

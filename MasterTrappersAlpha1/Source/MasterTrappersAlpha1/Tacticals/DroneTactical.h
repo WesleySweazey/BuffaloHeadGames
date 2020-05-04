@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Tacticals/BaseTactical.h"
+#include "MasterTrappersAlpha1Character.h"
 #include "DroneTactical.generated.h"
 
 /**
@@ -38,6 +39,10 @@ public:
     //Facing direction
     FVector DroneDir;
     
+    //Smoke begin
+    FTimerHandle droneTimerHandle;
+
+    AMasterTrappersAlpha1Character* DroneOwner;
 
     //Character overlapping - play sound
     UFUNCTION()
@@ -46,8 +51,9 @@ public:
         void EndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
     //Dumb AI
     UFUNCTION()
-        void CheckForWalls();
+        bool CheckForWalls(AMasterTrappersAlpha1Character* pawn);
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 	
+    void SelfDestruct();
 };

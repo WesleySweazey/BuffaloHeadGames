@@ -10,7 +10,8 @@
 #include "DestructibleComponent.h"
 #include "DestructibleActor.h"
 #include "MasterTrappersAlpha1Character.h"
-
+#include "Components/StaticMeshComponent.h"
+#include "Engine/World.h"
 
 AThrowingAxeTactical::AThrowingAxeTactical() :ABaseTactical()
 {

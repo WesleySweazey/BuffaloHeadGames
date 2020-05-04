@@ -62,8 +62,8 @@ public:
     //Timer handle
     FTimerHandle Explosionhandle;
     //On Explosion
-    UFUNCTION()
-    void OnExplosion();
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_OnExplosion();
     //Colliding character
     UPROPERTY(VisibleAnywhere, Category = "Collision")
         TArray<AMasterTrappersAlpha1Character*> collidedCharacters;

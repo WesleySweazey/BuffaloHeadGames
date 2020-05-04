@@ -75,6 +75,24 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 	Mesh1P->CastShadow = false;
 	Mesh1P->RelativeRotation = FRotator(1.9f, -19.19f, 5.2f);
 	Mesh1P->RelativeLocation = FVector(-0.5f, -4.4f, -155.7f);
+    Mesh1P->bRenderCustomDepth = false;
+
+    HatMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HatMesh"));
+    HatMesh->SetupAttachment(Mesh1P);
+    HatMesh->RelativeLocation = FVector(0.f, 0.0f, 200.0f);
+    HatMesh->SetRelativeScale3D(FVector(0.f, 0.0f, 0.0f));
+    //testMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("testMesh"));
+    //HatMesh->SetActive(true);
+    ////HatMesh->SetOnlyOwnerSee(true);
+    //HatMesh->SetIsReplicated(true);
+    //HatMesh->RelativeLocation = FVector(0.0f, 0.0f, 200.0f);
+    //Mesh1P->SetOnlyOwnerSee(true);
+    /*HatMesh->SetupAttachment(Mesh1P);
+    HatMesh->bCastDynamicShadow = false;
+    HatMesh->CastShadow = false;
+    HatMesh->SetActive(false);*/
+    //HatMesh->RelativeRotation = FRotator(1.9f, -19.19f, 5.2f);
+    //
 
 	// Create a gun mesh component
 	FP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
@@ -89,7 +107,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 	FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
 
 	// Default offset from the character location for projectiles to spawn
-	GunOffset = FVector(100.0f, 0.0f, 10.0f);
+	GunOffset = FVector(110.0f, 0.0f, 10.0f);
 
     // Create a decal in the world to show the cursor's location
     CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
@@ -153,6 +171,29 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
 
     SavedPosition = FirstPersonCameraComponent->GetComponentLocation();
 }
+bool AMasterTrappersAlpha1Character::Client_SetDroneView_Validate(bool val, int teamNumber)
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Client_SetDroneView_Implementation(bool val, int teamNumber)
+{
+    TArray<AActor*> FirstFoundActors;
+
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
+    {
+        for (int i = 0; i < FirstFoundActors.Num(); i++)
+        {
+            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
+            if (pawn->Team == teamNumber)
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 13, FColor::Red, "Setting drone view");
+                pawn->GetMesh1P()->SetRenderCustomDepth(val);
+            }
+        }
+    }
+}
+
 // Server Add Inventory Functions
 void AMasterTrappersAlpha1Character::Server_AddToInventory_Implementation(ABasePickup * actor)
 {
@@ -508,6 +549,7 @@ void AMasterTrappersAlpha1Character::PostBeginPlay()
     {
         Mesh1P->SetMaterial(0, CharacterMaterial);
     }
+    
         //}
     //}
     //After you make your custom T2D, assign it as a texture parameter to your material
@@ -515,6 +557,79 @@ void AMasterTrappersAlpha1Character::PostBeginPlay()
     //ref copy: Texture2D'/Game/Inventory/hp.hp'
 }
 
+bool AMasterTrappersAlpha1Character::Server_SetMasterTrapper_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_SetMasterTrapper_Implementation()
+{
+    if (Role == ROLE_Authority)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("SetMasterTrapper"));
+        int highScore = 0;
+        AMasterTrappersAlpha1Character* highestCharacter = nullptr;
+        bool tie = false;
+        TArray<AActor*> FirstFoundActors;
+
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
+        {
+            for (int i = 0; i < FirstFoundActors.Num(); i++)
+            {
+                AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
+                int currentscore = pawn->GetScore();
+                if (highScore < currentscore)
+                {
+                    highestCharacter = pawn;
+                    highScore = currentscore;
+                }
+            }
+            if (tie == false)
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Lead"));
+                if (highestCharacter != nullptr)
+                {
+                    highestCharacter->HatMesh->SetRelativeScale3D(FVector(1.f, 1.0f, 1.0f));
+                }
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hat true"));
+            }
+        }
+        
+    }
+}
+
+//void AMasterTrappersAlpha1Character::Multicast_SetMasterTrapper_Implementation()
+//{
+//    /*if (Role == ROLE_Authority)
+//    {*/
+//    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("SetMasterTrapper"));
+//    int highScore = 0;
+//    AMasterTrappersAlpha1Character* highestCharacter = nullptr;
+//    bool tie = false;
+//    TArray<AActor*> FirstFoundActors;
+//
+//    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
+//    {
+//        for (int i = 0; i < FirstFoundActors.Num(); i++)
+//        {
+//            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
+//            int currentscore = pawn->GetScore();
+//            if (highScore < currentscore)
+//            {
+//                highestCharacter = pawn;
+//                highScore = currentscore;
+//            }
+//        }
+//        if (tie == false)
+//        {
+//            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Lead"));
+//            highestCharacter->HatMesh->SetRelativeScale3D(FVector(1.f, 1.0f, 1.0f));
+//            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hat true"));
+//        }
+//    }
+//
+//    //}
+//}
 //Server Slip Functions
 
 bool AMasterTrappersAlpha1Character::Server_StartSlip_Validate()
@@ -629,10 +744,11 @@ void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
     {
         HealthComponent->Server_ResetHealth();
         SetActorLocation(GetRandomRespawnLocation());
+        Server_SetMasterTrapper();
         //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
         //StartSlip();
-
     }
+   // Multicast_SetMasterTrapper();
 }
 
 FVector AMasterTrappersAlpha1Character::GetRandomRespawnLocation()
@@ -708,9 +824,10 @@ void AMasterTrappersAlpha1Character::Client_SetCursorLocation()
         if (UWorld* World = GetWorld())
         {
             FHitResult HitResult;
+            FRotator SpawnRotation = GetControlRotation();
             FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
             FVector StartLocation = FirstPersonCameraComponent->GetComponentLocation();
-            FVector EndLocation = FirstPersonCameraComponent->GetComponentRotation().Vector() * 2000.0f + StartLocation;
+            FVector EndLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset) * 2000;
             Params.AddIgnoredActor(this);
             World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
             FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
@@ -719,6 +836,7 @@ void AMasterTrappersAlpha1Character::Client_SetCursorLocation()
             FRotator temp = TrapRotation;
             temp.Yaw -= 90;
             FVector trapFowardVector = temp.Vector();
+            //DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor(255, 0, 0), false, 0.1f, 0, 2.333);
             DrawDebugLine(GetWorld(), CursorToWorld->GetComponentLocation(), CursorToWorld->GetComponentLocation() + trapFowardVector * 100.0f, FColor(255, 0, 0), false, 0.1f, 0, 2.333);
         }
     }
@@ -733,9 +851,11 @@ void AMasterTrappersAlpha1Character::Server_SetCursorLocation_Implementation()
             if (UWorld* World = GetWorld())
             {
                 FHitResult HitResult;
+                FRotator SpawnRotation = GetControlRotation();
                 FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
                 FVector StartLocation = FirstPersonCameraComponent->GetComponentLocation();
-                FVector EndLocation = FirstPersonCameraComponent->GetComponentRotation().Vector() * 2000.0f + StartLocation;
+                FVector EndLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset) *2000;
+
                 Params.AddIgnoredActor(this);
                 World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
                 FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
@@ -744,10 +864,31 @@ void AMasterTrappersAlpha1Character::Server_SetCursorLocation_Implementation()
                 FRotator temp = TrapRotation;
                 temp.Yaw -= 90;
                 FVector trapFowardVector = temp.Vector();
+                //DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor(255, 0, 0), false, 0.1f, 0, 2.333);
                 DrawDebugLine(GetWorld(), CursorToWorld->GetComponentLocation(), CursorToWorld->GetComponentLocation() + trapFowardVector * 100.0f, FColor(255, 0, 0), false, 0.1f, 0, 2.333);
             }
         }
    // }
+}
+
+bool AMasterTrappersAlpha1Character::Server_ControlPitch_Validate()
+{
+    return true;
+}
+
+void AMasterTrappersAlpha1Character::Server_ControlPitch_Implementation()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 30.0f, FColor::Yellow, "Clamp pitch");
+    TArray<AActor*> FirstFoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
+    {
+        for (int i = 0; i < FirstFoundActors.Num(); i++)
+        {
+            FRotator actorRotation = FirstFoundActors[i]->GetActorRotation();
+            actorRotation.Pitch = 0;
+            FirstFoundActors[i]->SetActorRotation(actorRotation);
+        }
+    }
 }
 
 void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
@@ -759,6 +900,12 @@ void AMasterTrappersAlpha1Character::Tick(float DeltaSeconds)
     {
         Client_SetCursorLocation();
     }
+
+    //if (Role == ROLE_Authority)
+    //{
+    //    //Server_ControlPitch_Implementation();
+    //}
+
     LocalFacingRot = FirstPersonCameraComponent->GetComponentRotation();
     LocalFacingDirection = LocalFacingRot.Vector();
     Server_ChangeFacing(LocalFacingDirection);
@@ -897,7 +1044,9 @@ bool AMasterTrappersAlpha1Character::Server_ChangeFacing_Validate(FVector Target
 
 void AMasterTrappersAlpha1Character::Server_ChangeFacing_Implementation(FVector TargetFacing)
 {
-    ChangeFacing(TargetFacing);
+    FRotator actorRotation = GetActorRotation();
+    actorRotation.Pitch = 0;
+    SetActorRotation(actorRotation);
 }
 
 void AMasterTrappersAlpha1Character::MoveForward(float Value)
@@ -924,9 +1073,6 @@ void AMasterTrappersAlpha1Character::ChangeFacing(FVector TargetFacing)
 {
     SetActorRotation(TargetFacing.Rotation());
     Facing = TargetFacing;
-    //Facing.Y = 0.0f;
-    //Facing.X = 0.0f;
-    //Server_ChangeFacing(Facing);
     if (Role < ROLE_Authority)
     {
         Server_ChangeFacing(Facing);
@@ -1020,6 +1166,9 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                 //Set Spawn Collision Handling Override
                 FActorSpawnParameters ActorSpawnParams;
                 ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;//AdjustIfPossibleButDontSpawnIfColliding
+                
+                FRotator tempRot = SpawnRotation + FRotator(0.0f, 0.0f, 0.0f);
+                FVector tempLocation = SpawnLocation + FVector(40.0f, 0.0f, 10.0f);
 
                 // spawn the projectile at the muzzle
              if (currentTactical == 0 && GrenadeNum>0)
@@ -1057,11 +1206,12 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                 }
                 else if (currentTactical == 2 && MolotovNum>0)
                 {
-                    AMolotovTactical* SpawnedActor = World->SpawnActor<AMolotovTactical>(MolotovTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    AMolotovTactical* SpawnedActor = World->SpawnActor<AMolotovTactical>(MolotovTactical, tempLocation, tempRot, ActorSpawnParams);
                     if (SpawnedActor)
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
                         SpawnedActor->Server_SetMaterial(CharacterMaterial);
+                        SpawnedActor->FowardVelocity = SpawnLocation;
                         MolotovNum--;
                         SpawnedActor->Team = Team;
                         SpawnedActor->SetOwner(this);
@@ -1073,7 +1223,7 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                 }
                 else if (currentTactical == 3 && NinjaStarNum>0)
                 {
-                    ANinjaStarTactical* SpawnedActor = World->SpawnActor<ANinjaStarTactical>(NinjaStarTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                    ANinjaStarTactical* SpawnedActor = World->SpawnActor<ANinjaStarTactical>(NinjaStarTactical, tempLocation, tempRot, ActorSpawnParams);
                     if (SpawnedActor)
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
@@ -1105,13 +1255,15 @@ void AMasterTrappersAlpha1Character::SpawnTatical_Implementation()
                 }
                 else if (currentTactical == 5 && DroneTacticalNum>0)
                 {
-                    ADroneTactical* SpawnedActor = World->SpawnActor<ADroneTactical>(DroneTactical, SpawnLocation, SpawnRotation, ActorSpawnParams);
+                 tempRot.Pitch = 0;
+                    ADroneTactical* SpawnedActor = World->SpawnActor<ADroneTactical>(DroneTactical, tempLocation, tempRot, ActorSpawnParams);
                     if (SpawnedActor)
                     {
                         SpawnedActor->SetMaterial(CharacterMaterial);
                         SpawnedActor->Server_SetMaterial(CharacterMaterial);
                         DroneTacticalNum--;
                         SpawnedActor->Team = Team;
+                        SpawnedActor->DroneOwner = this;
                         SpawnedActor->SetOwner(this);
                         if (FireSound != NULL)
                         {

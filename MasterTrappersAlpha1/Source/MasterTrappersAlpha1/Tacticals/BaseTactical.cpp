@@ -4,7 +4,7 @@
 #include "MasterTrappersAlpha1Character.h"
 #include "Components/StaticMeshComponent.h"
 #include "Net/UnrealNetwork.h"
-
+#include "Engine/Engine.h"
 // Sets default values
 ABaseTactical::ABaseTactical()
 {

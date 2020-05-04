@@ -40,8 +40,9 @@ protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
-    //Check Collision
-    virtual void CheckCollision();
+    ////Check Collision
+    //UFUNCTION(Server, Reliable, WithValidation)
+    //    void Server_CheckCollision();
 
     // Called every frame
     virtual void Tick(float DeltaTime) override;

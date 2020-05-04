@@ -13,6 +13,8 @@
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Public/DrawDebugHelpers.h"
 #include "Engine/World.h"
+#include "Runtime/Engine/Public/TimerManager.h"
+#include "SkeletalMeshComponent.generated.h"
 
 ADroneTactical::ADroneTactical()
 {
@@ -43,7 +45,8 @@ ADroneTactical::ADroneTactical()
     SetReplicates(true);
     SetReplicateMovement(true);
     RunningTime = 0.0f;
-    DroneDir = FVector(4, 0, 0);
+    DroneDir = FVector(0, 0, 0);
+
 }
 
 void ADroneTactical::BeginPlay()
@@ -51,13 +54,24 @@ void ADroneTactical::BeginPlay()
     Super::BeginPlay();
     //stops sound from playing right away
     DroneAudio->Stop();
+    GetWorld()->GetTimerManager().SetTimer(droneTimerHandle, this, &ADroneTactical::SelfDestruct, 40.0f, false);
 }
 
 void ADroneTactical::StartOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
     if (OtherActor->ActorHasTag("Player"))
     {
-        //GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap Start");
+        AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
+        if (pawn)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue , "Overlap Start");
+            AMasterTrappersAlpha1Character* owner = Cast<AMasterTrappersAlpha1Character>(GetOwner());
+            if (DroneOwner)
+            {
+                DroneOwner->Client_SetDroneView(true, pawn->Team);
+            }
+        }
+        
         //plays sound when players enter radius
         DroneAudio->Play();
     }
@@ -67,10 +81,19 @@ void ADroneTactical::EndOverlap(UPrimitiveComponent * OverlappedComp, AActor * O
 {
     if (OtherActor->ActorHasTag("Player"))
     {
-        //GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Overlap End");
-        //stops playing sound when players leave drone radius 
-        DroneAudio->Stop();
+        AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(OtherActor);
+        if (pawn)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 19, FColor::Blue, "Overlap end");
+            AMasterTrappersAlpha1Character* owner = Cast<AMasterTrappersAlpha1Character>(GetOwner());
+                if (DroneOwner)
+                {
+                    DroneOwner->Client_SetDroneView(false, pawn->Team);
+                }
+        }
 
+        //plays sound when players enter radius
+        DroneAudio->Play();
     }
 }
 
@@ -91,11 +114,17 @@ void ADroneTactical::Tick(float DeltaTime)
     
 }
 
-void ADroneTactical::CheckForWalls()
+void ADroneTactical::SelfDestruct()
+{
+    Destroy();
+}
+
+bool ADroneTactical::CheckForWalls(AMasterTrappersAlpha1Character* pawn)
 {
     FHitResult* HitResult = new FHitResult();
     FVector RayStartPoint = GetActorLocation();
-    FVector RayEndPoint = RayStartPoint + (FVector::ForwardVector * 20);
+    FVector RayEndPoint = pawn->GetActorLocation();
+    DrawDebugLine(GetWorld(), RayStartPoint, RayEndPoint, FColor::Red, false, 0.1f, 0, 2.333);
     FCollisionQueryParams* CQP = new FCollisionQueryParams();
 
     /*!HitResult->GetActor()->ActorHasTag("Player")|| !HitResult->GetActor()->ActorHasTag("Tactical") || !HitResult->GetActor()->ActorHasTag("Trap")*/
@@ -125,4 +154,5 @@ void ADroneTactical::CheckForWalls()
             RayEndPoint = RayStartPoint + (-FVector::RightVector * 20);
         }
     }
+    return true;
 }

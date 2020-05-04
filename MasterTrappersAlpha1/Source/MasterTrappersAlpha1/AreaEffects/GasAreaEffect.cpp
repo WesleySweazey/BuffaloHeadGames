@@ -25,7 +25,7 @@ void AGasAreaEffect::BeginPlay()
     UWorld* const World = GetWorld();
     World->GetTimerManager().SetTimer(LifeTimeHandle, this, &ABaseAreaEffect::Server_Stop, LifeTime, false);
     //Set update timer
-    World->GetTimerManager().SetTimer(damageTimeHandle, this, &AGasAreaEffect::CheckCollision, 1, true);
+    World->GetTimerManager().SetTimer(damageTimeHandle, this, &AGasAreaEffect::Server_CheckCollision, 1, true);
     //CollisionComp->OnComponentHit.AddDynamic(this, &AGasAreaEffect::OnHit);
     PlayEffects();
 }
@@ -36,8 +36,13 @@ void AGasAreaEffect::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     
 }
+bool AGasAreaEffect::Server_CheckCollision_Validate()
+{
+    return true;
+}
+
 //Check Collision
-void AGasAreaEffect::CheckCollision()
+void AGasAreaEffect::Server_CheckCollision_Implementation()
 {
     UWorld* const World = GetWorld();
     if (World)
@@ -70,7 +75,7 @@ void AGasAreaEffect::CheckCollision()
                 }
             }
         }
-        World->GetTimerManager().SetTimer(damageTimeHandle, this, &AGasAreaEffect::CheckCollision, 1, true);
+        World->GetTimerManager().SetTimer(damageTimeHandle, this, &AGasAreaEffect::Server_CheckCollision, 1, true);
     }
 }
 void AGasAreaEffect::PlayEffects()

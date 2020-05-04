@@ -20,6 +20,12 @@ class AMasterTrappersAlpha1Character : public ACharacter
 	UPROPERTY(EditAnywhere, Category=Mesh)
 	class USkeletalMeshComponent* Mesh1P;
 
+    UPROPERTY(EditAnywhere, Category = Mesh)
+        class UStaticMeshComponent* HatMesh;
+
+    //UPROPERTY(EditAnywhere, Category = Mesh)
+        //class UStaticMeshComponent* testMesh;
+
     /** Pos tProcess Component: for flash bang effect */
     UPROPERTY(EditAnywhere, Category = Camera)
         class UPostProcessComponent* FP_PostProcessComponent;
@@ -63,6 +69,8 @@ public:
     void Multicast_AssignColors();
     UFUNCTION(Server, Reliable, WithValidation)
         void Server_SetColor();
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_ControlPitch();
     /** Player's team number */
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Team", Replicated)
         int Team;
@@ -136,6 +144,9 @@ public:
     UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
         void Server_AddMolotovNum();
     void AddMolotovNum();
+
+    UFUNCTION(BlueprintCallable, NetMulticast, Reliable, WithValidation)//
+        void Server_SetMasterTrapper();
 
     //NinjaStar  setup
     UPROPERTY(EditAnywhere, Replicated)
@@ -425,6 +436,8 @@ public:
     UFUNCTION(Client, Reliable, WithValidation)//, WithValidation)
         void Client_EndStun();
 
+    UFUNCTION(Client, Reliable, WithValidation)//, WithValidation)
+        void Client_SetDroneView(bool val, int teamNumber);
 
     //Multicast die
     UFUNCTION(NetMulticast, Reliable)
@@ -446,7 +459,7 @@ public:
 
     //Multicast die
     UFUNCTION(Server, Reliable, WithValidation)
-        void Server_SetCursorLocation();
+        void  Server_SetCursorLocation();
 
     void Client_SetCursorLocation();
 protected:
@@ -551,6 +564,8 @@ protected:
 public:
 	/** Returns Mesh1P subobject **/
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
+    /** Returns Mesh1P subobject **/
+    //FORCEINLINE class UStaticMeshComponent* GetHatMesh() const { return HatMesh; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
     FVector LocalFacingDirection;

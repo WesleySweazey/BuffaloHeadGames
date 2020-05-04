@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-GameFrwkSessionsPlugin-1910.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\Wesley Sweazey\Documents\GitHub\BuffaloHeadGames\MasterTrappersAlpha1\Intermediate\Build\Win64\MasterTrappersAlpha1Editor\Development\Engine\SharedPCH.Engine.h.obj"
+"C:\Users\Wesley Sweazey\Documents\GitHub\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\Module.GameFrwkSessionsPlugin.cpp.obj"
+"C:\Users\Wesley Sweazey\Documents\GitHub\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\Module.GameFrwkSessionsPlugin.gen.cpp.obj"
+"C:\Users\Wesley Sweazey\Documents\GitHub\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\PCLaunch.rc.res"
+/OUT:"C:\Users\Wesley Sweazey\Documents\GitHub\BuffaloHeadGames\MasterTrappersAlpha1\Plugins\GameFrwkSessionsPlugin\Intermediate\Build\Win64\UE4Editor\Development\GameFrwkSessionsPlugin\UE4Editor-GameFrwkSessionsPlugin-1910.lib"

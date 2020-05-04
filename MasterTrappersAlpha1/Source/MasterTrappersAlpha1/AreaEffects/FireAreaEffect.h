@@ -28,6 +28,8 @@ protected:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
+
     //Check Collision
-    virtual void CheckCollision() override;
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_CheckCollision();
 };

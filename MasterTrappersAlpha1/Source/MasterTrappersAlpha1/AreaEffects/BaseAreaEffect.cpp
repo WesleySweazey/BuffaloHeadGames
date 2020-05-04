@@ -46,11 +46,16 @@ void ABaseAreaEffect::BeginPlay()
     World->GetTimerManager().SetTimer(LifeTimeHandle, this, &ABaseAreaEffect::Server_Stop, LifeTime, false);
     PlayEffects();
 }
-//Pure void check collision
-void ABaseAreaEffect::CheckCollision()
-{
 
-}
+//bool ABaseAreaEffect::Server_CheckCollision_Validate()
+//{
+//    return true;
+//}
+////Pure void check collision
+//void ABaseAreaEffect::Server_CheckCollision_Implementation()
+//{
+//
+//}
 
 // Called every frame
 void ABaseAreaEffect::Tick(float DeltaTime)

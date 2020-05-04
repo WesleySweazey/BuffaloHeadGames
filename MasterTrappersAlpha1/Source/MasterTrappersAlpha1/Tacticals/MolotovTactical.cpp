@@ -13,6 +13,7 @@
 #include "AreaEffects/BaseAreaEffect.h"
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "Engine/Engine.h"
 
 AMolotovTactical::AMolotovTactical()
 {
@@ -36,26 +37,23 @@ AMolotovTactical::AMolotovTactical()
     ProjectileMovement->UpdatedComponent = StaticMeshComponent;
     ProjectileMovement->InitialSpeed = 1000.0f;
     ProjectileMovement->MaxSpeed = 1000.f;
+    //ProjectileMovement->SetVelocityInLocalSpace(FowardVelocity);
     ProjectileMovement->bRotationFollowsVelocity = false;
     ProjectileMovement->bShouldBounce = true;
 
-    CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionComp"));
-    CollisionComp->InitSphereRadius(50.0f);
-    CollisionComp->SetCollisionProfileName("OverlapAllDynamic");
-    CollisionComp->OnComponentHit.AddDynamic(this, &AMolotovTactical::OnHit);
-    CollisionComp->SetupAttachment(RootComponent);
+    GetStaticMeshComponent()->OnComponentHit.AddDynamic(this, &AMolotovTactical::Server_OnHit);
 
     // Die after 3 seconds by default
     InitialLifeSpan = 6.0f;
 
-    FRotator NewRotation = FRotator(90.0f, 0.0f, 0.0f);
+    /*FRotator NewRotation = FRotator(90.0f, 0.0f, 0.0f);
 
     FQuat QuatRotation = FQuat(NewRotation);
-    SetActorRotation(QuatRotation);
+    SetActorRotation(QuatRotation);*/
     // Initialize the rotate value
-    PitchVal = 0.f;
-    YawVal = 5.f;
-    RollVal = 0.f;
+    //PitchVal = 5.0f;
+    //YawVal = 5.f;
+    //RollVal = 5.f;
 
     SetReplicates(true);
     SetReplicateMovement(true);
@@ -73,45 +71,82 @@ void AMolotovTactical::BeginPlay()
 
 void AMolotovTactical::OnDetonate()
 {
-    ////Spawns Fire
-    //UWorld* const World = GetWorld();
-    //FActorSpawnParameters SpawnParams;
-    //SpawnParams.Owner = this;
-    //SpawnParams.SpawnCollisionHandlingOverride =
-    //    ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    //FTransform SpawnTransform = GetActorTransform();
-    //FRotator SpawnRotation = GetActorRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
-    //SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
-    //AFireAreaEffect* SpawnedActor = World->SpawnActor<AFireAreaEffect>(FireAreaEffect, SpawnTransform, SpawnParams);
-    //SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
-    //SpawnedActor->SetTeam(Team);
-    //if (SpawnedActor)
-    //{
-    //    UE_LOG(LogTemp, Warning, TEXT("Fire Area Effect Spawned"));
-    //}
+    //Spawns Fire
+    UWorld* const World = GetWorld();
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Owner = this;
+    SpawnParams.SpawnCollisionHandlingOverride =
+        ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    FTransform SpawnTransform = GetActorTransform();
+    FRotator SpawnRotation = GetActorRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
+    SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
+    AFireAreaEffect* SpawnedActor = World->SpawnActor<AFireAreaEffect>(FireAreaEffect, SpawnTransform, SpawnParams);
+    SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+    SpawnedActor->SetTeam(Team);
+    if (SpawnedActor)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Fire Area Effect Spawned"));
+    }
 
-    //UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
-    //Explosion->SetRelativeScale3D(FVector(4.f));
+    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    Explosion->SetRelativeScale3D(FVector(4.f));
 
-    //UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 
-    //TArray<FHitResult> HitActors;
+    TArray<FHitResult> HitActors;
 
-    //FVector StartTrace = GetActorLocation();
-    //FVector EndTrace = StartTrace;
-    //EndTrace.Z += 360.0f;
+    FVector StartTrace = GetActorLocation();
+    FVector EndTrace = StartTrace;
+    EndTrace.Z += 360.0f;
 
-    //FCollisionShape CollisionShape;
-    //CollisionShape.ShapeType = ECollisionShape::Sphere;
-    //CollisionShape.SetSphere(Radius);
+    FCollisionShape CollisionShape;
+    CollisionShape.ShapeType = ECollisionShape::Sphere;
+    CollisionShape.SetSphere(Radius);
     //Destroy();
 }
 
-void AMolotovTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+bool AMolotovTactical::Server_OnHit_Validate(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+    return true;
+}
+
+void AMolotovTactical::Server_OnHit_Implementation(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
     // Only add impulse and destroy projectile if we hit a physics
-    if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) /*&& OtherComp->IsSimulatingPhysics()*/)        // I don't care if there's physics happened
+    if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherActor != this->GetOwner())        // I don't care if there's physics happened
     {
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, ("Molotov hit "));
+        UWorld* const World = GetWorld();
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Owner = this;
+        SpawnParams.SpawnCollisionHandlingOverride =
+            ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        FTransform SpawnTransform = GetActorTransform();
+        FRotator SpawnRotation = GetActorRotation();// +FRotator(-90.0f, 0.0f, 0.0f);
+        SpawnRotation.Pitch = SpawnRotation.Pitch - 90.0f;
+        AFireAreaEffect* SpawnedActor = World->SpawnActor<AFireAreaEffect>(FireAreaEffect, SpawnTransform, SpawnParams);
+        SpawnedActor->SetActorRelativeRotation(SpawnRotation.Quaternion());
+        SpawnedActor->SetTeam(Team);
+        if (SpawnedActor)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Fire Area Effect Spawned"));
+        }
+
+        UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+        Explosion->SetRelativeScale3D(FVector(4.f));
+
+        UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
+
+        TArray<FHitResult> HitActors;
+
+        FVector StartTrace = GetActorLocation();
+        FVector EndTrace = StartTrace;
+        EndTrace.Z += 360.0f;
+
+        FCollisionShape CollisionShape;
+        CollisionShape.ShapeType = ECollisionShape::Sphere;
+        CollisionShape.SetSphere(Radius);
+        Destroy();
         /*OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
         */
@@ -122,7 +157,7 @@ void AMolotovTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
     {
         OnDetonate();
     }*/
-    Destroy();
+    
 }
 
 void AMolotovTactical::Tick(float DeltaTime)
@@ -130,7 +165,7 @@ void AMolotovTactical::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     // smooth rotating every frame
-   /* FRotator NewRotation = FRotator(PitchVal, YawVal, RollVal);
+    /*FRotator NewRotation = FRotator(PitchVal, YawVal, RollVal);
 
     FQuat QuatRotation = FQuat(NewRotation);
 

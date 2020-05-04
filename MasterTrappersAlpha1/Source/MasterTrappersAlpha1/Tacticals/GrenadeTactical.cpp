@@ -66,27 +66,42 @@ AGrenadeTactical::AGrenadeTactical()
 
 
 
-void AGrenadeTactical::OnExplosion()
+bool AGrenadeTactical::Server_OnExplosion_Validate()
 {
-    /*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
-        "OnExplosion ");*/
+    return true;
+}
+
+void AGrenadeTactical::Server_OnExplosion_Implementation()
+{
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
     UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
     Explosion->SetRelativeScale3D(FVector(4.f));
     Explosion->SetIsReplicated(true);
 
-    
     TArray<AActor*> FirstFoundActors;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
     {
+        //GEngine->AddOnScreenDebugMessage(-1, 30.0f, FColor::Yellow, "Num of actors: " + FString::SanitizeFloat(FirstFoundActors.Num()));
         for (int i = 0; i < FirstFoundActors.Num(); i++)
         {
-            if (this->GetDistanceTo(FirstFoundActors[i])<650.0f)
+            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
+            FVector pawnPos = pawn->SavedPosition;
+            //FVector::Distance(this->GetActorLocation(), pawnPos);
+            //this->GetDistanceTo(pawnPos)
+            float dist = FVector::Distance(this->GetActorLocation(), pawnPos);
+            //GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + "Distance: " + FString::SanitizeFloat(FVector::Distance(this->GetActorLocation(), pawnPos)));
+            //GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + " Flash position: X" + FString::SanitizeFloat(this->GetActorLocation().X) + " Actor position: Y" + FString::SanitizeFloat(this->GetActorLocation().Y) + " Actor position: Z" + FString::SanitizeFloat(this->GetActorLocation().Z));
+            if (dist < 500.0f)
             {
-                AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
 
+                //GEngine->AddOnScreenDebugMessage(-1, 45.0f, FColor::Red, pawn->GetName() + " Actor position: X" + FString::SanitizeFloat(pawn->GetActorLocation().X) + " Actor position: Y" + FString::SanitizeFloat(pawn->GetActorLocation().Y) + " Actor position: Z" + FString::SanitizeFloat(pawn->GetActorLocation().Z));
+                //GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + " Actor position: X" + FString::SanitizeFloat(pawn->SavedPosition.X) + " Actor position: Y" + FString::SanitizeFloat(pawn->SavedPosition.Y) + " Actor position: Z" + FString::SanitizeFloat(pawn->SavedPosition.Z));
+                //GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + " Flash position: X" + FString::SanitizeFloat(this->GetActorLocation().X) + " Actor position: Y" + FString::SanitizeFloat(this->GetActorLocation().Y) + " Actor position: Z" + FString::SanitizeFloat(this->GetActorLocation().Z));
+
+                //pawn->GetMesh1P();
                 TArray<AActor*> FoundActors;
                 UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
-                for (int j= 0; j < FoundActors.Num(); j++)
+                for (int j = 0; j < FoundActors.Num(); j++)
                 {
                     AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[j]);
                     if (temp->Team == Team)
@@ -96,46 +111,18 @@ void AGrenadeTactical::OnExplosion()
                     }
                 }
                 pawn->Multicast_Die();
+                Destroy();
             }
         }
     }
-    //TArray<AActor*> Actors;
-    //CollisionComp->GetOverlappingActors(Actors, AMasterTrappersAlpha1Character::StaticClass());
-    //for (int i = 0; i < Actors.Num(); i++)
-    //{
-    //    AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(Actors[i]);
-    //    if (pawn) //if the flash bang not hitting the player himself
-    //    {
-    //        TArray<AActor*> FoundActors;
-    //        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
-
-    //        for (int i = 0; i < FoundActors.Num(); i++)
-    //        {
-    //            AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
-    //            if (temp->Team == Team)
-    //            {
-    //                temp->AddScore();
-    //                break;
-    //            }
-    //        }
-    //        pawn->Multicast_Die();
-    //    }
-    //}
-
-   /* m_Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
-    if (m_Explosion)
-    {
-        m_Explosion->SetRelativeScale3D(FVector(4.f));
-    }*/
-    UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
-    
 }
+    
 
 void AGrenadeTactical::BeginPlay()
 {
     Super::BeginPlay();
     UWorld* const World = GetWorld();
-    World->GetTimerManager().SetTimer(ExplodeHandle, this, &AGrenadeTactical::OnExplosion, Lifetime, false);
+    World->GetTimerManager().SetTimer(ExplodeHandle, this, &AGrenadeTactical::Server_OnExplosion, Lifetime, false);
     //FTimerHandle handle;
     //GetWorld()->GetTimerManager().SetTimer(handle, this, &AGrenadeTactical::OnDetonate, 5.f, false);  // don't want to loop the explotion, just do once every 5.0 second
     //GetWorld()->GetTimerManager().SetTimer(Explosionhandle, this, &AGrenadeTactical::OnExplosion, 2.5f, false);
@@ -217,7 +204,7 @@ void AGrenadeTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
                 }
             }
         }
-        OnExplosion();
+        //OnExplosion();
     }
 }
 

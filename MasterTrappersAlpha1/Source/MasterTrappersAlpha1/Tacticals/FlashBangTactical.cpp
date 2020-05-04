@@ -18,29 +18,11 @@
 
 AFlashBangTactical::AFlashBangTactical()
 {
-    // Use a sphere as a simple collision representation
-    //CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-    //CollisionComp->InitSphereRadius(500.0f);
-    //CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
-    //CollisionComp->OnComponentHit.AddDynamic(this, &AFlashBangTactical::OnHit);		// set up a notification for when this component hits something blocking
-
-    //// Players can't walk on it
-    //CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
-    //CollisionComp->CanCharacterStepUpOn = ECB_No;
-
-    //// Set as root component
-    //RootComponent = CollisionComp;
-
-    
-
-    //StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    //StaticMeshComponent->SetupAttachment(RootComponent);
-
     // Use a ProjectileMovementComponent to govern this projectile's movement
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
     ProjectileMovement->UpdatedComponent = StaticMeshComponent;
     ProjectileMovement->InitialSpeed = 1000.0f;
-    ProjectileMovement->MaxSpeed = 3000.f;
+    ProjectileMovement->MaxSpeed = 1000.f;
     ProjectileMovement->bRotationFollowsVelocity = false;
     ProjectileMovement->bShouldBounce = true;
 
@@ -125,9 +107,9 @@ void AFlashBangTactical::Server_OnDetonate_Implementation()
             //FVector::Distance(this->GetActorLocation(), pawnPos);
             //this->GetDistanceTo(pawnPos)
             float dist = FVector::Distance(this->GetActorLocation(), pawnPos);
-            GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + "Distance: " + FString::SanitizeFloat(FVector::Distance(this->GetActorLocation(), pawnPos)));
-            GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + " Flash position: X" + FString::SanitizeFloat(this->GetActorLocation().X) + " Actor position: Y" + FString::SanitizeFloat(this->GetActorLocation().Y) + " Actor position: Z" + FString::SanitizeFloat(this->GetActorLocation().Z));
-            if (dist < 400.0f)
+            //GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + "Distance: " + FString::SanitizeFloat(FVector::Distance(this->GetActorLocation(), pawnPos)));
+            //GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, pawn->GetName() + " Flash position: X" + FString::SanitizeFloat(this->GetActorLocation().X) + " Actor position: Y" + FString::SanitizeFloat(this->GetActorLocation().Y) + " Actor position: Z" + FString::SanitizeFloat(this->GetActorLocation().Z));
+            if (dist < 500.0f)
             {
                 
                 //GEngine->AddOnScreenDebugMessage(-1, 45.0f, FColor::Red, pawn->GetName() + " Actor position: X" + FString::SanitizeFloat(pawn->GetActorLocation().X) + " Actor position: Y" + FString::SanitizeFloat(pawn->GetActorLocation().Y) + " Actor position: Z" + FString::SanitizeFloat(pawn->GetActorLocation().Z));
@@ -152,57 +134,6 @@ void AFlashBangTactical::Server_OnDetonate_Implementation()
             }
         }
     }
-
-    //TArray<FHitResult> HitActors;
-    //TArray<AActor*> Actors;
-    //ExplosionComp->GetOverlappingActors(Actors, AMasterTrappersAlpha1Character::StaticClass());
-    //for (int i = 0; i < Actors.Num(); i++)
-    //{
-    //    AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(Actors[i]);
-    //    if (pawn) //if the flash bang not hitting the player himself
-    //    {
-    //        //for (int i = 0; i < Actors.Num(); i++)
-    //        //{
-    //        float distanceToFlash = this->GetDistanceTo(pawn);
-
-    //            if (distanceToFlash < 650.0f)
-    //            {
-    //                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-    //                    "AFlashBangTactical::OnOverlapBegin Overlapped with - "
-    //                    + pawn->GetName() + " Distance: " + FString::SanitizeFloat(distanceToFlash));
-    //                pawn->Client_StartStun();
-    //            }
-    //        //}
-    //        /*if (Role < ROLE_Authority)
-    //        {
-    //            pawn->Server_StartStun();
-    //        }
-    //        else
-    //        {*/
-    //            //pawn->Client_StartStun();
-    //        //}
-    //    }
-    //}
-    /*FVector StartTrace = GetActorLocation();
-    FVector EndTrace = StartTrace;
-    EndTrace.Z += 360.0f;
-
-    FCollisionShape CollisionShape;
-    CollisionShape.ShapeType = ECollisionShape::Sphere;
-    CollisionShape.SetSphere(Radius);
-
-    if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
-    {
-        for (auto Actors = HitActors.CreateIterator(); Actors; Actors++)
-        {
-            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>((*Actors).Actor->GetClass());
-            if (pawn)
-            {
-                pawn->Server_StartStun();
-            }
-        }
-    }
-    Destroy();*/
 }
 
 void AFlashBangTactical::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

@@ -11,6 +11,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/World.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "Engine.h"
 
 AFireAreaEffect::AFireAreaEffect() : ABaseAreaEffect()
 {
@@ -26,7 +27,7 @@ void AFireAreaEffect::BeginPlay()
     //Set destory timer
     World->GetTimerManager().SetTimer(LifeTimeHandle, this, &ABaseAreaEffect::Server_Stop, LifeTime, false);
     //Set update timer
-    World->GetTimerManager().SetTimer(damageTimeHandle, this, &AFireAreaEffect::CheckCollision, 1, true);
+    World->GetTimerManager().SetTimer(damageTimeHandle, this, &AFireAreaEffect::Server_CheckCollision, 1, true);
     //->OnComponentHit.AddDynamic(this, &AFireAreaEffect::OnHit);
     PlayEffects();
 }
@@ -37,9 +38,16 @@ void AFireAreaEffect::PlayEffects()
     ParticleZoneComponent->SetRelativeScale3D(FVector(4.f));
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 }
-//Check Collision
-void AFireAreaEffect::CheckCollision()
+
+bool AFireAreaEffect::Server_CheckCollision_Validate()
 {
+    return true;
+}
+//Check Collision
+void AFireAreaEffect::Server_CheckCollision_Implementation()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+        "Checking collision");
     UWorld* const World = GetWorld();
     if (World)
     {
@@ -51,28 +59,34 @@ void AFireAreaEffect::CheckCollision()
             AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(Actors[i]);
             if (pawn) //player
             {
-                pawn->GetComponentHealth()->TakeDamage(15.0f);
-                if (pawn->GetHealth() < 0.0f)
+                pawn->GetComponentHealth()->TakeDamage(50.0f);
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+                    "TakeDamage");
+                if (pawn->GetHealth() < 50.0f)
                 {
                     TArray<AActor*> FoundActors;
                     UGameplayStatics::GetAllActorsOfClass(World, AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
-
+                    
                     for (int i = 0; i < FoundActors.Num(); i++)
                     {
                         AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
                         if (temp->Team == Team)
                         {
+                            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+                                "Addscore");
                             //Add to team
                             temp->AddScore();
                             break;
                         }
                     }
                     pawn->Multicast_Die();
+                    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+                        "Death");
                 }
                 
             }
         }
-        World->GetTimerManager().SetTimer(damageTimeHandle, this, &AFireAreaEffect::CheckCollision, 1, true);
+        World->GetTimerManager().SetTimer(damageTimeHandle, this, &AFireAreaEffect::Server_CheckCollision, 1, true);
     }
 }
 
