@@ -45,6 +45,8 @@ public:
         void Multicast_SetScoreTeamOne(int Score);
     UFUNCTION(NetMulticast, Reliable)
         void Multicast_SetScoreTeamTwo(int Score);
+    //UFUNCTION(Server, Reliable, WithValidation)
+        void GameDone();
 
     //UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Materials, Replicated)
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Materials, Replicated)
@@ -83,4 +85,13 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay, Replicated)
         bool bIsPlayerFiveLoggedIn;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay, Replicated)
+        float gameTimeSecs;
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gameplay, Replicated)
+        int gameTimeMins;
+    UFUNCTION(BlueprintCallable)
+        int GetGameTimeMins() { return gameTimeMins; }
+    UFUNCTION(BlueprintCallable)
+        float AddTime(float val);
 };

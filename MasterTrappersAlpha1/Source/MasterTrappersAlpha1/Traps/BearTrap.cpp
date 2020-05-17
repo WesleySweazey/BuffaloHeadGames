@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine.h"
 
 ABearTrap::ABearTrap() : ABaseTrap()
 {
@@ -15,6 +16,29 @@ ABearTrap::ABearTrap() : ABaseTrap()
     SphereComponent->AttachTo(RootComponent);
 
     Tags.Add("Trap");
+}
+
+bool ABearTrap::Server_OnHit_Validate()
+{
+    return true;
+}
+
+void ABearTrap::Server_OnHit_Implementation()
+{
+    //Get all players in scene
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
+
+    for (int i = 0; i < FoundActors.Num(); i++)
+    {
+        AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
+        //If the trap team equal a players team add score
+        if (temp->Team == Team)
+        {
+            temp->AddScore();
+            break;
+        }
+    }
 }
 
 void ABearTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -29,20 +53,7 @@ void ABearTrap::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor
                 //Check team
                 if (pawn->Team != Team)
                 {
-                    //Get all players in scene
-                    TArray<AActor*> FoundActors;
-                    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FoundActors);
-
-                    for (int i = 0; i < FoundActors.Num(); i++)
-                    {
-                        AMasterTrappersAlpha1Character* temp = Cast<AMasterTrappersAlpha1Character>(FoundActors[i]);
-                        //If the trap team equal a players team add score
-                        if (temp->Team == Team)
-                        {
-                            temp->AddScore();
-                            break;
-                        }
-                    }
+                    Server_OnHit();
                     pawn->Multicast_Die();
                 }
             }

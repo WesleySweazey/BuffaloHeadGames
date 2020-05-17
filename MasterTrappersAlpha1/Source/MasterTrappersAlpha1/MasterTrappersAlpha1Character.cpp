@@ -43,6 +43,7 @@
 #include "Tacticals/DroneTactical.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "GameFrwkSessionsPlugin/LobbyGameMode.h"
+#include "GameFramework/HUD.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -81,6 +82,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     HatMesh->SetupAttachment(Mesh1P);
     HatMesh->RelativeLocation = FVector(0.f, 0.0f, 200.0f);
     HatMesh->SetRelativeScale3D(FVector(0.f, 0.0f, 0.0f));
+    HatMesh->SetIsReplicated(true);
     //testMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("testMesh"));
     //HatMesh->SetActive(true);
     ////HatMesh->SetOnlyOwnerSee(true);
@@ -123,7 +125,8 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     currentTactical = 0;
     totalTraps = 5;
     currentTrap = 0;
-    
+    m_Score = 0;
+    previousIdx = 0;
     Team = 0;
 
     CurrentSpeed = 0.0f;
@@ -170,6 +173,7 @@ AMasterTrappersAlpha1Character::AMasterTrappersAlpha1Character()
     }
 
     SavedPosition = FirstPersonCameraComponent->GetComponentLocation();
+    Lead = false;
 }
 bool AMasterTrappersAlpha1Character::Client_SetDroneView_Validate(bool val, int teamNumber)
 {
@@ -557,15 +561,59 @@ void AMasterTrappersAlpha1Character::PostBeginPlay()
     //ref copy: Texture2D'/Game/Inventory/hp.hp'
 }
 
+void  AMasterTrappersAlpha1Character::SetMasterTrapperTest()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("SetMasterTrapper"));
+    int highScore = 0;
+    AMasterTrappersAlpha1Character* highestCharacter = nullptr;
+    bool tie = false;
+    TArray<AActor*> FirstFoundActors;
+
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
+    {
+        for (int i = 0; i < FirstFoundActors.Num(); i++)
+        {
+            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
+            //pawn->SetMasterTrapperTest();
+            int currentscore = pawn->GetScore();
+            if (highScore < currentscore)
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("New high score"));
+                highestCharacter = pawn;
+                highScore = currentscore;
+            }
+            else if (highScore > currentscore)
+            {
+                pawn->HatMesh->SetRelativeScale3D(FVector(0.0f, 0.0f, 0.0f));
+                pawn->Lead = false;
+            }
+            else if (highScore == currentscore)
+            {
+                tie = true;
+            }
+        }
+        if (tie == false)
+        {
+            if (highestCharacter != nullptr)
+            {
+                highestCharacter->HatMesh->SetRelativeScale3D(FVector(1.f, 1.0f, 1.0f));
+                highestCharacter->Lead = true;
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Lead"));
+            }
+            //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hat true"));
+        }
+    }
+}
+
 bool AMasterTrappersAlpha1Character::Server_SetMasterTrapper_Validate()
 {
     return true;
 }
 
-void AMasterTrappersAlpha1Character::Server_SetMasterTrapper_Implementation()
+void AMasterTrappersAlpha1Character::Server_SetMasterTrapper_Implementation()//Server
 {
-    if (Role == ROLE_Authority)
-    {
+    /*if (Role == ROLE_Authority)
+    {*/
         GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("SetMasterTrapper"));
         int highScore = 0;
         AMasterTrappersAlpha1Character* highestCharacter = nullptr;
@@ -577,59 +625,106 @@ void AMasterTrappersAlpha1Character::Server_SetMasterTrapper_Implementation()
             for (int i = 0; i < FirstFoundActors.Num(); i++)
             {
                 AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
+                //pawn->HatMesh->SetRelativeScale3D(FVector(1.f, 1.0f, 1.0f));
+                //pawn->Lead = true;
                 int currentscore = pawn->GetScore();
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "score: "+ FString::FromInt(currentscore));
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "num of actors: " + FString::FromInt(FirstFoundActors.Num()));
                 if (highScore < currentscore)
                 {
+                    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("New high score"));
                     highestCharacter = pawn;
                     highScore = currentscore;
+                }
+                /*else if (highScore > currentscore)
+                {
+                    pawn->HatMesh->SetRelativeScale3D(FVector(0.0f, 0.0f, 0.0f));
+                    pawn->Lead = false;
+                }
+                else if (highScore == currentscore)
+                {
+                    tie = true;
                 }
             }
             if (tie == false)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Lead"));
                 if (highestCharacter != nullptr)
                 {
                     highestCharacter->HatMesh->SetRelativeScale3D(FVector(1.f, 1.0f, 1.0f));
-                }
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hat true"));
+                    highestCharacter->Lead = true;
+                    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Lead"));
+                }*/
+                //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hat true"));*/
             }
-        }
+            if (highestCharacter != nullptr)
+            {
+                for (int i = 0; i < FirstFoundActors.Num(); i++)
+                {
+                    AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
+                    if (pawn != highestCharacter)
+                    {
+                        pawn->HatMesh->SetRelativeScale3D(FVector(0.f, 0.0f, 0.0f));
+                        pawn->Lead = false;
+                    }
+                    else if (pawn == highestCharacter)
+                    {
+                        pawn->HatMesh->SetRelativeScale3D(FVector(1.f, 1.0f, 1.0f));
+                        pawn->Lead = true;
+                        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Lead"));
+                    }
+                }
+            }
+       }
         
-    }
+   //}
 }
 
-//void AMasterTrappersAlpha1Character::Multicast_SetMasterTrapper_Implementation()
-//{
-//    /*if (Role == ROLE_Authority)
-//    {*/
-//    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("SetMasterTrapper"));
-//    int highScore = 0;
-//    AMasterTrappersAlpha1Character* highestCharacter = nullptr;
-//    bool tie = false;
-//    TArray<AActor*> FirstFoundActors;
-//
-//    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
-//    {
-//        for (int i = 0; i < FirstFoundActors.Num(); i++)
-//        {
-//            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
-//            int currentscore = pawn->GetScore();
-//            if (highScore < currentscore)
-//            {
-//                highestCharacter = pawn;
-//                highScore = currentscore;
-//            }
-//        }
-//        if (tie == false)
-//        {
-//            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Lead"));
-//            highestCharacter->HatMesh->SetRelativeScale3D(FVector(1.f, 1.0f, 1.0f));
-//            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hat true"));
-//        }
-//    }
-//
-//    //}
-//}
+void AMasterTrappersAlpha1Character::Multicast_SetMasterTrapper_Implementation()//Server
+{
+    /*if (Role == ROLE_Authority)
+    {*/
+    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("SetMasterTrapper"));
+    int highScore = 0;
+    AMasterTrappersAlpha1Character* highestCharacter = nullptr;
+    bool tie = false;
+    TArray<AActor*> FirstFoundActors;
+
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
+    {
+        for (int i = 0; i < FirstFoundActors.Num(); i++)
+        {
+            AMasterTrappersAlpha1Character* pawn = Cast<AMasterTrappersAlpha1Character>(FirstFoundActors[i]);
+            int currentscore = pawn->GetScore();
+            if (highScore < currentscore)
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("New high score"));
+                highestCharacter = pawn;
+                highScore = currentscore;
+            }
+            else if (highScore > currentscore)
+            {
+                pawn->HatMesh->SetRelativeScale3D(FVector(0.0f, 0.0f, 0.0f));
+                pawn->Lead = false;
+            }
+            else if (highScore == currentscore)
+            {
+                tie = true;
+            }
+        }
+        if (tie == false)
+        {
+            if (highestCharacter != nullptr)
+            {
+                highestCharacter->HatMesh->SetRelativeScale3D(FVector(1.f, 1.0f, 1.0f));
+                highestCharacter->Lead = true;
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Lead"));
+            }
+            //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hat true"));
+        }
+        //}
+
+    }
+}
 //Server Slip Functions
 
 bool AMasterTrappersAlpha1Character::Server_StartSlip_Validate()
@@ -728,34 +823,44 @@ bool AMasterTrappersAlpha1Character::Client_EndStun_Validate()
 
 void AMasterTrappersAlpha1Character::Client_EndStun_Implementation()
 {
-
     FP_PostProcessComponent->bEnabled = false;
 }
 
 void AMasterTrappersAlpha1Character::Multicast_EndStun_Implementation()//
 {
-
     FP_PostProcessComponent->bEnabled = false;
 }
 //Multicasting Die
 void AMasterTrappersAlpha1Character::Multicast_Die_Implementation()
 {
-    if (Role == ROLE_Authority)
+   if (Role == ROLE_Authority)
     {
         HealthComponent->Server_ResetHealth();
         SetActorLocation(GetRandomRespawnLocation());
         Server_SetMasterTrapper();
+        //Multicast_SetMasterTrapper();
         //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("You Died!"));
         //StartSlip();
     }
-   // Multicast_SetMasterTrapper();
+   else
+   {
+       //Server_SetMasterTrapper();
+       //Multicast_SetMasterTrapper();
+   }
+   //Server_SetMasterTrapper();
+   //Multicast_SetMasterTrapper();
+   //SetMasterTrapperTest();
 }
 
 FVector AMasterTrappersAlpha1Character::GetRandomRespawnLocation()
 {
     int randIdx = rand() % RespawnLocations.Num();
+    while (randIdx == previousIdx)
+    {
+        randIdx = rand() % RespawnLocations.Num();;
+    }
     FVector loc = RespawnLocations[randIdx];
-    int bp = 1;
+    previousIdx = randIdx;
     return loc;
 }
 
@@ -1370,6 +1475,17 @@ void AMasterTrappersAlpha1Character::Server_SetColor_Implementation()
     }
 }
 
+AHUD * AMasterTrappersAlpha1Character::GetHUD()
+{
+    /*APlayerController* PlayerControllertemp = GetWorld()->GetFirstPlayerController();
+    if (PlayerControllertemp)
+    {
+        AHUD * tempAHUD = PlayerControllertemp->GetHUD();
+        return tempAHUD;
+    }*/
+    return nullptr;
+}
+
 AMasterTrappersGameStateBase * AMasterTrappersAlpha1Character::GetLocalGameState()
 {
     return Cast<AMasterTrappersGameStateBase>(GetWorld()->GetGameState());
@@ -1385,6 +1501,7 @@ void AMasterTrappersAlpha1Character::GetLifetimeReplicatedProps(TArray<FLifetime
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+    DOREPLIFETIME(AMasterTrappersAlpha1Character, Lead);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, CursorToWorld);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, TrapRotation);
     DOREPLIFETIME(AMasterTrappersAlpha1Character, Facing);

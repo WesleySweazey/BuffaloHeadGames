@@ -55,6 +55,8 @@ public:
     //Spawn smoke
     void StartSmoke();
 
+    void StartFlash();
+
     /** Smoke effect Blueprint */
     UPROPERTY(EditDefaultsOnly,
         BlueprintReadOnly,

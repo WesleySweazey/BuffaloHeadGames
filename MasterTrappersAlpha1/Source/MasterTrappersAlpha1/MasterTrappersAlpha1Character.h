@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "MasterTrappersAlpha1HUD.h"
 #include "MasterTrappersAlpha1Character.generated.h"
 
 //inventory : when the inventory get updated this event be fired
@@ -74,7 +75,8 @@ public:
     /** Player's team number */
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Team", Replicated)
         int Team;
-
+    
+    AHUD* GetHUD();
     class AMasterTrappersGameStateBase* GetLocalGameState();
     class AMasterTrappersAlpha1GameMode* GetLocalGameMode();
     //Master Material 
@@ -145,8 +147,20 @@ public:
         void Server_AddMolotovNum();
     void AddMolotovNum();
 
-    UFUNCTION(BlueprintCallable, NetMulticast, Reliable, WithValidation)//
+    UFUNCTION(BlueprintCallable, NetMulticast, Reliable)//
+        void Multicast_SetMasterTrapper();
+
+    UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)//
         void Server_SetMasterTrapper();
+
+    void SetMasterTrapperTest();
+
+    UPROPERTY(EditAnywhere, Replicated)
+    bool Lead;
+
+    int previousIdx;
+
+    bool GetLead() { return Lead; }
 
     //NinjaStar  setup
     UPROPERTY(EditAnywhere, Replicated)

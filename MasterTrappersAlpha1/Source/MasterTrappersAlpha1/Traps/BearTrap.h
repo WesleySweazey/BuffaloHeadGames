@@ -24,6 +24,9 @@ public:
             bool bFromSweep,
             const FHitResult &SweepResult);
 
+    UFUNCTION(Server, Reliable, WithValidation)
+        void Server_OnHit();
+
     UPROPERTY(VisibleAnywhere, Category = "Collision",
         meta = (AllowPrivateAccess))
         class USphereComponent* SphereComponent;

@@ -6,6 +6,7 @@
 #include "TextureResource.h"
 #include "CanvasItem.h"
 #include "UObject/ConstructorHelpers.h"
+#include "HudSettings.h"
 
 AMasterTrappersAlpha1HUD::AMasterTrappersAlpha1HUD()
 {
@@ -33,3 +34,13 @@ void AMasterTrappersAlpha1HUD::DrawHUD()
 	TileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem( TileItem );
 }
+
+//void AMasterTrappersAlpha1HUD::Win()
+//{
+//    
+//}
+//
+//void AMasterTrappersAlpha1HUD::Lose()
+//{
+//
+//}

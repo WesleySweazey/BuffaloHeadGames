@@ -16,10 +16,14 @@ public:
 
 	/** Primary draw call for the HUD */
 	virtual void DrawHUD() override;
+    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+        void Win();
+    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+        void Lose();
 
 private:
 	/** Crosshair asset pointer */
 	class UTexture2D* CrosshairTex;
-
+    
 };
 

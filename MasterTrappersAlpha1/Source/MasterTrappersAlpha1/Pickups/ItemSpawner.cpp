@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "MasterTrappersAlpha1Character.h"
 #include "Engine/World.h"
+#include "Engine.h"
 
 // Sets default values
 AItemSpawner::AItemSpawner()

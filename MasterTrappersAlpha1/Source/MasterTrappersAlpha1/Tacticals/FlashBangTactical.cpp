@@ -53,6 +53,14 @@ AFlashBangTactical::~AFlashBangTactical()
     //m_Explosion->bAutoDestroy = true;
 }
 
+void AFlashBangTactical::StartFlash()
+{
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
+    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
+    Explosion->SetRelativeScale3D(FVector(4.f));
+    Explosion->SetIsReplicated(true);
+}
+
 void AFlashBangTactical::StartSmoke()
 {
         UWorld* const World = GetWorld();
@@ -81,7 +89,8 @@ void AFlashBangTactical::BeginPlay()
     {
         GetWorld()->GetTimerManager().SetTimer(handle, this, &AFlashBangTactical::Server_OnDetonate_Implementation, 5.f, false);  // don't want to loop the explotion, just do once every 5.0 second
     }
-    GetWorld()->GetTimerManager().SetTimer(smokeTimerHandle, this, &AFlashBangTactical::StartSmoke, 4.0f, false);                                        //Spawns Smoke
+    GetWorld()->GetTimerManager().SetTimer(smokeTimerHandle, this, &AFlashBangTactical::StartSmoke, 4.0f, false);  //Spawns Smoke
+    GetWorld()->GetTimerManager().SetTimer(smokeTimerHandle, this, &AFlashBangTactical::StartFlash, 5.0f, false);  //Spawns flash
 }
 
 bool AFlashBangTactical::Server_OnDetonate_Validate()
@@ -91,10 +100,7 @@ bool AFlashBangTactical::Server_OnDetonate_Validate()
 
 void AFlashBangTactical::Server_OnDetonate_Implementation()
 {
-    UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
-    UParticleSystemComponent* Explosion = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorTransform());
-    Explosion->SetRelativeScale3D(FVector(4.f));
-    Explosion->SetIsReplicated(true);
+    
 
     TArray<AActor*> FirstFoundActors;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMasterTrappersAlpha1Character::StaticClass(), FirstFoundActors);
